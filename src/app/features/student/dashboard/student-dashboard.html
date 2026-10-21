@@ -1,0 +1,486 @@
+<div class="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-300">
+
+  <!-- =========================================================================
+       1. PRIMARY DUAL FLIGHT DECK (8-COL FLIGHT DECK + 4-COL LIVE EXAM BEACON)
+       ========================================================================= -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- 8-Col Flight Deck Card -->
+    <div class="glass-pristine p-6 sm:p-8 specular-clean relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6"
+         [ngClass]="hasActiveExam() ? 'lg:col-span-8' : 'lg:col-span-12'">
+      
+      <!-- Left: Student Info & Greeting -->
+      <div class="space-y-3 max-w-lg text-center md:text-left">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20">
+          <span class="w-2 h-2 rounded-full bg-[#21db93] animate-pulse"></span>
+          Student Flight Deck: Ready
+        </div>
+
+        <h1 class="text-2xl sm:text-3xl font-black text-[#14171c] tracking-tight leading-tight">
+          Good afternoon, <span class="text-[#0b4a39]">{{ profile().fullName || 'Alex' }}</span>! 🌿
+        </h1>
+
+        <p class="text-[#5a6066] text-xs sm:text-sm font-medium leading-relaxed">
+          You are currently in <strong class="text-[#14171c]">Semester 6 • B.Tech CSE</strong>. Your oral viva readiness index indicates outstanding progress for continuous outcome assessment.
+        </p>
+
+        <!-- Student Meta Chips -->
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1 text-xs font-semibold">
+          <span class="px-2.5 py-1 rounded-lg bg-[#f4f6f5] text-[#0b4a39] border border-[#e9ecea]">
+            ID: {{ profile().studentId }}
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-[#f4f6f5] text-[#0b4a39] border border-[#e9ecea]">
+            Cohort 2026
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-white text-[#5a6066] border border-[#e9ecea]">
+            Verified Scholar
+          </span>
+        </div>
+      </div>
+
+      <!-- Right: Circular 3D Viva Readiness Donut Gauge -->
+      <div class="flex flex-col items-center justify-center p-4 bg-white rounded-3xl border border-[#e9ecea] shadow-sm min-w-[200px]">
+        <div class="relative w-36 h-36 flex items-center justify-center">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#e2e8f0" stroke-width="7.5"></circle>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="url(#jade-gauge-grad)" stroke-width="8"
+                    stroke-dasharray="263.89"
+                    [attr.stroke-dashoffset]="readinessOffset()"
+                    stroke-linecap="round"
+                    class="transition-all duration-1000 ease-out"></circle>
+            <defs>
+              <linearGradient id="jade-gauge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#21db93"/>
+                <stop offset="100%" stop-color="#0b4a39"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span class="text-2xl sm:text-3xl font-black text-[#14171c] tracking-tight">
+              {{ profile().overallReadinessIndex || 84.6 }}%
+            </span>
+            <span class="text-[9px] uppercase tracking-wider font-extrabold text-[#0b4a39]">
+              VIVA INDEX
+            </span>
+          </div>
+        </div>
+
+        <span class="mt-2 px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-200">
+          Potential: Grade O (Outstanding)
+        </span>
+      </div>
+
+    </div>
+
+    <!-- 4-Col Live Exam Ticking Beacon -->
+    @if (hasActiveExam()) {
+      <div class="lg:col-span-4 glass-rose p-6 sm:p-7 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-rose-500 text-white shadow-sm flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            LIVE EXAM RADAR
+          </span>
+          <span class="text-xs font-extrabold text-rose-800 bg-rose-100 px-2.5 py-0.5 rounded-lg border border-rose-200">
+            Hall B-14
+          </span>
+        </div>
+
+        <div class="my-4 text-center sm:text-left space-y-1">
+          <span class="text-[10px] uppercase font-black tracking-wider text-slate-400 block">Exam Lockout In</span>
+          <div class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            {{ activeExamTimeRemaining() }}
+          </div>
+          <p class="text-xs font-black text-slate-800 pt-1 line-clamp-2">
+            {{ activeExamTitle() }}
+          </p>
+          <p class="text-[11px] text-slate-500">
+            Proctor: Dr. Sarah Jenkins • Verified
+          </p>
+        </div>
+
+        <a routerLink="/student/viva"
+           class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white font-black text-xs shadow-md shadow-rose-500/25 transition-all cursor-pointer flex items-center justify-center gap-2">
+          <span>Enter Secure Exam Room</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </div>
+    }
+
+  </div>
+
+  <!-- =========================================================================
+       2. SUSPENSION / ACADEMIC NOTICE (If applicable)
+       ========================================================================= -->
+  @if (suspendedClass(); as sClass) {
+    <section class="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 flex items-start gap-3 shadow-xs">
+      <div class="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 shrink-0 font-bold">
+        ⚠️
+      </div>
+      <div class="space-y-1 text-xs flex-1">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-amber-900 uppercase tracking-wide">Classroom Notice: {{ sClass.name }}</span>
+          <span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-amber-200/80 text-amber-900">[{{ sClass.status }}]</span>
+        </div>
+        <p class="text-slate-700 leading-relaxed">
+          @if (sClass.suspensionReason) {
+            <span>{{ sClass.suspensionReason }}. </span>
+          }
+          Please contact course instructor {{ sClass.mentorName }} for enrollment rectification.
+        </p>
+      </div>
+    </section>
+  }
+
+  <!-- =========================================================================
+       3. FOUR TACTILE BENTO ACTION CARDS
+       ========================================================================= -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <!-- Card 1: Live Exam -->
+    <a routerLink="/student/viva"
+       class="glass-pristine p-5 flex flex-col justify-between group cursor-pointer hover:border-emerald-300">
+      <div>
+        <div class="flex items-start justify-between">
+          <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
+            🎙️
+          </div>
+          <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
+            Active
+          </span>
+        </div>
+        <h3 class="text-sm font-black text-slate-900 mt-3 group-hover:text-emerald-700 transition-colors">
+          Live Exam & Viva
+        </h3>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Oral examiner with instant voice & articulation evaluation.
+        </p>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-black text-emerald-700">
+        <span>Enter Room</span>
+        <span class="group-hover:translate-x-1 transition-transform">→</span>
+      </div>
+    </a>
+
+    <!-- Card 2: Practice -->
+    <a routerLink="/student/practice"
+       class="glass-pristine p-5 flex flex-col justify-between group cursor-pointer hover:border-teal-300">
+      <div>
+        <div class="flex items-start justify-between">
+          <div class="w-11 h-11 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
+            🔮
+          </div>
+          <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-teal-100 text-teal-800">
+            OBE Mining
+          </span>
+        </div>
+        <h3 class="text-sm font-black text-slate-900 mt-3 group-hover:text-teal-700 transition-colors">
+          Question Predictor
+        </h3>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Historical probability analysis based on Bloom's Taxonomy.
+        </p>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-black text-teal-700">
+        <span>Explore Topics</span>
+        <span class="group-hover:translate-x-1 transition-transform">→</span>
+      </div>
+    </a>
+
+    <!-- Card 3: Code Sandbox -->
+    <a routerLink="/student/paper-upload"
+       class="glass-pristine p-5 flex flex-col justify-between group cursor-pointer hover:border-indigo-300">
+      <div>
+        <div class="flex items-start justify-between">
+          <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
+            📑
+          </div>
+          <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800">
+            OCR
+          </span>
+        </div>
+        <h3 class="text-sm font-black text-slate-900 mt-3 group-hover:text-indigo-700 transition-colors">
+          Question Papers
+        </h3>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Digital archives, solved step-by-step model keys & OCR.
+        </p>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-black text-indigo-700">
+        <span>Open Vault</span>
+        <span class="group-hover:translate-x-1 transition-transform">→</span>
+      </div>
+    </a>
+
+    <!-- Card 4: My Results -->
+    <a routerLink="/student/progress"
+       class="glass-pristine p-5 flex flex-col justify-between group cursor-pointer hover:border-amber-300">
+      <div>
+        <div class="flex items-start justify-between">
+          <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
+            📊
+          </div>
+          <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">
+            OBE Ledger
+          </span>
+        </div>
+        <h3 class="text-sm font-black text-slate-900 mt-3 group-hover:text-amber-700 transition-colors">
+          Results & Ledger
+        </h3>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Course outcome attainment graphs & verifiable transcripts.
+        </p>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-black text-amber-700">
+        <span>View Dossier</span>
+        <span class="group-hover:translate-x-1 transition-transform">→</span>
+      </div>
+    </a>
+
+  </section>
+
+  <!-- =========================================================================
+       4. ASSIGNED EXAMINATIONS & VIVAS
+       ========================================================================= -->
+  <section class="glass-pristine p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div>
+        <h3 class="text-base font-black text-slate-900 tracking-tight">Assigned Examinations & VIVAs</h3>
+        <p class="text-xs text-slate-500">Scheduled oral assessments, question paper evaluations, and practice tests</p>
+      </div>
+      <a routerLink="/student/viva" class="text-xs font-extrabold text-emerald-700 hover:underline flex items-center gap-1">
+        <span>View All</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <div class="divide-y divide-slate-100 text-xs">
+      @for (test of assignedTests(); track test.id) {
+        <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-emerald-50/30 px-2 rounded-xl transition-colors">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0"
+              [ngClass]="test.status === 'IN_PROGRESS' ? 'bg-rose-100 text-rose-700 border border-rose-200' : test.status === 'PENDING' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-700 border border-slate-200'">
+              @if (test.status === 'IN_PROGRESS') {
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+              } @else if (test.status === 'PENDING') {
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              } @else {
+                <span class="text-emerald-700">✓</span>
+              }
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-slate-900 text-sm">{{ test.title }}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider"
+                  [ngClass]="test.status === 'IN_PROGRESS' ? 'bg-rose-100 text-rose-700 border border-rose-200 animate-pulse' : test.status === 'PENDING' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-700'">
+                  {{ test.status }}
+                </span>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 text-slate-500 text-[11px] font-medium">
+                <span>🏛️ {{ test.subjectCode }}</span>
+                <span>⏱️ {{ test.durationMinutes }} Mins</span>
+                <span>📊 Target: {{ test.targetCOs.join(', ') }}</span>
+                <span>📅 Due: {{ test.dueDate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 self-end sm:self-auto">
+            @if (test.status === 'IN_PROGRESS') {
+              <a routerLink="/student/viva"
+                 class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                <span>Resume Viva</span>
+                <span>→</span>
+              </a>
+            } @else if (test.status === 'PENDING') {
+              <a routerLink="/student/viva"
+                 class="btn-jade-primary px-4 py-2 text-xs font-black flex items-center gap-1.5">
+                <span>Start Viva</span>
+                <span>→</span>
+              </a>
+            } @else {
+              <span class="text-emerald-700 font-extrabold text-xs">
+                Score: {{ test.awardedScore || 0 }}/{{ test.totalMarks }}
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. OBE DIAGNOSTIC RECOMMENDATION & PRIMARY MENTOR GUIDANCE
+       ========================================================================= -->
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- Left: Automated OBE Remedial Diagnosis -->
+    <div class="glass-pristine p-6 flex flex-col justify-between space-y-4">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-base shadow-inner">
+              🎯
+            </div>
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-700 block">OBE Remedial Diagnosis</span>
+              <h4 class="text-sm font-black text-slate-900">Weakest Outcome: {{ weakestCO().code }}</h4>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 font-mono text-xs font-black">
+            {{ weakestCO().scorePercent }}% Attained
+          </span>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-xs text-slate-700">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-900">
+            <span>{{ weakestCO().subject }}</span>
+            <span class="text-slate-500">{{ weakestCO().name }}</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed text-[11px]">
+            {{ weakestCO().failureDiagnosis }}
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <span class="text-xs text-slate-500 font-medium truncate pr-2">Drill: {{ weakestCO().remedialAction }}</span>
+        <a routerLink="/student/practice"
+           class="btn-jade-primary px-3.5 py-1.5 text-xs font-black shrink-0 flex items-center gap-1">
+          <span>Launch Drill</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Primary Reviewing Mentor Guidance -->
+    <div class="glass-pristine p-6 flex flex-col justify-between space-y-4">
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 font-black text-sm flex items-center justify-center shrink-0 border border-emerald-300">
+            SJ
+          </div>
+          <div>
+            <h4 class="text-sm font-black text-slate-900">{{ profile().primaryMentorName || 'Dr. Sarah Jenkins' }}</h4>
+            <span class="text-[11px] text-slate-500 font-medium">Head of Academic Committee • Primary Reviewing Mentor</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+          "Review the past oral derivations on Raft consensus in the Practice miner before starting your midterm defense."
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <span class="text-[11px] text-emerald-700 font-extrabold flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Online • Response within 1 hr
+        </span>
+        <a routerLink="/student/communication"
+           class="text-xs font-black text-emerald-700 hover:underline flex items-center gap-1">
+          <span>Direct Chat Stream</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =========================================================================
+       6. ACTIVE ENROLLED CLASSROOMS
+       ========================================================================= -->
+  <section class="glass-pristine p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div>
+        <h3 class="text-base font-black text-slate-900 tracking-tight">Active Enrolled Classrooms</h3>
+        <p class="text-xs text-slate-500">Institutional courses joined with verification codes</p>
+      </div>
+      <a routerLink="/student/classes" class="text-xs font-extrabold text-emerald-700 hover:underline flex items-center gap-1">
+        <span>View All ({{ joinedClasses().length }})</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      @for (c of joinedClasses(); track c.id) {
+        <div class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-300 transition-all flex flex-col justify-between space-y-3 shadow-xs group">
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-mono text-[10px] font-black border border-emerald-200">
+                {{ c.subjectCode }}
+              </span>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
+                [ngClass]="c.status === 'ENROLLED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-700'">
+                {{ c.status }}
+              </span>
+            </div>
+
+            <h4 class="text-sm font-black text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+              {{ c.name }}
+            </h4>
+            <p class="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
+              <span>🧑‍🏫 {{ c.mentorName }}</span>
+              <span>•</span>
+              <span>Sem {{ c.semester }}</span>
+            </p>
+          </div>
+
+          <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400 text-[11px]">Joined {{ c.enrolledAt }}</span>
+            <a routerLink="/student/classes" class="text-emerald-700 font-black hover:underline flex items-center gap-1">
+              <span>Enter Class</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. UPCOMING EVENTS & OPPORTUNITIES
+       ========================================================================= -->
+  <section class="glass-pristine p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div>
+        <h3 class="text-base font-black text-slate-900 tracking-tight">Upcoming Events & Opportunities</h3>
+        <p class="text-xs text-slate-500">Department workshops, hackathons, and institutional research symposiums</p>
+      </div>
+      <a routerLink="/student/classes" class="text-xs font-extrabold text-emerald-700 hover:underline flex items-center gap-1">
+        <span>View Calendar</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <!-- Event Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      @for (evt of upcomingEvents(); track evt.title) {
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200 aspect-[16/9] sm:aspect-[21/9] md:aspect-[16/9] flex flex-col justify-between p-5 bg-slate-900 group shadow-sm">
+          <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+               [style.backgroundImage]="'url(' + evt.imageUrl + ')'"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+
+          <!-- Date Badge (Top Left) -->
+          <div class="relative z-10 w-fit px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md border border-white text-center shadow-xs">
+            <span class="block text-[10px] font-black uppercase tracking-wider text-emerald-700 leading-none">{{ evt.dateMonth }}</span>
+            <span class="block text-base font-black text-slate-900 leading-none mt-0.5">{{ evt.dateDay }}</span>
+          </div>
+
+          <!-- Event Content (Bottom) -->
+          <div class="relative z-10 space-y-1">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-500 text-white">
+              {{ evt.category }}
+            </span>
+            <h4 class="text-base sm:text-lg font-black text-white tracking-tight leading-snug">
+              {{ evt.title }}
+            </h4>
+            <p class="text-xs text-slate-300 font-medium flex items-center gap-1.5">
+              <span>📍 {{ evt.timeAndVenue }}</span>
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+</div>

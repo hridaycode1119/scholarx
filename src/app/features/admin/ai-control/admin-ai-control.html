@@ -1,0 +1,232 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Toast Notification -->
+  @if (toastMessage()) {
+    <div class="p-4 rounded-2xl bg-[#0B4A39] text-white flex items-center justify-between text-xs font-bold shadow-lg animate-in fade-in duration-150">
+      <div class="flex items-center gap-2">
+        <span class="text-base text-[#21DB93]">⚡</span>
+        <span>{{ toastMessage() }}</span>
+      </div>
+      <button (click)="toastMessage.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] text-xs font-black uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-[#10B981] animate-ping"></span>
+          ● AI INFERENCE CLUSTER ONLINE (vLLM)
+        </span>
+        <span class="text-xs font-semibold text-[#5A6066]">
+          Autonomous VIVA Synthesizer Engine
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        AI Model Control & Checkpoint Supervisor
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        Live hyperparameter tuning, model weights hot-swapping, VRAM memory telemetry, and streaming inference audit logs
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        (click)="runBenchmark()"
+        class="px-4 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#0F2421] text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-2">
+        <span>⚡</span>
+        <span>Run Benchmark</span>
+      </button>
+
+      <button
+        (click)="flushKvCache()"
+        class="px-4 py-2.5 rounded-xl bg-white border border-[#ECEEEE] hover:border-[#0B4A39] text-[#0B4A39] text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5">
+        <span>🧹</span>
+        <span>Flush KV Cache</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- AI Telemetry Metric Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm space-y-1">
+      <span class="text-xs font-semibold text-[#5A6066]">Active Checkpoint</span>
+      <p class="text-sm font-black text-[#0B4A39] truncate" [title]="broadcastService.aiEngineConfig().activeModel">
+        {{ broadcastService.aiEngineConfig().activeModel }}
+      </p>
+      <span class="text-[10px] text-[#059669] font-bold">FP8 TensorRT Acceleration</span>
+    </div>
+
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm space-y-1">
+      <span class="text-xs font-semibold text-[#5A6066]">Generation Velocity</span>
+      <p class="text-2xl font-black text-[#0B4A39]">{{ broadcastService.aiEngineConfig().tokensPerSecond }} <span class="text-sm font-normal text-[#5A6066]">tps</span></p>
+      <span class="text-[10px] text-[#10B981] font-bold">↑ Peak 112.4 tps</span>
+    </div>
+
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm space-y-1">
+      <span class="text-xs font-semibold text-[#5A6066]">GPU VRAM Allocation</span>
+      <p class="text-2xl font-black text-[#0B4A39]">{{ broadcastService.aiEngineConfig().gpuVramUsagePercent }}%</p>
+      <span class="text-[10px] text-[#5A6066]">2x NVIDIA A100 (160 GB Total)</span>
+    </div>
+
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm space-y-1">
+      <span class="text-xs font-semibold text-[#5A6066]">KV Cache Hit Rate</span>
+      <p class="text-2xl font-black text-[#10B981]">{{ broadcastService.aiEngineConfig().kvCacheHitRatePercent }}%</p>
+      <span class="text-[10px] text-[#059669] font-semibold">PagedAttention Active</span>
+    </div>
+  </div>
+
+  <!-- 2-Column: Model Configuration vs Live Streaming Logs -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- LEFT COLUMN: Model Switcher & Parameter Tuning -->
+    <div class="space-y-6">
+
+      <!-- Model Hot-Swap Card -->
+      <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-4">
+        <div>
+          <h2 class="text-base font-bold text-[#0B4A39]">Model Checkpoint Hot-Swap</h2>
+          <p class="text-xs text-[#5A6066]">Switch active LLM weights without interrupting ongoing viva sessions</p>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div class="space-y-1.5">
+            <label class="font-bold text-[#0B4A39]">Select AI Inference Model Checkpoint</label>
+            <select
+              [(ngModel)]="selectedModel"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-bold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]">
+              @for (m of availableModels; track m.id) {
+                <option [value]="m.name">{{ m.name }} ({{ m.family }} • {{ m.vram }})</option>
+              }
+            </select>
+          </div>
+
+          @if (isUpdatingModel()) {
+            <div class="p-3.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-2">
+              <div class="flex items-center justify-between text-xs font-bold text-[#0B4A39]">
+                <span>Deploying checkpoint to GPU VRAM cluster...</span>
+                <span>{{ updateProgress() }}%</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-[#ECEEEE] overflow-hidden">
+                <div class="h-full bg-[#0B4A39] transition-all duration-300 rounded-full" [style.width.%]="updateProgress()"></div>
+              </div>
+            </div>
+          }
+
+          <button
+            (click)="hotSwapModel()"
+            [disabled]="isUpdatingModel()"
+            class="w-full py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-50 text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2">
+            <span>🔄</span>
+            <span>Hot-Swap Active Model Checkpoint</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Hyperparameters Card -->
+      <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-bold text-[#0B4A39]">Inference Hyperparameters</h2>
+            <p class="text-xs text-[#5A6066]">Tune generation sampling temperature and token budgeting</p>
+          </div>
+          <button
+            (click)="updateHyperparameters()"
+            class="px-4 py-1.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all cursor-pointer">
+            Save
+          </button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <!-- Temperature -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-[#0B4A39]">Sampling Temperature</label>
+              <span class="font-mono font-black text-[#0B4A39]">{{ temperature }}</span>
+            </div>
+            <p class="text-[11px] text-[#5A6066]">Lower values produce more deterministic, factual academic oral questions.</p>
+            <input type="range" min="0.1" max="1.0" step="0.05" [(ngModel)]="temperature" class="w-full accent-[#0B4A39] cursor-pointer" />
+          </div>
+
+          <!-- Max Output Tokens -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-[#0B4A39]">Max Output Tokens per Question</label>
+              <span class="font-mono font-black text-[#0B4A39]">{{ maxTokens }} Tokens</span>
+            </div>
+            <input type="range" min="512" max="4096" step="256" [(ngModel)]="maxTokens" class="w-full accent-[#0B4A39] cursor-pointer" />
+          </div>
+
+          <!-- Context Window Limit -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-[#0B4A39]">KV Context Window Limit</label>
+              <span class="font-mono font-black text-[#0B4A39]">{{ contextWindow | number }} Tokens</span>
+            </div>
+            <input type="range" min="4096" max="32768" step="4096" [(ngModel)]="contextWindow" class="w-full accent-[#0B4A39] cursor-pointer" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Live Streaming AI Terminal Logs -->
+    <div class="bg-[#0F1E1B] rounded-[22px] p-6 border border-[#0B4A39] shadow-xl flex flex-col justify-between space-y-4 font-mono text-xs text-white/90">
+      <div class="space-y-2">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#21DB93] animate-pulse"></span>
+            <span class="font-bold text-sm tracking-wider text-white">LIVE AI INFERENCE LOGS</span>
+          </div>
+          <span class="text-[10px] text-[#21DB93] bg-[#21DB93]/10 px-2 py-0.5 rounded border border-[#21DB93]/20">
+            vLLM Engine Stream
+          </span>
+        </div>
+        <p class="text-[11px] text-white/60 font-sans">
+          Real-time stream of oral viva question synthesis prompts, token throughput, and memory allocations.
+        </p>
+      </div>
+
+      <!-- Terminal Log Console -->
+      <div class="flex-1 space-y-2.5 overflow-y-auto max-h-[460px] pr-2">
+        @for (log of broadcastService.aiLogs(); track log.id) {
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1 hover:bg-white/10 transition-colors">
+            <div class="flex items-center justify-between text-[10px]">
+              <div class="flex items-center gap-2">
+                <span class="px-1.5 py-0.2 rounded font-black text-[9px]"
+                  [ngClass]="{
+                    'bg-[#21DB93] text-[#0F1E1B]': log.level === 'INFERENCE',
+                    'bg-[#38BDF8] text-[#0F1E1B]': log.level === 'OPTIMIZATION',
+                    'bg-white/20 text-white': log.level === 'INFO',
+                    'bg-[#F59E0B] text-[#0F1E1B]': log.level === 'WARN'
+                  }">
+                  {{ log.level }}
+                </span>
+                <span class="text-white/60 font-semibold">{{ log.component }}</span>
+              </div>
+              <span class="text-white/40 text-[10px]">{{ log.timestamp }}</span>
+            </div>
+
+            <p class="text-[11px] text-white/80 leading-relaxed font-sans">{{ log.message }}</p>
+
+            @if (log.durationMs) {
+              <div class="text-[10px] text-[#21DB93] flex items-center gap-1">
+                <span>⏱️ Execution:</span>
+                <span class="font-bold">{{ log.durationMs }}ms</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Terminal Footer -->
+      <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50">
+        <span>Prompt Cache Hit: 93.6%</span>
+        <span>Auto-Scroll Active</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>

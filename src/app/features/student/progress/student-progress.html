@@ -1,0 +1,243 @@
+<div class="space-y-6 animate-in fade-in duration-300">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+        <span>📊 Progress, Grades & CO Attainment Analytics</span>
+      </h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400">
+        Longitudinal Outcome-Based Education (OBE) tracking aligned with NBA Washington Accord Criterion 3 and Bloom's Cognitive Taxonomy.
+      </p>
+    </div>
+
+    <!-- Download PDF Report CTA -->
+    <button
+      (click)="downloadReportPdf()"
+      class="px-5 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-black text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer self-start sm:self-auto">
+      <span>📥 Download Evaluation Report (.PDF)</span>
+    </button>
+  </div>
+
+  <!-- Top 3 KPI Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <div class="p-5 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Average CO Attainment</span>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-black text-[#0b4a39]">81.2%</span>
+        <span class="text-xs font-bold text-slate-500">Level 3 (Exceeded)</span>
+      </div>
+      <p class="text-[11px] text-slate-400">+11.2% above institutional benchmark</p>
+    </div>
+
+    <div class="p-5 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Oral VIVA Readiness Index</span>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-black text-[#0b4a39]">84.6%</span>
+        <span class="text-xs font-bold text-slate-500">14 Completed</span>
+      </div>
+      <p class="text-[11px] text-slate-400">112 average Words Per Minute cadence</p>
+    </div>
+
+    <div class="p-5 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Integrity Compliance</span>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-black text-[#0b4a39]">100%</span>
+        <span class="text-xs font-bold text-slate-500">Zero Flags</span>
+      </div>
+      <p class="text-[11px] text-slate-400">Proctoring biometric telemetry clean</p>
+    </div>
+  </div>
+
+  <!-- Main Analytics Grid: Bloom Radar + CO Progress Bars -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- 8.1 COGNITIVE MASTERY RADAR (SPIDER CHART) -->
+    <div class="p-6 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <div class="space-y-0.5">
+          <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <span>🕸️ Bloom's Taxonomy Cognitive Radar</span>
+          </h3>
+          <p class="text-xs text-slate-400">Evaluated competency spread across L1–L6 cognitive tiers</p>
+        </div>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20">
+          6 Cognitive Axes
+        </span>
+      </div>
+
+      <!-- SVG Radar Spider Canvas -->
+      <div class="relative w-full max-w-sm mx-auto aspect-square flex items-center justify-center">
+        <svg class="w-full h-full" viewBox="0 0 300 300">
+          <!-- Concentric Web Rings (20%, 40%, 60%, 80%, 100%) -->
+          <circle cx="150" cy="150" r="22" fill="none" stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="1"></circle>
+          <circle cx="150" cy="150" r="44" fill="none" stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="1"></circle>
+          <circle cx="150" cy="150" r="66" fill="none" stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="1"></circle>
+          <circle cx="150" cy="150" r="88" fill="none" stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="1"></circle>
+          <circle cx="150" cy="150" r="110" fill="none" stroke="currentColor" class="text-slate-300 dark:text-slate-700" stroke-width="1.5"></circle>
+
+          <!-- Spoke Lines for 6 Axes -->
+          @for (b of bloomLevels; track b.label) {
+            <line x1="150" y1="150"
+                  [attr.x2]="getPointCoordinates(b.angle, 100).x"
+                  [attr.y2]="getPointCoordinates(b.angle, 100).y"
+                  stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="1"></line>
+          }
+
+          <!-- Benchmark Target Polygon (70% Dashed Slate) -->
+          <polygon [attr.points]="targetPolygonPoints()"
+                   fill="rgba(148, 163, 184, 0.1)"
+                   stroke="#94a3b8"
+                   stroke-dasharray="3 3"
+                   stroke-width="1.5"></polygon>
+
+          <!-- Candidate Actual Mastery Polygon (Deep Pine & Neon Mint Glow) -->
+          <polygon [attr.points]="actualPolygonPoints()"
+                   fill="rgba(33, 219, 147, 0.2)"
+                   stroke="#0b4a39"
+                   stroke-width="2.5"></polygon>
+
+          <!-- Vertex Points -->
+          @for (b of bloomLevels; track b.label) {
+            <circle [attr.cx]="getPointCoordinates(b.angle, b.score).x"
+                    [attr.cy]="getPointCoordinates(b.angle, b.score).y"
+                    r="4" fill="#21db93" stroke="#0b4a39" stroke-width="1.5"></circle>
+          }
+        </svg>
+      </div>
+
+      <!-- Radar Legend & Cognitive Breakdown -->
+      <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-center text-xs">
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+          <span class="text-[10px] text-slate-400 block font-bold">L1-L2 (Lower)</span>
+          <span class="font-black text-[#0b4a39]">90.0% Avg</span>
+        </div>
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+          <span class="text-[10px] text-slate-400 block font-bold">L3-L4 (Applying)</span>
+          <span class="font-black text-[#0b4a39]">80.0% Avg</span>
+        </div>
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+          <span class="text-[10px] text-slate-400 block font-bold">L5-L6 (HOTS)</span>
+          <span class="font-black text-[#0b4a39]">71.0% Avg</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8.2 COURSE OUTCOME (CO) ATTAINMENT PROGRESS BARS -->
+    <div class="p-6 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="space-y-0.5">
+          <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <span>🎯 Course Outcome (CO1–CO6) Attainment</span>
+          </h3>
+          <p class="text-xs text-slate-400">Statutory threshold benchmarks (NBA Washington Accord)</p>
+        </div>
+        <span class="text-xs font-mono font-bold text-slate-400">Target: 70%</span>
+      </div>
+
+      <!-- CO Bars List -->
+      <div class="space-y-4">
+        @for (co of courseOutcomes; track co.code) {
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-black text-[#0b4a39]">{{ co.code }}</span>
+                <span class="font-semibold text-slate-800 dark:text-slate-200">{{ co.name }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-black"
+                      [ngClass]="co.status === 'PROFICIENT' ? 'text-emerald-500' : co.status === 'COMPETENT' ? 'text-amber-500' : 'text-red-500'">
+                  {{ co.score }}%
+                </span>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase"
+                      [ngClass]="co.status === 'PROFICIENT' ? 'bg-emerald-500/20 text-emerald-400' : co.status === 'COMPETENT' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'">
+                  {{ co.status }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden relative">
+              <!-- Benchmark Line at 70% -->
+              <div class="absolute top-0 bottom-0 left-[70%] w-0.5 bg-slate-400 dark:bg-slate-600 z-10"></div>
+              <div class="h-full rounded-full transition-all duration-700"
+                   [ngClass]="co.status === 'PROFICIENT' ? 'bg-emerald-500' : co.status === 'COMPETENT' ? 'bg-amber-500' : 'bg-red-500'"
+                   [style.width.%]="co.score"></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Threshold Legend -->
+      <div class="flex flex-wrap items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Proficient (≥80%)
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span> Competent (60-79%)
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-red-500"></span> Needs Remediation (<60%)
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 8.3 HISTORICAL ASSESSMENT LEDGER TABLE -->
+  <div class="p-6 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-base font-black text-slate-900 dark:text-white">📑 Historical Assessment Ledger</h3>
+        <p class="text-xs text-slate-400">Chronological submission log with awarded scores and proctoring integrity stamps</p>
+      </div>
+      <span class="text-xs font-bold text-[#0b4a39]">{{ assessmentHistory.length }} Records</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-xs text-left">
+        <thead class="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 uppercase text-[10px]">
+          <tr>
+            <th class="p-3">Assessment Title & Course</th>
+            <th class="p-3">Date</th>
+            <th class="p-3">Type</th>
+            <th class="p-3">CO Target</th>
+            <th class="p-3">Awarded Score</th>
+            <th class="p-3">Integrity Audit</th>
+            <th class="p-3">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+          @for (item of assessmentHistory; track item.id) {
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="p-3">
+                <span class="font-bold text-slate-900 dark:text-white block">{{ item.title }}</span>
+                <span class="text-[11px] text-slate-400">{{ item.course }}</span>
+              </td>
+              <td class="p-3 font-mono text-slate-500 dark:text-slate-400">{{ item.date }}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold"
+                      [ngClass]="item.type === 'ORAL_VIVA' ? 'bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'">
+                  {{ item.type }}
+                </span>
+              </td>
+              <td class="p-3 font-mono font-bold text-[#0b4a39]">{{ item.coTarget }}</td>
+              <td class="p-3 font-black text-emerald-500">{{ item.score }}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
+                  {{ item.integrity }}
+                </span>
+              </td>
+              <td class="p-3">
+                <button (click)="downloadReportPdf()" class="text-[#0b4a39] hover:text-[#08382b] font-bold hover:underline cursor-pointer">
+                  PDF Report →
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,18 @@
+// Class analytics & OBE Radar styles
+:host {
+  display: block;
+}
+
+svg polygon {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+circle {
+  transition: transform 0.2s ease, r 0.2s ease;
+  transform-origin: center;
+  
+  &:hover {
+    filter: drop-shadow(0 0 6px rgba(33, 219, 147, 0.8));
+  }
+}
+

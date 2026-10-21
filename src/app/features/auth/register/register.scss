@@ -1,0 +1,86 @@
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  color: var(--on-surface, #0b1c30);
+  background-color: var(--surface, #f8f9ff);
+}
+
+.scholarx-auth-root {
+  --surface: #f8f9ff;
+  --surface-dim: #cbdbf5;
+  --surface-bright: #f8f9ff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #eff4ff;
+  --surface-container: #e5eeff;
+  --surface-container-high: #dce9ff;
+  --surface-container-highest: #d3e4fe;
+  --on-surface: #0b1c30;
+  --on-surface-variant: #3d4a42;
+  --inverse-surface: #213145;
+  --inverse-on-surface: #eaf1ff;
+  --outline: #6d7a72;
+  --outline-variant: #bccac0;
+  --primary: #006948;
+  --on-primary: #ffffff;
+  --primary-container: #00855d;
+  --on-primary-container: #f5fff7;
+  --secondary: #42655e;
+  --on-secondary: #ffffff;
+  --secondary-container: #c4ebe1;
+  --on-secondary-container: #486b64;
+  --tertiary: #0051d5;
+  --on-tertiary: #ffffff;
+  --tertiary-fixed: #dbe1ff;
+
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--surface);
+  color: var(--on-surface);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.scholarx-auth-root.dark {
+  --surface: #0a131f;
+  --surface-dim: #070d16;
+  --surface-bright: #142236;
+  --surface-container-lowest: #0e1a2b;
+  --surface-container-low: #112035;
+  --surface-container: #162740;
+  --surface-container-high: #1c304d;
+  --on-surface: #f1f5f9;
+  --on-surface-variant: #94a3b8;
+  --outline: #475569;
+  --outline-variant: #334155;
+  --primary: #10b981;
+  --primary-container: #059669;
+  --secondary-container: #064e3b;
+  --on-secondary-container: #a7f3d0;
+}
+
+.bg-surface { background-color: var(--surface) !important; }
+.bg-surface-container-lowest { background-color: var(--surface-container-lowest) !important; }
+.bg-surface-container-low { background-color: var(--surface-container-low) !important; }
+.bg-surface-container { background-color: var(--surface-container) !important; }
+.bg-primary { background-color: var(--primary) !important; }
+.bg-primary-container { background-color: var(--primary-container) !important; }
+.bg-secondary-container { background-color: var(--secondary-container) !important; }
+
+.text-on-surface { color: var(--on-surface) !important; }
+.text-on-surface-variant { color: var(--on-surface-variant) !important; }
+.text-primary { color: var(--primary) !important; }
+.text-on-primary { color: var(--on-primary) !important; }
+.text-on-secondary-container { color: var(--on-secondary-container) !important; }
+
+.font-display { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+.font-headline { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+.font-body { font-family: 'Inter', sans-serif !important; }
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}

@@ -1,0 +1,203 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Toast Notification -->
+  @if (toastMessage()) {
+    <div class="p-4 rounded-2xl bg-[#0B4A39] text-white flex items-center justify-between text-xs font-bold shadow-lg animate-in fade-in duration-150">
+      <div class="flex items-center gap-2">
+        <span class="text-base text-[#21DB93]">✓</span>
+        <span>{{ toastMessage() }}</span>
+      </div>
+      <button (click)="toastMessage.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-extrabold">
+          Multi-Tenant Infrastructure
+        </span>
+        <span class="text-xs font-semibold text-[#5A6066]">
+          Institutional Campuses
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        Affiliated Institutions & Campuses
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        Configure university branch colleges, domain validation rules, and accreditation compliance authorities
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        (click)="openOnboardModal()"
+        class="px-5 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-2">
+        <span>+</span>
+        <span>Onboard New Campus</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Institutions Directory Table -->
+  <div class="bg-white rounded-[22px] border border-[#ECEEEE] shadow-sm overflow-hidden">
+    <table class="w-full text-left border-collapse text-xs">
+      <thead>
+        <tr class="bg-[#F8FAF9] border-b border-[#ECEEEE] text-[11px] font-bold uppercase tracking-wider text-[#5A6066]">
+          <th class="py-3.5 px-6">Campus Name & Code</th>
+          <th class="py-3.5 px-4">Primary Domain</th>
+          <th class="py-3.5 px-4 text-center">Students</th>
+          <th class="py-3.5 px-4 text-center">Faculty</th>
+          <th class="py-3.5 px-4 text-center">Active Classes</th>
+          <th class="py-3.5 px-4">Accreditation</th>
+          <th class="py-3.5 px-4">Status</th>
+          <th class="py-3.5 px-6 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[#ECEEEE]">
+        @for (inst of institutions(); track inst.id) {
+          <tr class="hover:bg-[#F4F6F5]/40 transition-all">
+            <td class="py-3.5 px-6">
+              <div class="space-y-0.5">
+                <span class="font-bold text-[#0B4A39] block">{{ inst.name }}</span>
+                <span class="font-mono text-[10px] text-[#0B4A39] bg-[#E6F4F0] px-1.5 py-0.2 rounded font-black">
+                  {{ inst.code }}
+                </span>
+              </div>
+            </td>
+
+            <td class="py-3.5 px-4 font-mono text-[#5A6066]">
+              {{ inst.domain }}
+            </td>
+
+            <td class="py-3.5 px-4 text-center font-bold text-[#0B4A39]">
+              {{ inst.studentCount }}
+            </td>
+
+            <td class="py-3.5 px-4 text-center font-bold text-[#0B4A39]">
+              {{ inst.mentorCount }}
+            </td>
+
+            <td class="py-3.5 px-4 text-center font-bold text-[#0B4A39]">
+              {{ inst.activeClassesCount }}
+            </td>
+
+            <td class="py-3.5 px-4 text-[#5A6066]">
+              {{ inst.accreditationBody }}
+            </td>
+
+            <td class="py-3.5 px-4">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black"
+                [ngClass]="inst.status === 'ACTIVE' ? 'bg-[#ECFDF5] text-[#065F46]' : 'bg-[#FFFBEB] text-[#B45309]'">
+                ● {{ inst.status }}
+              </span>
+            </td>
+
+            <td class="py-3.5 px-6 text-right">
+              <button
+                class="px-3 py-1.5 rounded-lg bg-[#F8FAF9] hover:bg-[#F4F6F5] text-[#0B4A39] border border-[#ECEEEE] text-xs font-bold transition-all cursor-pointer shadow-2xs">
+                Manage
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Onboard Campus Modal Dialog -->
+  @if (showOnboardModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150">
+      <div class="w-full max-w-lg bg-white rounded-[24px] shadow-2xl p-6 border border-[#ECEEEE] space-y-4">
+        <div class="flex items-center justify-between border-b border-[#ECEEEE] pb-3">
+          <div>
+            <span class="text-[10px] font-bold text-[#0B4A39] uppercase tracking-wider">Multi-Campus Provisioning</span>
+            <h2 class="text-base font-bold text-[#0B4A39]">Onboard New Campus / College</h2>
+          </div>
+          <button (click)="closeOnboardModal()" class="text-sm font-bold text-[#8C959B] hover:text-[#0B4A39] cursor-pointer">✕</button>
+        </div>
+
+        <form (ngSubmit)="submitOnboarding()" class="space-y-4 text-xs">
+          <div class="space-y-1">
+            <label class="font-bold text-[#0B4A39]">Campus / Institution Name *</label>
+            <input
+              type="text"
+              required
+              [(ngModel)]="newCampus.name"
+              name="campusName"
+              placeholder="e.g. Oxford Institute of Applied Science"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">Institution Code *</label>
+              <input
+                type="text"
+                required
+                [(ngModel)]="newCampus.code"
+                name="campusCode"
+                placeholder="e.g. OIAS-05"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-mono font-bold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+              />
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">Primary Domain *</label>
+              <input
+                type="text"
+                required
+                [(ngModel)]="newCampus.domain"
+                name="campusDomain"
+                placeholder="e.g. oias.edu"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-[#0B4A39]">Accreditation Authority Standard</label>
+            <select
+              [(ngModel)]="newCampus.accreditationBody"
+              name="accreditationBody"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]">
+              <option value="NBA Tier-1 / NAAC Grade A+">NBA Tier-1 / NAAC Grade A+</option>
+              <option value="NAAC Grade A">NAAC Grade A</option>
+              <option value="ABET Accredited (Engineering)">ABET Accredited (Engineering)</option>
+              <option value="State Technical Board">State Technical Board</option>
+            </select>
+          </div>
+
+          @if (onboardSuccess()) {
+            <div class="p-3 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] text-xs font-bold flex items-center gap-2">
+              <span>✓</span>
+              <span>Campus registered and provisioned in tenant registry!</span>
+            </div>
+          }
+
+          <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#ECEEEE]">
+            <button
+              type="button"
+              (click)="closeOnboardModal()"
+              class="px-4 py-2 rounded-xl bg-white border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:text-[#0B4A39] cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="!newCampus.name.trim() || !newCampus.code.trim() || isOnboarding()"
+              class="px-6 py-2 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-40 text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-2">
+              @if (isOnboarding()) {
+                <span>Provisioning...</span>
+              } @else {
+                <span>Provision Campus</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</div>

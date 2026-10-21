@@ -1,0 +1,223 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Breadcrumbs & Actions -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <a [routerLink]="['/mentor/classes', classId()]" class="inline-flex items-center gap-2 text-xs font-bold text-[#5A6066] hover:text-[#0B4A39] transition-all">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Back to Class Workspace
+    </a>
+
+    <div class="flex items-center gap-3">
+      <a [routerLink]="['/mentor/classes', classId(), 'analytics']" class="px-4 py-2 rounded-xl bg-white border border-[#ECEEEE] text-[#5A6066] hover:text-[#0B4A39] text-xs font-bold transition-all shadow-2xs">
+        View Analytics Dashboard →
+      </a>
+      <button
+        (click)="saveOutcomes()"
+        [disabled]="!isWeightValid() || isSaving()"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
+        @if (isSaving()) {
+          <span class="animate-spin text-sm">↻</span>
+          Saving Matrix...
+        } @else {
+          <span>💾</span>
+          Save Outcomes Matrix
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Notification Banner -->
+  @if (saveSuccess()) {
+    <div class="p-4 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] flex items-center justify-between text-xs font-bold animate-in fade-in duration-200">
+      <div class="flex items-center gap-2.5">
+        <span class="text-base">✓</span>
+        <span>Outcome configurations and CO-PO correlation matrix saved successfully.</span>
+      </div>
+      <span class="text-[10px] text-[#047857] uppercase font-bold tracking-wider">NBA / NAAC Aligned</span>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-extrabold">
+          {{ classItem()?.subjectCode || 'CS401' }}
+        </span>
+        <span class="text-xs font-semibold text-[#5A6066]">
+          Outcome-Based Education (OBE) Matrix
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        Course & Program Outcomes Configuration
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        {{ classItem()?.name || 'Distributed Systems' }} • Manage syllabus objectives, target Bloom levels, and accreditation weightages
+      </p>
+    </div>
+
+    <!-- Live Weightage Total Gauge Pill -->
+    <div class="p-4 rounded-2xl border shrink-0 space-y-1.5 transition-all"
+      [ngClass]="isWeightValid() ? 'bg-[#ECFDF5] border-[#A7F3D0]' : 'bg-[#FFFBEB] border-[#FDE68A]'">
+      <div class="flex items-center justify-between gap-4">
+        <span class="text-[11px] font-bold" [ngClass]="isWeightValid() ? 'text-[#065F46]' : 'text-[#92400E]'">
+          Total CO Weightage:
+        </span>
+        <span class="text-base font-black font-mono" [ngClass]="isWeightValid() ? 'text-[#065F46]' : 'text-[#D97706]'">
+          {{ totalWeightage() }}%
+        </span>
+      </div>
+      <div class="w-48 h-2 bg-black/5 rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-300"
+          [style.width.%]="totalWeightage() > 100 ? 100 : totalWeightage()"
+          [ngClass]="isWeightValid() ? 'bg-[#21DB93]' : totalWeightage() > 100 ? 'bg-[#EF4444]' : 'bg-[#F59E0B]'">
+        </div>
+      </div>
+      <p class="text-[10px] font-semibold text-right" [ngClass]="isWeightValid() ? 'text-[#059669]' : 'text-[#B45309]'">
+        {{ isWeightValid() ? 'Target 100% Achieved ✓' : totalWeightage() > 100 ? 'Exceeds 100% (Reduce ' + (totalWeightage() - 100) + '%)' : 'Remaining: ' + (100 - totalWeightage()) + '%' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Course Outcomes (CO) Configuration Table -->
+  <div class="bg-white rounded-[22px] border border-[#ECEEEE] shadow-sm overflow-hidden space-y-4 p-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-base font-bold text-[#0B4A39]">1. Course Outcomes (CO1 – CO{{ cos().length }})</h2>
+        <p class="text-xs text-[#5A6066]">Formulate granular competencies mapped to Bloom's Revised Taxonomy</p>
+      </div>
+
+      <button
+        (click)="addCourseOutcome()"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-bold text-[#0B4A39] hover:border-[#0B4A39] hover:bg-[#E6F4F0] transition-all cursor-pointer">
+        <span>+</span> Add Course Outcome
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto border border-[#ECEEEE] rounded-xl">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-[#F8FAF9] border-b border-[#ECEEEE] text-[11px] font-bold uppercase tracking-wider text-[#5A6066]">
+            <th class="py-3 px-4 w-20">Code</th>
+            <th class="py-3 px-4">Learning Objective / Description</th>
+            <th class="py-3 px-4 w-44">Target Bloom Level</th>
+            <th class="py-3 px-4 w-32">Weight (%)</th>
+            <th class="py-3 px-4 w-16 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#ECEEEE]">
+          @for (co of cos(); track co.id) {
+            <tr class="hover:bg-[#F4F6F5]/40 transition-all">
+              <td class="py-3.5 px-4 font-mono font-black text-[#0B4A39]">
+                {{ co.code }}
+              </td>
+
+              <td class="py-3.5 px-4">
+                <input
+                  type="text"
+                  [(ngModel)]="co.description"
+                  class="w-full px-3 py-1.5 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+                />
+              </td>
+
+              <td class="py-3.5 px-4">
+                <select
+                  [(ngModel)]="co.bloomTarget"
+                  class="w-full px-2.5 py-1.5 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]">
+                  @for (bl of availableBloomLevels; track bl) {
+                    <option [value]="bl">{{ bl }}</option>
+                  }
+                </select>
+              </td>
+
+              <td class="py-3.5 px-4">
+                <div class="flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    [(ngModel)]="co.weightagePercentage"
+                    class="w-20 px-2.5 py-1.5 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-bold text-center text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+                  />
+                  <span class="font-bold text-[#5A6066]">%</span>
+                </div>
+              </td>
+
+              <td class="py-3.5 px-4 text-center">
+                <button
+                  (click)="removeCourseOutcome(co.id)"
+                  [disabled]="cos().length <= 1"
+                  class="text-[#8C959B] hover:text-[#EF4444] disabled:opacity-30 p-1 cursor-pointer transition-all">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 2: CO-to-PO Correlation Mapping Matrix -->
+  <div class="bg-white rounded-[22px] border border-[#ECEEEE] shadow-sm p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-base font-bold text-[#0B4A39]">2. CO-to-PO Articulation Matrix</h2>
+        <p class="text-xs text-[#5A6066]">Click cells to cycle correlation strengths: <span class="font-bold text-[#0B4A39]">- (None) ➔ 1 (Low) ➔ 2 (Medium) ➔ 3 (High)</span></p>
+      </div>
+
+      <!-- Matrix Legend -->
+      <div class="flex items-center gap-2 text-[11px] font-bold">
+        <span class="flex items-center gap-1 text-[#5A6066]"><span class="w-5 h-5 rounded bg-[#F8FAF9] border border-[#ECEEEE] flex items-center justify-center text-[10px]">-</span> None</span>
+        <span class="flex items-center gap-1 text-[#0B4A39]"><span class="w-5 h-5 rounded bg-[#F4F6F5] flex items-center justify-center text-[10px] font-bold">1</span> Low</span>
+        <span class="flex items-center gap-1 text-[#0B4A39]"><span class="w-5 h-5 rounded bg-[#E6F4F0] text-[#0B4A39] flex items-center justify-center text-[10px] font-bold">2</span> Med</span>
+        <span class="flex items-center gap-1 text-[#065F46]"><span class="w-5 h-5 rounded bg-[#21DB93] text-[#0B4A39] flex items-center justify-center text-[10px] font-extrabold">3</span> High</span>
+      </div>
+    </div>
+
+    <!-- Matrix Table -->
+    <div class="overflow-x-auto border border-[#ECEEEE] rounded-xl">
+      <table class="w-full text-center border-collapse text-xs">
+        <thead>
+          <tr class="bg-[#F8FAF9] border-b border-[#ECEEEE] text-[11px] font-bold uppercase tracking-wider text-[#5A6066]">
+            <th class="py-3 px-6 text-left w-28">CO Code</th>
+            <th class="py-3 px-4 text-left">Outcome Summary</th>
+            @for (po of programOutcomes(); track po) {
+              <th class="py-3 px-6 w-24">{{ po }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#ECEEEE]">
+          @for (co of cos(); track co.id) {
+            <tr class="hover:bg-[#F4F6F5]/40 transition-all">
+              <td class="py-3.5 px-6 text-left font-mono font-black text-[#0B4A39]">
+                {{ co.code }}
+              </td>
+              <td class="py-3.5 px-4 text-left text-xs text-[#5A6066] truncate max-w-xs">
+                {{ co.description }}
+              </td>
+              @for (po of programOutcomes(); track po) {
+                <td class="py-3 px-6">
+                  <button
+                    type="button"
+                    (click)="cyclePoCorrelation(co.code, po)"
+                    class="w-9 h-9 rounded-xl font-mono text-xs font-bold transition-all shadow-2xs cursor-pointer inline-flex items-center justify-center border"
+                    [ngClass]="{
+                      'bg-[#F8FAF9] border-[#ECEEEE] text-[#8C959B] hover:border-[#0B4A39]': getPoCorrelation(co.code, po) === 0,
+                      'bg-[#F4F6F5] border-[#ECEEEE] text-[#0B4A39]': getPoCorrelation(co.code, po) === 1,
+                      'bg-[#E6F4F0] border-[#A7F3D0] text-[#0B4A39] font-extrabold': getPoCorrelation(co.code, po) === 2,
+                      'bg-[#21DB93] border-[#21DB93] text-[#0B4A39] font-black shadow-xs': getPoCorrelation(co.code, po) === 3
+                    }">
+                    {{ getPoCorrelation(co.code, po) === 0 ? '-' : getPoCorrelation(co.code, po) }}
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

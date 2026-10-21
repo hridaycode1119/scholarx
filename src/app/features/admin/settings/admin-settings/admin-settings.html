@@ -1,0 +1,160 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Toast Notification -->
+  @if (savedToast()) {
+    <div class="p-4 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] flex items-center justify-between text-xs font-bold shadow-sm animate-in fade-in duration-150">
+      <div class="flex items-center gap-2">
+        <span class="text-base">✓</span>
+        <span>Global platform configuration parameters updated and applied across all tenants.</span>
+      </div>
+      <button (click)="savedToast.set(false)" class="text-[#065F46] hover:text-[#047857] cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-extrabold">
+          Governance & Security Parameters
+        </span>
+        <span class="text-xs font-semibold text-[#5A6066]">
+          Platform Settings
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        System Settings & Audit Log Trail
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        Configure platform-wide pass thresholds, proctoring AI sensitivity, and inspect administrative audit history
+      </p>
+    </div>
+
+    <button
+      (click)="saveSettings()"
+      class="px-6 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-sm cursor-pointer self-start sm:self-center">
+      💾 Save Configuration
+    </button>
+  </div>
+
+  <!-- SECTION 1: System Policies & Controls -->
+  <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-6">
+    <div>
+      <h2 class="text-base font-bold text-[#0B4A39]">1. Global Academic & Surveillance Policies</h2>
+      <p class="text-xs text-[#5A6066]">Tune baseline thresholds applied across all institutions</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+      <!-- Default Pass Threshold -->
+      <div class="p-4 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="font-bold text-[#0B4A39]">Default Viva Pass Threshold (%)</label>
+          <span class="font-mono font-black text-[#0B4A39]">{{ passThreshold() }}%</span>
+        </div>
+        <p class="text-[11px] text-[#5A6066]">Minimum percentage score required to meet institutional baseline.</p>
+        <input
+          type="range"
+          min="40"
+          max="80"
+          [(ngModel)]="passThreshold"
+          class="w-full accent-[#0B4A39] cursor-pointer"
+        />
+      </div>
+
+      <!-- Proctoring Sensitivity -->
+      <div class="p-4 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-2">
+        <label class="font-bold text-[#0B4A39] block">Proctoring AI Sensitivity</label>
+        <p class="text-[11px] text-[#5A6066]">Controls tab switch tolerance and face-tracker detection intervals.</p>
+        <div class="grid grid-cols-3 gap-2 pt-1">
+          <button
+            type="button"
+            (click)="proctoringSensitivity.set('RELAXED')"
+            class="py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer"
+            [ngClass]="proctoringSensitivity() === 'RELAXED' ? 'bg-[#0B4A39] text-white border-[#0B4A39]' : 'bg-white text-[#5A6066] border-[#ECEEEE]'">
+            Relaxed
+          </button>
+          <button
+            type="button"
+            (click)="proctoringSensitivity.set('STANDARD')"
+            class="py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer"
+            [ngClass]="proctoringSensitivity() === 'STANDARD' ? 'bg-[#0B4A39] text-white border-[#0B4A39]' : 'bg-white text-[#5A6066] border-[#ECEEEE]'">
+            Standard
+          </button>
+          <button
+            type="button"
+            (click)="proctoringSensitivity.set('STRICT')"
+            class="py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer"
+            [ngClass]="proctoringSensitivity() === 'STRICT' ? 'bg-[#0B4A39] text-white border-[#0B4A39]' : 'bg-white text-[#5A6066] border-[#ECEEEE]'">
+            Strict
+          </button>
+        </div>
+      </div>
+
+      <!-- Session Inactivity Timeout -->
+      <div class="p-4 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-2">
+        <label class="font-bold text-[#0B4A39] block">Session Inactivity Timeout (Minutes)</label>
+        <p class="text-[11px] text-[#5A6066]">Time before inactive faculty and proctor sessions require re-authentication.</p>
+        <select
+          [(ngModel)]="sessionTimeoutMins"
+          class="w-full px-3 py-2 rounded-lg bg-white border border-[#ECEEEE] text-xs font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]">
+          <option [value]="30">30 Minutes</option>
+          <option [value]="60">60 Minutes (Standard)</option>
+          <option [value]="120">120 Minutes</option>
+        </select>
+      </div>
+
+      <!-- Maintenance Mode Toggle -->
+      <div class="p-4 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] flex items-center justify-between">
+        <div>
+          <span class="font-bold text-[#0B4A39] block">Platform Maintenance Mode</span>
+          <span class="text-[11px] text-[#5A6066]">Prevents new oral viva examinations while updating clusters.</span>
+        </div>
+        <button
+          type="button"
+          (click)="maintenanceMode.set(!maintenanceMode())"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border"
+          [ngClass]="maintenanceMode() ? 'bg-[#DC2626] text-white border-[#DC2626]' : 'bg-white text-[#059669] border-[#ECEEEE]'">
+          {{ maintenanceMode() ? 'Active (Offline)' : 'Disabled (Online)' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Platform Audit Trail -->
+  <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-4">
+    <div>
+      <h2 class="text-base font-bold text-[#0B4A39]">2. Chronological Security Audit Log</h2>
+      <p class="text-xs text-[#5A6066]">Immutable trail of campus onboarding, assessment publication, and privilege modifications</p>
+    </div>
+
+    <div class="overflow-x-auto border border-[#ECEEEE] rounded-xl">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-[#F8FAF9] border-b border-[#ECEEEE] text-[11px] font-bold uppercase tracking-wider text-[#5A6066]">
+            <th class="py-3 px-4">Timestamp</th>
+            <th class="py-3 px-4">Actor</th>
+            <th class="py-3 px-4">Action Event</th>
+            <th class="py-3 px-4">Target Resource</th>
+            <th class="py-3 px-4 text-right">IP Address</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#ECEEEE]">
+          @for (log of auditLogs; track log.id) {
+            <tr class="hover:bg-[#F4F6F5]/40 transition-all">
+              <td class="py-3 px-4 font-mono text-[#5A6066]">{{ log.time }}</td>
+              <td class="py-3 px-4 font-bold text-[#0B4A39]">{{ log.actor }}</td>
+              <td class="py-3 px-4">
+                <span class="font-mono text-[10px] font-black px-2 py-0.5 rounded bg-[#E6F4F0] text-[#0B4A39]">
+                  {{ log.action }}
+                </span>
+              </td>
+              <td class="py-3 px-4 text-[#5A6066]">{{ log.target }}</td>
+              <td class="py-3 px-4 text-right font-mono text-[#8C959B]">{{ log.ip }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

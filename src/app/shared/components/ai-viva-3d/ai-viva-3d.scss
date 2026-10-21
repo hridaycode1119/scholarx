@@ -1,0 +1,386 @@
+.ai-viva-companion-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  background: radial-gradient(circle at 50% 35%, #0f172a 0%, #020617 100%);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  transition: all 0.4s ease;
+
+  &.compact {
+    min-height: 220px;
+  }
+
+  &.stern-alert {
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 35px rgba(239, 68, 68, 0.4), inset 0 0 15px rgba(239, 68, 68, 0.2);
+  }
+
+  // 1. 3D WebGL Canvas Viewport
+  .video-frame-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+
+    .ai-viva-three-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+        outline: none;
+        display: block;
+      }
+    }
+
+    // Teacher Focus Ring Halo
+    .teacher-focus-halo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(56, 189, 248, 0.35);
+      pointer-events: none;
+      animation: rotateHalo 20s linear infinite;
+
+      &.speaking {
+        border-color: rgba(56, 189, 248, 0.8);
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.3), inset 0 0 20px rgba(56, 189, 248, 0.2);
+      }
+
+      &.warning {
+        border-color: rgba(239, 68, 68, 0.8);
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+      }
+    }
+
+    // Cyber Scanning Beam
+    .hud-scan-beam {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.8), transparent);
+      box-shadow: 0 0 12px #38bdf8;
+      pointer-events: none;
+      animation: scanDown 4s linear infinite;
+
+      &.alert {
+        background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.9), transparent);
+        box-shadow: 0 0 16px #ef4444;
+        animation: scanDownFast 1.5s linear infinite;
+      }
+    }
+
+    // Corner HUD Reticles
+    .hud-corner {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: rgba(56, 189, 248, 0.6);
+      border-style: solid;
+      pointer-events: none;
+      z-index: 2;
+
+      &.top-left {
+        top: 12px;
+        left: 12px;
+        border-width: 2px 0 0 2px;
+        border-top-left-radius: 4px;
+      }
+      &.top-right {
+        top: 12px;
+        right: 12px;
+        border-width: 2px 2px 0 0;
+        border-top-right-radius: 4px;
+      }
+      &.bottom-left {
+        bottom: 12px;
+        left: 12px;
+        border-width: 0 0 2px 2px;
+        border-bottom-left-radius: 4px;
+      }
+      &.bottom-right {
+        bottom: 12px;
+        right: 12px;
+        border-width: 0 2px 2px 0;
+        border-bottom-right-radius: 4px;
+      }
+    }
+  }
+
+  // 2. Ambient Siri Glowing Aura
+  .siri-ambient-aura {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(139, 92, 246, 0.18) 45%, rgba(236, 72, 153, 0.1) 75%, transparent 100%);
+    filter: blur(52px);
+    border-radius: 50%;
+    pointer-events: none;
+    transition: all 0.8s ease;
+    animation: siriBreathe 5s infinite ease-in-out;
+    z-index: 0;
+
+    &.speaking {
+      transform: translate(-50%, -50%) scale(1.3);
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, rgba(168, 85, 247, 0.35) 45%, rgba(244, 63, 94, 0.22) 75%, transparent 100%);
+      filter: blur(60px);
+      animation: siriPulse 1s infinite alternate ease-in-out;
+    }
+
+    &.listening {
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.38) 0%, rgba(45, 212, 191, 0.28) 50%, transparent 100%);
+    }
+
+    &.warning {
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.5) 0%, rgba(245, 158, 11, 0.3) 50%, transparent 100%);
+    }
+  }
+
+  // 3. Minimal Clean Floating Status Badge
+  .ai-clean-status-pill {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 9999px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+
+    &[data-state='STERN_WARNING'],
+    &[data-state='TAB_SWITCH_ALERT'],
+    &[data-state='DISQUALIFIED'] {
+      border-color: rgba(239, 68, 68, 0.6);
+      background: rgba(69, 10, 10, 0.85);
+      color: #fca5a5;
+    }
+
+    &[data-state='FACE_HIDDEN_ALERT'] {
+      border-color: rgba(245, 158, 11, 0.6);
+      background: rgba(69, 39, 10, 0.85);
+      color: #fcd34d;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: dotBlink 2s infinite ease-in-out;
+
+      &.speaking {
+        background: #38bdf8;
+        box-shadow: 0 0 10px #38bdf8;
+      }
+
+      &.warn {
+        background: #ef4444;
+        box-shadow: 0 0 10px #ef4444;
+      }
+    }
+
+    .teacher-title {
+      letter-spacing: 0.02em;
+    }
+
+    .speaking-wave-mini {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 10px;
+
+      span {
+        width: 2px;
+        height: 100%;
+        background: #38bdf8;
+        border-radius: 1px;
+        animation: waveBounce 0.7s infinite ease-in-out;
+
+        &:nth-child(2) { animation-delay: 0.15s; }
+        &:nth-child(3) { animation-delay: 0.3s; }
+      }
+    }
+  }
+
+  // 4. Clean Gesture & Studio Control Bar
+  .clean-gesture-bar {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 1rem;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    max-width: 95%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+    .camera-dock,
+    .gesture-dock {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-preset-chip {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: #94a3b8;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(56, 189, 248, 0.2);
+        color: #38bdf8;
+      }
+
+      &.active {
+        background: #0284c7;
+        color: #ffffff;
+        border-color: #38bdf8;
+      }
+    }
+
+    .btn-clean-chip {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+
+      &:hover {
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+      }
+
+      &.active {
+        background: #0284c7;
+        color: #ffffff;
+        border-color: #38bdf8;
+      }
+
+      &.warn.active {
+        background: #ef4444;
+        border-color: #ef4444;
+      }
+    }
+
+    .btn-export-chip {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(16, 185, 129, 0.3);
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes scanDown {
+  0% { top: 0%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes scanDownFast {
+  0% { top: 0%; opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { top: 100%; opacity: 0.2; }
+}
+
+@keyframes siriBreathe {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes siriPulse {
+  0% { transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1.4); }
+}
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+@keyframes waveBounce {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes rotateHalo {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}

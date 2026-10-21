@@ -1,0 +1,759 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div class="space-y-2 max-w-2xl">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-black tracking-wider uppercase">
+          Accreditation & Cryptographic Intelligence Hub
+        </span>
+        <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] text-xs font-bold flex items-center gap-1.5 border border-[#A7F3D0]">
+          <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
+          SHA-256 Tamper-Proof Audit Sealed
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        Accreditation Reports & Cryptographic Dossiers
+      </h1>
+      <p class="text-xs md:text-sm text-[#5A6066] leading-relaxed">
+        Generate Washington Accord Tier-I SAR Criterion 3 files, NAAC Criterion 2.6 evidence bundles, Bloom spread histograms, and cryptographically verified Course Outcome (CO) attainment certificates.
+      </p>
+    </div>
+
+    <!-- Quick Action Suite -->
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+      <button
+        type="button"
+        (click)="synthesizeExecutiveSummary()"
+        class="px-4 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-2">
+        <span>✨ Gemini AI SAR Brief</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="openCertificateModal()"
+        class="px-4 py-2.5 rounded-xl bg-white border border-[#ECEEEE] hover:border-[#0B4A39] text-[#0B4A39] text-xs font-bold shadow-2xs transition-all cursor-pointer flex items-center gap-1.5">
+        <span>🔐 Signed CO Certificate</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="openBatchExportModal()"
+        class="px-4 py-2.5 rounded-xl bg-[#F8FAF9] hover:bg-[#F4F6F5] border border-[#ECEEEE] text-[#0B4A39] text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5">
+        <span>📦 Batch Multi-Course Export</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Accreditation Body Switcher & Course Selector Card -->
+  <div class="bg-white rounded-2xl p-5 border border-[#ECEEEE] shadow-sm space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      
+      <!-- Body Switcher Tabs -->
+      <div class="flex items-center gap-1.5 p-1 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] overflow-x-auto">
+        <button
+          type="button"
+          (click)="setAccreditationBody('NBA')"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+          [ngClass]="selectedAccreditationBody() === 'NBA' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-[#5A6066] hover:text-[#0B4A39]'">
+          🏛️ NBA Tier-I/II SAR (Criterion 3)
+        </button>
+        <button
+          type="button"
+          (click)="setAccreditationBody('NAAC')"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+          [ngClass]="selectedAccreditationBody() === 'NAAC' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-[#5A6066] hover:text-[#0B4A39]'">
+          📋 NAAC SSR (Criterion 2.6 & 3.1)
+        </button>
+        <button
+          type="button"
+          (click)="setAccreditationBody('ABET')"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+          [ngClass]="selectedAccreditationBody() === 'ABET' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-[#5A6066] hover:text-[#0B4A39]'">
+          🌐 ABET Outcomes (1-7)
+        </button>
+        <button
+          type="button"
+          (click)="setAccreditationBody('ISO')"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+          [ngClass]="selectedAccreditationBody() === 'ISO' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-[#5A6066] hover:text-[#0B4A39]'">
+          🛡️ ISO 21001 Audit
+        </button>
+      </div>
+
+      <!-- Target Course Cohort Selector -->
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-bold text-[#0B4A39] whitespace-nowrap">Active Course Cohort:</label>
+        <select
+          [ngModel]="selectedClassId()"
+          (ngModelChange)="selectedClassId.set($event)"
+          class="px-3.5 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-bold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all">
+          @for (c of classes(); track c.id) {
+            <option [value]="c.id">{{ c.name }} ({{ c.subjectCode }}) — Sem {{ c.semester }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Live Telemetry KPI Strip -->
+    @if (selectedClass()) {
+      <div class="pt-3 border-t border-[#ECEEEE] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+        <div class="p-3 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE]">
+          <span class="text-[10px] uppercase font-bold text-[#8C959B] block">Overall Attainment Index</span>
+          <div class="flex items-center gap-2 mt-0.5">
+            <span class="text-base font-black text-[#0B4A39]">82.4%</span>
+            <span class="px-1.5 py-0.2 rounded text-[10px] font-black bg-[#ECFDF5] text-[#065F46]">Level 3 (Exceeded)</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE]">
+          <span class="text-[10px] uppercase font-bold text-[#8C959B] block">Attainment Calculation Model</span>
+          <div class="flex items-center gap-1.5 mt-0.5">
+            <span class="text-xs font-bold text-[#0B4A39]">80% Direct : 20% Indirect</span>
+            <span class="text-[10px] text-[#5A6066]">(NBA SAR Rule)</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE]">
+          <span class="text-[10px] uppercase font-bold text-[#8C959B] block">Total Evidence Records</span>
+          <div class="flex items-center gap-1.5 mt-0.5">
+            <span class="text-xs font-bold text-[#0B4A39]">186 Formative Oral VIVAs</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] flex items-center justify-between">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-[#8C959B] block">Digital SHA-256 Ledger</span>
+            <span class="text-[10px] font-mono font-bold text-[#0B4A39] block truncate max-w-[130px]">
+              {{ cryptographicHash }}
+            </span>
+          </div>
+          <button (click)="openQrModal()" class="px-2 py-1 rounded-lg bg-[#E6F4F0] text-[#0B4A39] text-[10px] font-bold hover:bg-[#0B4A39] hover:text-white transition-all cursor-pointer">
+            🔍 Audit
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Download Progress Toast Bar -->
+  @if (activeDownloadingReportId()) {
+    <div class="p-5 rounded-2xl bg-white border border-[#0B4A39]/40 shadow-md space-y-3 animate-in fade-in duration-200">
+      <div class="flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2.5">
+          <span class="animate-spin text-base text-[#0B4A39]">↻</span>
+          <span class="font-bold text-[#0B4A39]">
+            {{ downloadStatusText() }}
+          </span>
+        </div>
+        <span class="font-mono font-black text-[#0B4A39]">{{ downloadProgress() }}%</span>
+      </div>
+      <div class="w-full h-2 bg-[#F4F6F5] rounded-full overflow-hidden">
+        <div class="h-full bg-[#0B4A39] rounded-full transition-all duration-300" [style.width.%]="downloadProgress()"></div>
+      </div>
+    </div>
+  }
+
+  <!-- Statistical Evidence Grid: Grade Distribution Bell Curve & Cognitive Bloom Spread -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Card 1: CIE / SEE Grade Distribution Bell-Curve & Histogram -->
+    <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-base">📊</span>
+            <h2 class="text-sm font-extrabold uppercase tracking-wider text-[#0B4A39]">
+              CIE & Oral VIVA Score Frequency Distribution
+            </h2>
+          </div>
+          <p class="text-xs text-[#5A6066] mt-0.5">
+            Cohort Statistical Variance (Mean \(\mu = 74.2\%\), Std Dev \(\sigma = 9.8\%\))
+          </p>
+        </div>
+        <span class="px-2.5 py-1 rounded-lg bg-[#ECFDF5] text-[#065F46] font-mono text-[11px] font-bold">
+          N = 48 Candidates
+        </span>
+      </div>
+
+      <!-- Histogram Bars -->
+      <div class="space-y-2.5 pt-2">
+        @for (bin of gradeDistribution(); track bin.range) {
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-[#0B4A39]">{{ bin.range }}</span>
+              <div class="flex items-center gap-2 font-mono">
+                <span class="text-[#5A6066] font-semibold">{{ bin.count }} Students</span>
+                <span class="font-bold text-[#0B4A39]">({{ bin.percentage }}%)</span>
+              </div>
+            </div>
+            <div class="w-full h-3.5 bg-[#F8FAF9] rounded-full overflow-hidden border border-[#ECEEEE]">
+              <div
+                class="h-full rounded-full transition-all duration-500"
+                [style.width.%]="bin.percentage * 2.5"
+                [style.background-color]="bin.color"></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Statistical Interpretation Box -->
+      <div class="p-3.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <span class="text-base">📈</span>
+          <span class="text-[#5A6066]">Gaussian bell curve skew: <strong>-0.42 (Right skewed mastery)</strong></span>
+        </div>
+        <span class="text-[#0B4A39] font-bold text-[11px]">87.5% Met \(\ge 60\%\)</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Bloom's Cognitive Mastery vs. Target Spread -->
+    <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-base">🧠</span>
+            <h2 class="text-sm font-extrabold uppercase tracking-wider text-[#0B4A39]">
+              Bloom's Revised Taxonomy Cognitive Mastery
+            </h2>
+          </div>
+          <p class="text-xs text-[#5A6066] mt-0.5">
+            Curriculum Weight Allocation vs. Actual Cohort Verbal Defense Score
+          </p>
+        </div>
+        <span class="px-2.5 py-1 rounded-lg bg-[#E6F4F0] text-[#0B4A39] text-[11px] font-bold">
+          L1–L6 Articulation
+        </span>
+      </div>
+
+      <!-- Bloom Domain Bars -->
+      <div class="space-y-3 pt-2">
+        @for (item of bloomSpread(); track item.level) {
+          <div class="space-y-1 text-xs">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-5 rounded bg-[#FCFCFB] text-[#0B4A39] font-mono font-black text-[10px] flex items-center justify-center">
+                  {{ item.level }}
+                </span>
+                <span class="font-bold text-[#0B4A39]">{{ item.label }}</span>
+              </div>
+              <div class="flex items-center gap-3 text-[11px]">
+                <span class="text-[#8C959B]">Weight: {{ item.plannedWeight }}%</span>
+                <span class="font-mono font-black" [ngClass]="item.actualMastery >= 70 ? 'text-[#0B4A39]' : 'text-[#EF4444]'">
+                  Mastery: {{ item.actualMastery }}%
+                </span>
+              </div>
+            </div>
+
+            <div class="w-full h-2.5 bg-[#F8FAF9] rounded-full overflow-hidden border border-[#ECEEEE] relative">
+              <!-- Actual Mastery Bar -->
+              <div
+                class="h-full rounded-full transition-all duration-500"
+                [style.width.%]="item.actualMastery"
+                [ngClass]="item.actualMastery >= 70 ? 'bg-[#0B4A39]' : 'bg-[#EF4444]'"></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-[#E6F4F0] border border-[#A2D9CE] flex items-center justify-between text-xs text-[#0B4A39]">
+        <div class="flex items-center gap-2">
+          <span>🎯</span>
+          <span class="font-bold">Higher-Order Thinking Skills (HOTS: L4-L6):</span>
+        </div>
+        <span class="font-mono font-black text-sm">71.6% (Target \(\ge 65\%\))</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Available Reports Grid: 6 Modular Cards -->
+  <div class="space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-base">📑</span>
+        <h2 class="text-xs font-black uppercase tracking-wider text-[#5A6066]">
+          Accreditation Document Registry & Inspection Dossiers
+        </h2>
+      </div>
+      <span class="text-[11px] font-bold text-[#0B4A39]">
+        6 Specialized Export Formats Ready
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (rep of availableReports; track rep.id) {
+        <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm flex flex-col justify-between space-y-5 hover:border-[#0B4A39] hover:shadow-md transition-all">
+          <div class="space-y-4">
+            <!-- Top Badges -->
+            <div class="flex items-start justify-between gap-2">
+              <span class="w-12 h-12 rounded-2xl bg-[#E6F4F0] text-[#0B4A39] flex items-center justify-center text-xl shrink-0">
+                {{ rep.icon }}
+              </span>
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider" [ngClass]="rep.badgeColor">
+                {{ rep.category }}
+              </span>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F8FAF9] border border-[#ECEEEE] text-[#8C959B]">
+                  {{ rep.code }}
+                </span>
+                <span class="text-[10px] text-[#10B981] font-bold">● Validated</span>
+              </div>
+              <h3 class="text-sm font-extrabold text-[#0B4A39] mt-1 leading-snug">
+                {{ rep.title }}
+              </h3>
+              <span class="inline-block mt-0.5 text-[11px] font-bold text-[#0B4A39]">
+                {{ rep.standardReference }}
+              </span>
+            </div>
+
+            <p class="text-xs text-[#5A6066] leading-relaxed">
+              {{ rep.description }}
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-[#ECEEEE]/70 space-y-3">
+            <div class="flex items-center justify-between text-[11px] font-semibold text-[#8C959B]">
+              <span>{{ rep.format }}</span>
+              <span>{{ rep.sampleItemsCount }} Records</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              @if (rep.id === 'co-certificate') {
+                <button
+                  type="button"
+                  (click)="openCertificateModal()"
+                  class="flex-1 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5">
+                  <span>🔐 Preview & Seal</span>
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  (click)="downloadReport(rep)"
+                  [disabled]="activeDownloadingReportId() === rep.id"
+                  class="flex-1 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                  @if (activeDownloadingReportId() === rep.id) {
+                    <span class="animate-spin text-sm">↻</span>
+                    <span>Exporting {{ downloadProgress() }}%</span>
+                  } @else {
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Export Official {{ rep.format.includes('Excel') ? 'Sheet' : 'PDF' }}</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 1: CRYPTOGRAPHICALLY SIGNED COURSE OUTCOME ATTAINMENT CERTIFICATE   -->
+  <!-- ========================================================================= -->
+  @if (isCertificateModalOpen()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-3xl bg-white rounded-[28px] overflow-hidden shadow-2xl border border-white/40 flex flex-col max-h-[92vh]">
+        
+        <!-- Certificate Header Bar -->
+        <div class="p-6 bg-gradient-to-r from-[#0B4A39] via-[#0B4A39] to-[#0B4A39] text-white flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#21DB93]/20 border border-[#21DB93]/40 flex items-center justify-center text-xl">
+              🔐
+            </div>
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">
+                Digital Outcome Attainment Certificate
+              </span>
+              <h3 class="text-base font-black">Official Accreditation Sealed Document</h3>
+            </div>
+          </div>
+          <button (click)="closeCertificateModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Certificate Body -->
+        <div class="p-6 md:p-8 overflow-y-auto space-y-6 bg-[#FCFDFD] text-[#0B4A39]">
+
+          <!-- Institutional Crest & Title -->
+          <div class="text-center space-y-1 pb-4 border-b border-[#ECEEEE]">
+            <span class="text-[10px] uppercase font-black tracking-widest text-[#0B4A39]">Apex Institute of Technology • Department of Computer Science & AI</span>
+            <h2 class="text-xl font-black text-[#0B4A39] uppercase tracking-wide">
+              Certificate of Course Outcome (CO) Attainment
+            </h2>
+            <p class="text-xs text-[#5A6066]">
+              Accredited under Washington Accord Tier-I Standards & National Assessment Board
+            </p>
+          </div>
+
+          <!-- Course Details Meta Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-[#F8FAF9] p-4 rounded-2xl border border-[#ECEEEE]">
+            <div>
+              <span class="text-[10px] font-bold text-[#8C959B] uppercase block">Course Subject</span>
+              <strong class="text-[#0B4A39]">{{ selectedClass()?.name }} ({{ selectedClass()?.subjectCode }})</strong>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-[#8C959B] uppercase block">Academic Term</span>
+              <strong class="text-[#0B4A39]">2025–2026 (Sem {{ selectedClass()?.semester }})</strong>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-[#8C959B] uppercase block">Enrolled Candidates</span>
+              <strong class="text-[#0B4A39]">48 Examinees</strong>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-[#8C959B] uppercase block">Overall Attainment</span>
+              <strong class="text-[#0B4A39] font-black text-sm">82.4% (Level 3)</strong>
+            </div>
+          </div>
+
+          <!-- Attainment Table -->
+          <div class="rounded-xl border border-[#ECEEEE] overflow-hidden">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-[#FCFCFB] text-[#0B4A39] font-bold">
+                <tr>
+                  <th class="p-2.5">CO Code</th>
+                  <th class="p-2.5">Competency Title</th>
+                  <th class="p-2.5">Direct (80%)</th>
+                  <th class="p-2.5">Indirect (20%)</th>
+                  <th class="p-2.5">Attainment</th>
+                  <th class="p-2.5">Level</th>
+                  <th class="p-2.5">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#ECEEEE] font-medium bg-white">
+                <tr>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">CO1</td>
+                  <td class="p-2.5">Distributed Architectures & Consensus</td>
+                  <td class="p-2.5 font-mono">84.0%</td>
+                  <td class="p-2.5 font-mono">76.0%</td>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">82.4%</td>
+                  <td class="p-2.5 font-black">Level 3</td>
+                  <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-bold text-[10px]">EXCEEDED</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">CO2</td>
+                  <td class="p-2.5">RPC & Inter-Process Protocols</td>
+                  <td class="p-2.5 font-mono">69.5%</td>
+                  <td class="p-2.5 font-mono">72.0%</td>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">70.0%</td>
+                  <td class="p-2.5 font-black">Level 3</td>
+                  <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-bold text-[10px]">MET</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">CO3</td>
+                  <td class="p-2.5">Consensus Models & Raft Replication</td>
+                  <td class="p-2.5 font-mono">77.0%</td>
+                  <td class="p-2.5 font-mono">75.0%</td>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">76.6%</td>
+                  <td class="p-2.5 font-black">Level 3</td>
+                  <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-bold text-[10px]">EXCEEDED</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">CO4</td>
+                  <td class="p-2.5">Byzantine Fault Tolerance & Failover</td>
+                  <td class="p-2.5 font-mono">45.0%</td>
+                  <td class="p-2.5 font-mono">60.0%</td>
+                  <td class="p-2.5 font-bold font-mono text-[#EF4444]">48.0%</td>
+                  <td class="p-2.5 font-black">Level 1</td>
+                  <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-[#FEF2F2] text-[#991B1B] font-bold text-[10px]">REMEDIAL</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2.5 font-bold font-mono text-[#0B4A39]">CO5</td>
+                  <td class="p-2.5">Distributed Storage & CAP Theorem</td>
+                  <td class="p-2.5 font-mono">60.0%</td>
+                  <td class="p-2.5 font-mono">70.0%</td>
+                  <td class="p-2.5 font-bold font-mono text-[#F59E0B]">62.0%</td>
+                  <td class="p-2.5 font-black">Level 2</td>
+                  <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-[#FFFBEB] text-[#92400E] font-bold text-[10px]">MET</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Cryptographic Seal Footer Box -->
+          <div class="p-4 rounded-2xl bg-[#FCFCFB] border border-[#A2D9CE] space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div>
+                <span class="text-[10px] font-bold text-[#5A6066] uppercase block">SHA-256 Cryptographic Audit Signature</span>
+                <span class="font-mono font-bold text-[#0B4A39] text-[11px] break-all">{{ cryptographicHash }}</span>
+              </div>
+              <button (click)="openQrModal()" class="px-3 py-1.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all cursor-pointer shrink-0">
+                🔍 Verify Ledger Stamp
+              </button>
+            </div>
+
+            <div class="pt-2 border-t border-[#ECEEEE] flex items-center justify-between text-[11px] text-[#5A6066]">
+              <span>Signer: <strong>{{ digitalSigner }}</strong></span>
+              <span>Timestamp: <strong>{{ sealTimestamp }}</strong></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="p-4 bg-[#F8FAF9] border-t border-[#ECEEEE] flex items-center justify-between">
+          <button (click)="closeCertificateModal()" class="px-4 py-2 rounded-xl border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:bg-white cursor-pointer">
+            Close
+          </button>
+
+          <button
+            (click)="downloadReport(availableReports[1])"
+            class="px-5 py-2 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5">
+            <span>📥 Download Stamped Certificate PDF</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2: PUBLIC TRUST LEDGER QR CODE VERIFICATION SIMULATION              -->
+  <!-- ========================================================================= -->
+  @if (isQrVerificationModalOpen()) {
+    <div class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-md bg-white rounded-[28px] overflow-hidden shadow-2xl border border-white/40 p-6 md:p-8 space-y-5 text-center">
+        
+        <div class="w-14 h-14 rounded-2xl bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] flex items-center justify-center text-2xl mx-auto">
+          ✓
+        </div>
+
+        <div class="space-y-1">
+          <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] text-[10px] font-black uppercase tracking-wider">
+            Ledger Proof Validated
+          </span>
+          <h3 class="text-base font-extrabold text-[#0B4A39]">Certificate Integrity Verified</h3>
+          <p class="text-xs text-[#5A6066]">
+            This document is cryptographically verified against the ScholarX Academic Trust Registry.
+          </p>
+        </div>
+
+        <!-- Simulated QR Frame -->
+        <div class="p-4 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] inline-block space-y-2">
+          <div class="w-40 h-40 bg-white border border-[#ECEEEE] rounded-xl p-2 mx-auto flex items-center justify-center">
+            <svg class="w-full h-full text-[#0B4A39]" viewBox="0 0 100 100" fill="currentColor">
+              <rect x="10" y="10" width="30" height="30" rx="4" />
+              <rect x="60" y="10" width="30" height="30" rx="4" />
+              <rect x="10" y="60" width="30" height="30" rx="4" />
+              <rect x="18" y="18" width="14" height="14" fill="white" />
+              <rect x="68" y="18" width="14" height="14" fill="white" />
+              <rect x="18" y="68" width="14" height="14" fill="white" />
+              <rect x="50" y="50" width="15" height="15" />
+              <rect x="70" y="60" width="10" height="20" />
+              <rect x="60" y="75" width="20" height="10" />
+            </svg>
+          </div>
+          <span class="text-[10px] font-mono text-[#8C959B] block truncate max-w-xs">
+            {{ verificationUrl }}
+          </span>
+        </div>
+
+        <div class="text-left text-xs bg-[#F8FAF9] p-3.5 rounded-xl border border-[#ECEEEE] space-y-1 font-mono text-[11px]">
+          <div><span class="text-[#8C959B]">Status:</span> <strong class="text-[#10B981]">VALID & TAMPER-FREE</strong></div>
+          <div><span class="text-[#8C959B]">Course:</span> CS401 Distributed Systems</div>
+          <div><span class="text-[#8C959B]">Verdict:</span> Level 3 (82.4% Attained)</div>
+        </div>
+
+        <button
+          (click)="closeQrModal()"
+          class="w-full py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold cursor-pointer transition-all shadow-sm">
+          Dismiss Verification
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 3: GEMINI AI ACCREDITATION EXECUTIVE SUMMARY MODAL                  -->
+  <!-- ========================================================================= -->
+  @if (isExecutiveSummaryModalOpen()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-2xl bg-white rounded-[28px] overflow-hidden shadow-2xl border border-white/40 flex flex-col max-h-[92vh]">
+        
+        <!-- Header -->
+        <div class="p-6 bg-gradient-to-r from-[#0B4A39] to-[#0B4A39] text-white flex items-center justify-between">
+          <div class="space-y-1">
+            <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">
+              Gemini 3.6 Flash • Academic Committee Brief
+            </span>
+            <h3 class="text-base font-black">Executive Accreditation Summary & SAR Statement</h3>
+          </div>
+          <button (click)="closeExecutiveSummaryModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 md:p-8 overflow-y-auto space-y-5 text-xs">
+          @if (isAiSynthesizing()) {
+            <div class="text-center py-12 space-y-4">
+              <div class="w-12 h-12 rounded-full bg-[#21DB93] text-[#0B4A39] border border-[#10B981] flex items-center justify-center font-black text-xl mx-auto animate-bounce">
+                ✨
+              </div>
+              <div class="space-y-1">
+                <h4 class="text-sm font-bold text-[#0B4A39]">Gemini 3.6 Flash is synthesizing your SAR Executive Summary...</h4>
+                <p class="text-xs text-[#5A6066]">Analyzing direct/indirect outcome attainment, cognitive Bloom spread, and CQI intervention logs.</p>
+              </div>
+            </div>
+          } @else if (aiExecutiveSummary(); as summary) {
+            <!-- Verdict Badge -->
+            <div class="p-4 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-between text-xs text-[#065F46]">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🏛️</span>
+                <span class="font-bold">Accreditation Verdict: <strong>{{ summary.complianceVerdict }}</strong></span>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#0B4A39] text-white text-[10px] font-black">
+                {{ selectedAccreditationBody() }} Compliant
+              </span>
+            </div>
+
+            <!-- Executive Summary Text -->
+            <div class="space-y-1.5">
+              <h4 class="font-extrabold text-[#0B4A39] uppercase tracking-wider text-[11px]">1. Executive Appraisal</h4>
+              <p class="p-3.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-[#0B4A39] leading-relaxed">
+                {{ summary.executiveSummary }}
+              </p>
+            </div>
+
+            <!-- Key Strengths -->
+            <div class="space-y-1.5">
+              <h4 class="font-extrabold text-[#0B4A39] uppercase tracking-wider text-[11px]">2. Key Evaluated Strengths</h4>
+              <ul class="space-y-1.5">
+                @for (str of summary.keyStrengths; track str) {
+                  <li class="p-2.5 rounded-lg bg-white border border-[#ECEEEE] flex items-start gap-2 text-[#0B4A39]">
+                    <span class="text-[#10B981] font-bold">✓</span>
+                    <span>{{ str }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <!-- CQI Narrative -->
+            <div class="space-y-1.5">
+              <h4 class="font-extrabold text-[#0B4A39] uppercase tracking-wider text-[11px]">3. Continuous Quality Improvement (CQI) Narrative</h4>
+              <p class="p-3.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] leading-relaxed">
+                {{ summary.cqiActionNarrative }}
+              </p>
+            </div>
+
+            <!-- Inspector Remarks -->
+            <div class="space-y-1.5">
+              <h4 class="font-extrabold text-[#0B4A39] uppercase tracking-wider text-[11px]">4. Inspection Committee Note</h4>
+              <p class="p-3 rounded-xl bg-[#FCFCFB] border border-[#A2D9CE] text-[#0B4A39] font-medium leading-relaxed">
+                {{ summary.inspectorRemarks }}
+              </p>
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 bg-[#F8FAF9] border-t border-[#ECEEEE] flex items-center justify-between">
+          <button (click)="closeExecutiveSummaryModal()" class="px-4 py-2 rounded-xl border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:bg-white cursor-pointer">
+            Close
+          </button>
+          <button (click)="closeExecutiveSummaryModal()" class="px-5 py-2 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold cursor-pointer transition-all shadow-sm">
+            📋 Append to Official SAR Report
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 4: BATCH MULTI-COURSE ACCREDITATION EXPORT PACKAGE                  -->
+  <!-- ========================================================================= -->
+  @if (isBatchExportModalOpen()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-xl bg-white rounded-[28px] overflow-hidden shadow-2xl border border-white/40 flex flex-col max-h-[92vh]">
+        
+        <div class="p-6 bg-gradient-to-r from-[#0B4A39] to-[#0B4A39] text-white flex items-center justify-between">
+          <div class="space-y-1">
+            <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">Multi-Course Accreditation Suite</span>
+            <h3 class="text-base font-black">Export Multi-Course SAR Package</h3>
+          </div>
+          <button (click)="closeBatchExportModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-6 md:p-8 overflow-y-auto space-y-5 text-xs text-[#0B4A39]">
+          <p class="text-xs text-[#5A6066] leading-relaxed">
+            Select course cohorts to bundle into a consolidated accreditation package with all student rosters, articulation matrices, and signed certificates.
+          </p>
+
+          <!-- Course Checklist -->
+          <div class="space-y-2">
+            <label class="font-bold block text-xs">Included Courses in Export Bundle:</label>
+            @for (c of classes(); track c.id) {
+              <label class="p-3 rounded-xl border border-[#ECEEEE] flex items-center justify-between hover:bg-[#F8FAF9] cursor-pointer transition-all">
+                <div class="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedBatchCourses().includes(c.id)"
+                    (change)="toggleBatchCourse(c.id)"
+                    class="w-4 h-4 text-[#0B4A39] rounded focus:ring-0"
+                  />
+                  <div>
+                    <span class="font-bold block">{{ c.name }} ({{ c.subjectCode }})</span>
+                    <span class="text-[10px] text-[#5A6066]">{{ c.department }} • Sem {{ c.semester }} ({{ c.enrolledCount }} Students)</span>
+                  </div>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#E6F4F0] text-[#0B4A39] font-bold">
+                  {{ c.joinCode }}
+                </span>
+              </label>
+            }
+          </div>
+
+          <!-- Export Formats Grid -->
+          <div class="pt-3 border-t border-[#ECEEEE] space-y-3">
+            <label class="font-bold block text-xs">Select Output Format:</label>
+            <div class="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                (click)="executeBatchExport('ZIP')"
+                class="p-4 rounded-xl border border-[#ECEEEE] hover:border-[#0B4A39] hover:bg-[#E6F4F0] text-center space-y-1 transition-all cursor-pointer">
+                <span class="text-2xl block">📦</span>
+                <span class="text-xs font-bold block text-[#0B4A39]">Complete ZIP</span>
+                <span class="text-[9px] text-[#5A6066] block">All PDFs + Excels</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="executeBatchExport('PDF_MASTER')"
+                class="p-4 rounded-xl border border-[#ECEEEE] hover:border-[#0B4A39] hover:bg-[#E6F4F0] text-center space-y-1 transition-all cursor-pointer">
+                <span class="text-2xl block">📑</span>
+                <span class="text-xs font-bold block text-[#0B4A39]">Master PDF</span>
+                <span class="text-[9px] text-[#5A6066] block">Consolidated SAR</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="executeBatchExport('EXCEL')"
+                class="p-4 rounded-xl border border-[#ECEEEE] hover:border-[#0B4A39] hover:bg-[#E6F4F0] text-center space-y-1 transition-all cursor-pointer">
+                <span class="text-2xl block">📊</span>
+                <span class="text-xs font-bold block text-[#0B4A39]">Excel Sheet</span>
+                <span class="text-[9px] text-[#5A6066] block">Multi-Tab Matrix</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="p-4 bg-[#F8FAF9] border-t border-[#ECEEEE] flex items-center justify-between">
+          <button (click)="closeBatchExportModal()" class="px-4 py-2 rounded-xl border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:bg-white cursor-pointer">
+            Cancel
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>
+

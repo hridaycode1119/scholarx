@@ -1,0 +1,252 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Toast Notification -->
+  @if (toastMessage()) {
+    <div class="p-4 rounded-2xl bg-[#0B4A39] text-white flex items-center justify-between text-xs font-bold shadow-lg animate-in fade-in duration-150">
+      <div class="flex items-center gap-2">
+        <span class="text-base text-[#21DB93]">✓</span>
+        <span>{{ toastMessage() }}</span>
+      </div>
+      <button (click)="toastMessage.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-extrabold">
+          Identity & Role Access Control
+        </span>
+        <span class="text-xs font-semibold text-[#5A6066]">
+          Unified Multi-Campus Directory
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        Global User Accounts Directory
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        Inspect student and faculty credentials, audit department affiliations, and toggle account activation states
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a routerLink="/admin/dashboard" class="px-4 py-2 rounded-xl bg-white border border-[#ECEEEE] text-[#5A6066] hover:text-[#0B4A39] text-xs font-bold transition-all shadow-2xs">
+        ← Admin Overview
+      </a>
+    </div>
+  </div>
+
+  <!-- Role Filter Tabs & Search Bar -->
+  <div class="bg-white rounded-2xl p-4 border border-[#ECEEEE] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        (click)="activeRoleFilter.set('ALL')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeRoleFilter() === 'ALL' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+        All ({{ allCount() }})
+      </button>
+      <button
+        (click)="activeRoleFilter.set('STUDENT')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeRoleFilter() === 'STUDENT' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+        Students ({{ studentCount() }})
+      </button>
+      <button
+        (click)="activeRoleFilter.set('FACULTY')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeRoleFilter() === 'FACULTY' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+        Faculty / Mentors ({{ facultyCount() }})
+      </button>
+      <button
+        (click)="activeRoleFilter.set('SYSTEM_ADMIN')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeRoleFilter() === 'SYSTEM_ADMIN' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+        Admins ({{ adminCount() }})
+      </button>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative w-full md:w-72">
+      <input
+        type="text"
+        placeholder="Search by name, email, campus..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+      />
+      <svg class="w-4 h-4 text-[#8C959B] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="bg-white rounded-[22px] border border-[#ECEEEE] shadow-sm overflow-hidden">
+    <table class="w-full text-left border-collapse text-xs">
+      <thead>
+        <tr class="bg-[#F8FAF9] border-b border-[#ECEEEE] text-[11px] font-bold uppercase tracking-wider text-[#5A6066]">
+          <th class="py-3.5 px-6">User & Identity</th>
+          <th class="py-3.5 px-4">Role</th>
+          <th class="py-3.5 px-4">Institution & Dept</th>
+          <th class="py-3.5 px-4">Status</th>
+          <th class="py-3.5 px-4">Created Date</th>
+          <th class="py-3.5 px-6 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[#ECEEEE]">
+        @for (u of filteredUsers(); track u.id) {
+          <tr class="hover:bg-[#F4F6F5]/40 transition-all cursor-pointer" (click)="openUserDrawer(u)">
+            <td class="py-3.5 px-6">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-[#0B4A39] text-[#21DB93] font-black text-xs flex items-center justify-center shrink-0">
+                  {{ getInitials(u.name) }}
+                </div>
+                <div>
+                  <h3 class="font-bold text-[#0B4A39]">{{ u.name }}</h3>
+                  <span class="text-[11px] text-[#5A6066]">{{ u.email }}</span>
+                </div>
+              </div>
+            </td>
+
+            <td class="py-3.5 px-4">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black"
+                [ngClass]="{
+                  'bg-[#E0F2FE] text-[#0369A1]': u.role === 'STUDENT',
+                  'bg-[#E6F4F0] text-[#0B4A39]': u.role === 'FACULTY' || u.role === 'MENTOR',
+                  'bg-[#FEF3C7] text-[#B45309]': u.role === 'INSTITUTION_ADMIN',
+                  'bg-[#FEE2E2] text-[#B91C1C]': u.role === 'SYSTEM_ADMIN'
+                }">
+                {{ u.role }}
+              </span>
+            </td>
+
+            <td class="py-3.5 px-4">
+              <div>
+                <span class="font-semibold text-[#0B4A39] block">{{ u.institutionName }}</span>
+                <span class="text-[11px] text-[#8C959B]">{{ u.department || 'General' }}</span>
+              </div>
+            </td>
+
+            <td class="py-3.5 px-4">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                [ngClass]="u.status === 'ACTIVE' ? 'bg-[#ECFDF5] text-[#065F46]' : 'bg-[#FEF2F2] text-[#EF4444]'">
+                ● {{ u.status }}
+              </span>
+            </td>
+
+            <td class="py-3.5 px-4 text-[#5A6066] font-mono text-[11px]">
+              {{ u.createdAt }}
+            </td>
+
+            <td class="py-3.5 px-6 text-right">
+              <div class="flex items-center justify-end gap-2" (click)="$event.stopPropagation()">
+                <button
+                  (click)="openUserDrawer(u)"
+                  class="px-3 py-1.5 rounded-lg bg-white border border-[#ECEEEE] hover:border-[#0B4A39] text-[#0B4A39] text-xs font-bold transition-all shadow-2xs cursor-pointer">
+                  Inspect
+                </button>
+                <button
+                  (click)="toggleStatus(u, $event)"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                  [ngClass]="u.status === 'ACTIVE' ? 'bg-[#FEF2F2] text-[#EF4444] hover:bg-[#FEE2E2]' : 'bg-[#ECFDF5] text-[#065F46] hover:bg-[#D1FAE5]'">
+                  {{ u.status === 'ACTIVE' ? 'Deactivate' : 'Activate' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- User Details Slide-Out Drawer -->
+  @if (selectedUser()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-end bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+      <div class="w-full max-w-lg h-full bg-white shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-[#ECEEEE]">
+
+        <div class="p-6 border-b border-[#ECEEEE] flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold text-[#8C959B] uppercase tracking-wider">User Identity Inspector</span>
+            <h2 class="text-lg font-bold text-[#0B4A39]">{{ selectedUser()?.name }}</h2>
+            <span class="text-xs text-[#5A6066] font-mono">ID: {{ selectedUser()?.id }}</span>
+          </div>
+
+          <button
+            (click)="closeUserDrawer()"
+            class="w-8 h-8 rounded-full bg-[#F8FAF9] border border-[#ECEEEE] text-[#5A6066] hover:text-[#0B4A39] flex items-center justify-center font-bold cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-6 space-y-6 flex-1">
+          <!-- Profile Card -->
+          <div class="p-4 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] flex items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-[#0B4A39] text-[#21DB93] font-black text-lg flex items-center justify-center">
+              {{ getInitials(selectedUser()!.name) }}
+            </div>
+            <div class="space-y-1">
+              <h3 class="text-base font-bold text-[#0B4A39]">{{ selectedUser()?.name }}</h3>
+              <p class="text-xs text-[#5A6066]">{{ selectedUser()?.email }}</p>
+              <span class="inline-block px-2 py-0.2 rounded text-[10px] font-extrabold bg-[#E6F4F0] text-[#0B4A39]">
+                {{ selectedUser()?.role }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Affiliation Details -->
+          <div class="space-y-3 text-xs">
+            <h4 class="font-bold text-[#0B4A39] uppercase tracking-wider text-[11px]">Academic Affiliation</h4>
+            <div class="space-y-2 p-4 rounded-xl border border-[#ECEEEE] bg-white">
+              <div class="flex items-center justify-between">
+                <span class="text-[#5A6066]">Assigned Campus</span>
+                <span class="font-bold text-[#0B4A39]">{{ selectedUser()?.institutionName }}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[#5A6066]">Department</span>
+                <span class="font-bold text-[#0B4A39]">{{ selectedUser()?.department || 'General Faculty' }}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[#5A6066]">Account Status</span>
+                <span class="font-bold" [ngClass]="selectedUser()?.status === 'ACTIVE' ? 'text-[#059669]' : 'text-[#EF4444]'">
+                  ● {{ selectedUser()?.status }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[#5A6066]">Member Since</span>
+                <span class="font-mono text-[#5A6066]">{{ selectedUser()?.createdAt }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Management Actions -->
+          <div class="space-y-3">
+            <h4 class="font-bold text-[#0B4A39] uppercase tracking-wider text-[11px]">Security Actions</h4>
+            <div class="space-y-2">
+              <button
+                (click)="toggleStatus(selectedUser()!)"
+                class="w-full py-2.5 rounded-xl border font-bold text-xs transition-all cursor-pointer"
+                [ngClass]="selectedUser()?.status === 'ACTIVE' ? 'bg-[#FEF2F2] border-[#FCA5A5] text-[#EF4444] hover:bg-[#FEE2E2]' : 'bg-[#ECFDF5] border-[#A7F3D0] text-[#065F46] hover:bg-[#D1FAE5]'">
+                {{ selectedUser()?.status === 'ACTIVE' ? '⚠️ Deactivate / Suspend User Access' : '✓ Activate User Account' }}
+              </button>
+
+              <button
+                (click)="closeUserDrawer()"
+                class="w-full py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] hover:bg-[#F4F6F5] text-xs font-bold text-[#0B4A39] transition-all cursor-pointer">
+                🔑 Send Password Reset Link
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 border-t border-[#ECEEEE] bg-[#F8FAF9] text-right">
+          <button
+            (click)="closeUserDrawer()"
+            class="px-5 py-2 rounded-xl bg-white border border-[#ECEEEE] text-xs font-bold text-[#0B4A39] cursor-pointer">
+            Close Inspector
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

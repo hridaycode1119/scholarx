@@ -1,0 +1,610 @@
+<div class="space-y-6 animate-in fade-in duration-300 pb-32">
+
+  <!-- 1. HEADER & PRESET SHORTCUTS -->
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+          <span>📄 Question Paper OCR & Practice Studio</span>
+        </h1>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-white shadow-xs">
+          AI Optical Scanner 2.0
+        </span>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        Drag & drop university question papers, upload PDFs, or paste screenshots (<kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono">Ctrl+V</kbd>). AI scans the paper top-to-bottom and segments questions cleanly.
+      </p>
+    </div>
+
+    <!-- Quick Preset Paper Loaders -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="text-[11px] font-bold text-slate-400">Sample Papers:</span>
+      <button
+        type="button"
+        (click)="loadPresetSample('USER_SAMPLE_8051')"
+        class="px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+        [ngClass]="selectedPreset() === 'USER_SAMPLE_8051' ? 'bg-[#0B4A39] text-white border-[#0B4A39] shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-emerald-500'">
+        <span>⚡ 8051 Microcontroller</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="loadPresetSample('AKTU_OS')"
+        class="px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+        [ngClass]="selectedPreset() === 'AKTU_OS' ? 'bg-[#0B4A39] text-white border-[#0B4A39] shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-emerald-500'">
+        <span>⚡ AKTU Operating Systems</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="loadPresetSample('SHARDA_SET')"
+        class="px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+        [ngClass]="selectedPreset() === 'SHARDA_SET' ? 'bg-[#0B4A39] text-white border-[#0B4A39] shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-emerald-500'">
+        <span>⚡ Distributed Systems</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. DRAG-AND-DROP & SCREENSHOT PASTE ZONE -->
+  <div
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    class="relative rounded-3xl border-2 border-dashed p-7 text-center transition-all bg-white dark:bg-white shadow-sm"
+    [ngClass]="isDragging() ? 'border-[#21DB93] bg-emerald-500/10 scale-[1.005]' : 'border-slate-300 dark:border-slate-800 hover:border-[#21DB93]'">
+
+    <div class="max-w-xl mx-auto space-y-3">
+      <!-- Animated Dropzone Icon -->
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-3xl shadow-inner">
+        📤
+      </div>
+
+      <div class="space-y-1">
+        <h3 class="text-base font-black text-slate-900 dark:text-white">
+          Drag & Drop Question Paper, Exam PDF, or Paste Screenshot
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          Supports multi-page PDF, PNG, JPG, JPEG, and WebP. Take a screenshot (<kbd class="px-1 rounded bg-slate-200 dark:bg-slate-700 font-mono text-[10px]">Win+Shift+S</kbd>) and press <kbd class="px-1 rounded bg-slate-200 dark:bg-slate-700 font-mono text-[10px]">Ctrl+V</kbd> to paste anywhere!
+        </p>
+      </div>
+
+      <!-- File Input & Clipboard Badge -->
+      <div class="flex items-center justify-center gap-3 pt-1 flex-wrap">
+        <label class="px-5 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-black shadow-sm cursor-pointer transition-all flex items-center gap-2">
+          <span>📁 Browse from Computer</span>
+          <input type="file" (change)="onFileSelected($event)" accept=".pdf,image/*" class="hidden" />
+        </label>
+
+        <span class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+          <span>📋</span>
+          <span>Paste Screenshot Active</span>
+        </span>
+      </div>
+
+      <!-- Upload / Extraction Telemetry Feedback -->
+      @if (isExtractingFileContent()) {
+        <div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-700 dark:text-emerald-300 font-mono animate-pulse flex items-center justify-center gap-2">
+          <span class="animate-spin">⏳</span>
+          <span>{{ fileExtractionStatusMessage() }}</span>
+        </div>
+      }
+
+      <!-- Current Document Pill if Loaded -->
+      @if (uploadedFileName()) {
+        <div class="pt-2 flex items-center justify-center gap-2 flex-wrap text-xs">
+          <span class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
+            <span>📄</span>
+            <span>{{ uploadedFileName() }}</span>
+            <span class="text-slate-400">({{ uploadedFileSize() }})</span>
+          </span>
+
+          <span class="px-2.5 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-black text-[11px] border border-emerald-300 dark:border-emerald-800">
+            ✓ {{ ocrConfidence() }}% Precision
+          </span>
+
+          <button
+            type="button"
+            (click)="isRawTranscriptVisible.set(!isRawTranscriptVisible())"
+            class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white font-bold underline transition-colors cursor-pointer">
+            {{ isRawTranscriptVisible() ? 'Hide Raw OCR Text' : 'Inspect Raw OCR Transcript' }}
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- RAW OCR TRANSCRIPT COLLAPSIBLE DRAWER -->
+  @if (isRawTranscriptVisible()) {
+    <div class="p-5 rounded-2xl bg-slate-900 text-emerald-300 font-mono text-xs border border-slate-800 space-y-2 shadow-inner">
+      <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800">
+        <span class="font-bold uppercase tracking-wider text-[10px]">RAW OPTICAL OCR TRANSCRIPT EXTRACTED VERBATIM</span>
+        <button (click)="isRawTranscriptVisible.set(false)" class="text-xs hover:text-white">✕ Close</button>
+      </div>
+      <pre class="max-h-60 overflow-y-auto whitespace-pre-wrap leading-relaxed">{{ rawPaperTranscript() }}</pre>
+    </div>
+  }
+
+  <!-- 3. TOP-TO-BOTTOM OPTICAL LASER SCANNING BLUEPRINT CANVAS -->
+  @if (showBlueprintCanvas()) {
+    <div class="rounded-3xl bg-white border border-[#eceeee] text-[#14171c] p-6 shadow-sm space-y-5 overflow-hidden relative">
+      
+      <!-- Top Blueprint Header & Telemetry Counters -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#eceeee]">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#21db93] animate-ping"></span>
+            <span class="text-xs font-mono font-black uppercase tracking-wider text-[#0b4a39]">
+              OPTICAL LASER SCANNING BLUEPRINT • TOP-TO-BOTTOM
+            </span>
+          </div>
+          <p class="text-xs text-[#5a6066]">
+            {{ activeScanningTelemetryLog() }}
+          </p>
+        </div>
+
+        <!-- Metric Badges -->
+        <div class="flex items-center gap-2 flex-wrap text-xs font-mono">
+          <span class="px-3 py-1.5 rounded-xl bg-[#fcfcfb] border border-[#eceeee] text-[#14171c]">
+            Lines Picked Up: <strong class="text-[#0b4a39]">{{ scannedPickedUpLines().length }}</strong>
+          </span>
+          <span class="px-3 py-1.5 rounded-xl bg-[#fcfcfb] border border-[#eceeee] text-[#14171c]">
+            Questions: <strong class="text-[#0b4a39]">{{ scannedDetectedQuestionsCount() }}</strong>
+          </span>
+          <span class="px-3 py-1.5 rounded-xl bg-[#fcfcfb] border border-[#eceeee] text-[#14171c]">
+            Diagrams: <strong class="text-[#0b4a39]">{{ scannedDetectedDiagramsCount() }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- Scan Beam Simulation & Picked-Up Lines Window -->
+      <div class="relative bg-[#fcfcfb] rounded-2xl border border-[#eceeee] min-h-[220px] max-h-[300px] overflow-y-auto p-4 font-mono text-xs space-y-1.5">
+        <!-- Optical Laser Beam -->
+        @if (isScanBeamActive()) {
+          <div class="optical-laser-beam" [style.top.%]="scanBeamYPercent()">
+            <div class="optical-laser-glow-trail"></div>
+          </div>
+        }
+
+        <!-- Stream of Picked-Up Lines in Real-Time -->
+        @for (item of scannedPickedUpLines(); track i; let i = $index) {
+          <div class="flex items-center gap-3 p-1 rounded transition-colors"
+               [ngClass]="i === currentScanningLineIndex() ? 'active-scan-line bg-[#21db93]/15 text-[#0b4a39] font-bold' : 'text-[#5a6066]'">
+            <span class="text-[10px] text-[#8c959b] select-none w-8 shrink-0 text-right">L{{ item.lineNumber }}</span>
+            <span class="px-1.5 py-0.2 rounded text-[9px] font-black shrink-0"
+                  [ngClass]="{
+                    'bg-[#21db93]/20 text-[#0b4a39]': item.type === 'QUESTION',
+                    'bg-sky-500/15 text-sky-700': item.type === 'DIAGRAM',
+                    'bg-amber-500/15 text-amber-700': item.type === 'SECTION',
+                    'bg-purple-500/15 text-purple-700': item.type === 'TABLE',
+                    'bg-[#eceeee] text-[#5a6066]': item.type === 'HEADER' || item.type === 'META' || item.type === 'INSTRUCTION'
+                  }">
+              {{ item.type }}
+            </span>
+            <span class="truncate text-[#14171c]">{{ item.text }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Scan Progress Bar -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-[11px] font-mono text-[#5a6066]">
+          <span>{{ scanProgressPercent() < 100 ? 'Scanning top to bottom...' : '✓ Optical Scanning Complete' }}</span>
+          <span class="text-[#0b4a39] font-bold">{{ scanProgressPercent() }}%</span>
+        </div>
+        <div class="w-full h-2 rounded-full bg-[#eceeee] overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-[#21db93] to-[#0b4a39] transition-all duration-150" [style.width.%]="scanProgressPercent()"></div>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- 4. EXTRACTED QUESTIONS CONTROL BAR (SECTION FORMULAS & DUAL MODES) -->
+  <div class="space-y-3">
+    <!-- Section Marks Telemetry Banner (3x10=30 and Section D) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      @if (detectedSectionFormulas()['SECTION-C']) {
+        <div class="p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📋</span>
+            <div>
+              <span class="font-extrabold text-teal-900 dark:text-teal-200">SECTION-C Rule:</span>
+              <span class="ml-1 text-teal-700 dark:text-teal-300 font-medium">{{ detectedSectionFormulas()['SECTION-C'] }}</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-800 dark:text-teal-200 font-mono font-bold text-[11px]">
+            10 Marks Each
+          </span>
+        </div>
+      }
+
+      @if (detectedSectionFormulas()['SECTION-D']) {
+        <div class="p-3.5 rounded-2xl bg-[#10b981]/10 border border-[#10b981]/30 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="text-base">🛡️</span>
+            <div>
+              <span class="font-extrabold text-white">SECTION-D Rule:</span>
+              <span class="ml-1 text-slate-300 font-medium">{{ detectedSectionFormulas()['SECTION-D'] }}</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-md bg-[#10b981]/20 text-[#10b981] font-mono font-bold text-[11px]">
+            Compulsory
+          </span>
+        </div>
+      }
+    </div>
+
+    <!-- Questions Header & Mode Controls -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-sm font-black text-slate-900 dark:text-white">
+          Extracted Questions ({{ extractedQuestions().length }} Total)
+        </span>
+        <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-black">
+          Segmented with OR Choices
+        </span>
+
+        <!-- Section / OR Filter Pills -->
+        <div class="flex items-center gap-1 ml-2">
+          <button
+            type="button"
+            (click)="selectedSectionFilter.set('ALL')"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+            [ngClass]="selectedSectionFilter() === 'ALL' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+            All ({{ extractedQuestions().length }})
+          </button>
+          <button
+            type="button"
+            (click)="selectedSectionFilter.set('SECTION_C')"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+            [ngClass]="selectedSectionFilter() === 'SECTION_C' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+            Section C (3×10=30)
+          </button>
+          <button
+            type="button"
+            (click)="selectedSectionFilter.set('SECTION_D')"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+            [ngClass]="selectedSectionFilter() === 'SECTION_D' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+            Section D (Q17)
+          </button>
+          <button
+            type="button"
+            (click)="selectedSectionFilter.set('OR_PAIRS')"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1"
+            [ngClass]="selectedSectionFilter() === 'OR_PAIRS' ? 'bg-amber-600 text-white shadow-2xs' : 'bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20'">
+            <span>⚡</span>
+            <span>OR Choices</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dual Mode Switcher: 7-Pillars vs Questions Only -->
+      <div class="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 gap-1">
+        <button
+          type="button"
+          (click)="paperContentMode.set('WITH_SOLUTIONS')"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5"
+          [ngClass]="paperContentMode() === 'WITH_SOLUTIONS' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+          <span>💡 7-Pillar Model Solutions</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="paperContentMode.set('QUESTIONS_ONLY')"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5"
+          [ngClass]="paperContentMode() === 'QUESTIONS_ONLY' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+          <span>📝 Questions Only (Practice Mode)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. EXTRACTED QUESTIONS LIST CARDS -->
+  @if (isProcessingQuestions()) {
+    <div class="space-y-4">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="p-6 rounded-3xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 animate-pulse space-y-3">
+          <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-32"></div>
+          <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
+          <div class="h-20 bg-slate-100 dark:bg-slate-850 rounded"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="space-y-6">
+      @for (q of filteredQuestions(); track q.id; let qIdx = $index) {
+        <div
+          [id]="'q-card-' + q.id"
+          class="practice-card-3d p-6 sm:p-7 rounded-3xl bg-white dark:bg-white border-2 border-slate-200 dark:border-slate-800 hover:border-[#21DB93] shadow-sm hover:shadow-xl transition-all space-y-4"
+          [ngClass]="{
+            'ring-4 ring-amber-400 dark:ring-amber-500 shadow-xl border-amber-400': highlightedOrGroup() === q.orChoiceGroup
+          }">
+          
+          <!-- Top Row: Q Number, Section, Marks, Bloom, OR Alternative Badge & Course Outcome on the Far Right -->
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-3 py-1 rounded-xl bg-[#0B4A39] text-white text-xs font-black shadow-2xs">
+                {{ q.paperReference || ('Q' + (qIdx + 1)) }}
+              </span>
+
+              @if (q.sectionName) {
+                <span class="px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-extrabold uppercase">
+                  {{ q.sectionName }}
+                </span>
+              }
+
+              <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-black">
+                {{ q.marks || 10 }} Marks
+              </span>
+
+              <span class="px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold">
+                {{ q.bloomLevel }}
+              </span>
+
+              <!-- OR Choice Indicator Badge & Jump Button -->
+              @if (q.isOrChoice) {
+                <span class="px-2.5 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[10px] font-black flex items-center gap-1">
+                  <span>⚡</span>
+                  <span>OR Choice (Part {{ q.orPartLabel?.toUpperCase() }})</span>
+                </span>
+
+                @if (q.hasOrAlternative && q.orAlternativeId) {
+                  <button
+                    type="button"
+                    (click)="scrollToAlternative('q-card-' + q.orAlternativeId, q.orChoiceGroup)"
+                    class="px-2.5 py-0.5 rounded-md bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/60 dark:hover:bg-amber-900/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-[10px] font-black cursor-pointer transition-all shadow-2xs flex items-center gap-1">
+                    <span>↔</span>
+                    <span>View OR Alternative (Part {{ q.orPartLabel === 'a' ? 'b' : 'a' }})</span>
+                  </button>
+                }
+              }
+
+              <!-- AI Auto-Healed Badge (e.g. Faint Q17 Resolution) -->
+              @if (q.isImproper) {
+                <span class="px-2.5 py-0.5 rounded-md bg-[#10b981]/15 border border-[#10b981]/30 text-[#10b981] text-[10px] font-black flex items-center gap-1">
+                  <span>✨</span>
+                  <span>AI Auto-Resolved: Faint '7.' healed to Q17</span>
+                </span>
+              }
+            </div>
+
+            <!-- Course Outcome on the Far Right -->
+            <div class="ml-auto">
+              <span class="px-3 py-1 rounded-xl bg-[#E6F4F0] dark:bg-[#0B4A39]/30 text-[#0B4A39] dark:text-[#21DB93] text-xs font-black border border-[#21DB93]/30 flex items-center gap-1.5 shadow-2xs">
+                <span>🎯</span>
+                <span>{{ q.detectedCO || q.targetCO || 'CO2' }}</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Question Prompt (Editable or Display) -->
+          @if (editingQuestionId() === q.id) {
+            <div class="space-y-2 pt-1">
+              <textarea
+                rows="3"
+                [(ngModel)]="inlineEditText"
+                class="w-full p-3 rounded-xl border border-emerald-500 bg-slate-50 dark:bg-slate-900 text-xs text-slate-900 dark:text-white font-serif outline-none">
+              </textarea>
+              <div class="flex items-center gap-2 justify-end">
+                <button (click)="cancelInlineEdit()" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-white">
+                  Cancel
+                </button>
+                <button (click)="saveInlineEdit(q.id)" class="px-4 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold">
+                  Save Question
+                </button>
+              </div>
+            </div>
+          } @else {
+            <h3 class="text-base sm:text-lg font-serif font-bold text-slate-900 dark:text-white leading-relaxed">
+              {{ q.questionText || q.question }}
+            </h3>
+          }
+
+          <!-- MODE A: WITH 7-PILLAR MODEL SOLUTIONS -->
+          @if (paperContentMode() === 'WITH_SOLUTIONS') {
+            <div class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              
+              <!-- Solution Pillar Tabs -->
+              <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-850 rounded-xl overflow-x-auto text-xs">
+                <button
+                  type="button"
+                  (click)="setSolutionTab(q.id, 'analogy')"
+                  class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap"
+                  [ngClass]="getSolutionTab(q.id) === 'analogy' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                  💡 Plain English Analogy
+                </button>
+
+                <button
+                  type="button"
+                  (click)="setSolutionTab(q.id, 'math')"
+                  class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap"
+                  [ngClass]="getSolutionTab(q.id) === 'math' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                  📐 Mathematical Proof & Invariants
+                </button>
+
+                <button
+                  type="button"
+                  (click)="setSolutionTab(q.id, 'diagram')"
+                  class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap"
+                  [ngClass]="getSolutionTab(q.id) === 'diagram' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                  🏗️ Architecture Diagram
+                </button>
+
+                <button
+                  type="button"
+                  (click)="setSolutionTab(q.id, 'rubric')"
+                  class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap"
+                  [ngClass]="getSolutionTab(q.id) === 'rubric' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                  🎯 Examiner Rubric Checklist
+                </button>
+              </div>
+
+              <!-- Tab 1: Analogy -->
+              @if (getSolutionTab(q.id) === 'analogy') {
+                <div class="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-slate-800 dark:text-slate-200 leading-relaxed space-y-2">
+                  <div class="font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+                    <span>💡</span>
+                    <span>Intuitive Concept & Real-World Parallel:</span>
+                  </div>
+                  <p>{{ q.aiThinkerSolution?.simpleExplanation || q.detailedIndianSolution?.mainPoints?.[0] }}</p>
+                  @if (q.detailedIndianSolution?.realWorldApplications; as apps) {
+                    <div class="pt-1 text-[11px] text-slate-600 dark:text-slate-400">
+                      <strong>Industrial Application:</strong> {{ apps[0] }}
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Tab 2: Mathematical Proof -->
+              @if (getSolutionTab(q.id) === 'math') {
+                <div class="p-4 rounded-2xl bg-slate-900 text-emerald-300 font-mono text-xs border border-slate-800 leading-relaxed overflow-x-auto whitespace-pre-wrap">
+                  {{ q.aiThinkerSolution?.mathematicalDerivation || 'Formal Invariant:\n1. State T(n) = O(log N) under quorum conditions.\n2. Bus cycle invariant verified for university exam marking.' }}
+                </div>
+              }
+
+              <!-- Tab 3: Architecture Diagram -->
+              @if (getSolutionTab(q.id) === 'diagram') {
+                <div class="p-4 rounded-2xl bg-slate-950 text-cyan-300 font-mono text-xs border border-slate-800 leading-relaxed overflow-x-auto whitespace-pre-wrap">
+                  {{ q.aiThinkerSolution?.architectureDiagram || '[Processor] ===[Address / Control]===> [Peripherals]\n     |                                      |\n     +----------------[Data Bus]------------+' }}
+                </div>
+              }
+
+              <!-- Tab 4: Examiner Rubric -->
+              @if (getSolutionTab(q.id) === 'rubric') {
+                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 text-xs">
+                  <div class="font-bold text-[#0B4A39] dark:text-[#21DB93] flex items-center gap-1.5">
+                    <span>🎯</span>
+                    <span>Examiner Rubric Criteria for Full {{ q.marks || 10 }} Marks:</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @for (crit of (q.detailedIndianSolution?.examinerRubricCriteria || []); track crit.criterion) {
+                      <div class="p-2.5 rounded-xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 space-y-1">
+                        <div class="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
+                          <span>{{ crit.criterion }}</span>
+                          <span class="text-[#0B4A39] dark:text-[#21DB93] font-mono">{{ crit.marks }} Marks</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">{{ crit.description }}</p>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+            </div>
+          }
+
+          <!-- MODE B: QUESTIONS ONLY (SELF-PRACTICE WORKSPACE) -->
+          @if (paperContentMode() === 'QUESTIONS_ONLY') {
+            <div class="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400">
+                <span class="flex items-center gap-1.5">
+                  <span>✍️</span>
+                  <span>Your Practice Solution / Derivation Workspace:</span>
+                </span>
+                <span class="font-mono text-[11px] text-slate-400">
+                  {{ getWordCount(studentDraftAnswers()[q.id]) }} words
+                </span>
+              </div>
+
+              <textarea
+                rows="4"
+                [ngModel]="studentDraftAnswers()[q.id] || ''"
+                (ngModelChange)="saveDraftAnswer(q.id, $event)"
+                placeholder="Type your derivation steps, pin configurations, or theoretical answer here to test yourself..."
+                class="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0B4A39] transition-all">
+              </textarea>
+            </div>
+          }
+
+          <!-- Card Bottom Action Strip -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 flex-wrap gap-2">
+            <span class="text-[11px] font-mono">
+              Topic: <strong class="text-slate-700 dark:text-slate-300 font-sans">{{ q.topic }}</strong>
+            </span>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                (click)="startInlineEdit(q)"
+                class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-white font-bold transition-colors cursor-pointer">
+                ✏️ Edit Question
+              </button>
+
+              <button
+                type="button"
+                (click)="autoHealQuestion(q)"
+                [disabled]="isAutoHealing()[q.id]"
+                class="text-xs text-[#10b981] hover:underline font-bold transition-colors cursor-pointer flex items-center gap-1">
+                <span>✨</span>
+                <span>{{ isAutoHealing()[q.id] ? 'Healing...' : 'AI Auto-Heal' }}</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+  <!-- 6. ROUNDED POPUP ACTION BAR (Appears only after paper scan is complete) -->
+  @if (paperScanStatus() === 'EXTRACTED' && extractedQuestions().length > 0) {
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 lg:left-[calc(50%+8rem)] lg:-translate-x-1/2 z-50 w-[92%] max-w-4xl p-3.5 sm:px-6 sm:py-3.5 bg-white/95 backdrop-blur-xl border border-[#eceeee] rounded-3xl shadow-[0_20px_50px_rgba(11,74,57,0.12)] ring-1 ring-[#0b4a39]/10 flex items-center justify-between gap-4 flex-wrap animate-in slide-in-from-bottom-6 fade-in duration-300">
+      
+      <!-- Scan Status & Count Indicator -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#21db93] opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#21db93]"></span>
+          </span>
+          <span class="text-xs sm:text-sm font-bold text-[#14171c]">
+            Ready: <strong class="text-[#0b4a39] font-black">{{ extractedQuestions().length }} Questions</strong>
+          </span>
+        </div>
+        <span class="hidden sm:inline text-[#eceeee]">•</span>
+        <span class="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#0b4a39] bg-[#e6f4f0] px-2.5 py-0.5 rounded-full border border-[#21db93]/30">
+          <span>✓</span>
+          <span>Scanned & Formatted</span>
+        </span>
+      </div>
+
+      <!-- Action Buttons Pill Group -->
+      <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end">
+        <button
+          type="button"
+          (click)="printStudySheet()"
+          class="px-4 py-2 sm:py-2.5 rounded-full text-xs font-bold text-[#14171c] border border-[#eceeee] bg-[#fcfcfb] hover:bg-[#f4f6f5] hover:border-[#0b4a39]/30 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs">
+          <span>🖨️</span>
+          <span>Print / Export Sheet</span>
+        </button>
+
+        <button
+          type="button"
+          id="saveToPracticeBtn"
+          (click)="saveToStudentPracticePapers()"
+          class="px-5 py-2 sm:py-2.5 rounded-full bg-[#21db93] hover:bg-[#1abc7e] text-[#0b4a39] text-xs font-black shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center gap-2 active:scale-95">
+          <span>📥</span>
+          <span>Save to My Practice Papers</span>
+        </button>
+
+        <button
+          type="button"
+          id="startPracticeNowBtn"
+          (click)="startPracticeDrillNow()"
+          class="px-5 py-2 sm:py-2.5 rounded-full bg-[#0b4a39] hover:bg-[#08382b] text-white text-xs font-black shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center gap-2 active:scale-95">
+          <span>🚀</span>
+          <span>Start Practice Drill Now →</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Floating Toast -->
+  @if (toastMessage(); as toast) {
+    <div class="fixed bottom-24 right-6 z-50 p-4 rounded-2xl bg-slate-900 text-white border border-emerald-500/50 shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
+      <span class="text-xl">🔔</span>
+      <span class="text-xs font-bold text-emerald-300">{{ toast }}</span>
+    </div>
+  }
+
+</div>

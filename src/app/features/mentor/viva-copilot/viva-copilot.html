@@ -1,0 +1,457 @@
+<div class="space-y-5 animate-in fade-in duration-300">
+
+  <!-- Success Toast -->
+  @if (successToast()) {
+    <div class="fixed top-5 right-5 z-60 max-w-md p-4 rounded-2xl bg-[#0B4A39] text-white text-xs font-bold shadow-2xl border border-[#21DB93]/50 animate-in fade-in duration-200 flex items-start justify-between gap-3">
+      <div class="flex items-start gap-2.5">
+        <span class="text-base text-[#21DB93]">⚡</span>
+        <p class="text-white/95 leading-relaxed">{{ successToast() }}</p>
+      </div>
+      <button (click)="successToast.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono text-sm">✕</button>
+    </div>
+  }
+
+  <!-- TOP SESSION HUD & STUDENT CONTEXT BANNER -->
+  <div class="p-5 rounded-[28px] bg-gradient-to-r from-[#0B4A39] via-[#0B4A39] to-[#0B4A39] text-white shadow-xl border border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    
+    <!-- Student & Course Profile -->
+    <div class="flex items-center gap-4">
+      <div class="relative">
+        <img
+          [src]="vivaService.activeSession().studentAvatar"
+          [alt]="vivaService.activeSession().studentName"
+          class="w-14 h-14 rounded-2xl object-cover border-2 border-[#21DB93] shadow-md"
+        />
+        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#21DB93] ring-2 ring-[#0B4A39] animate-pulse"></span>
+      </div>
+
+      <div class="space-y-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#21DB93] text-[#0B4A39]">
+            ● LIVE ORAL VIVA
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/15 text-white/90 border border-white/20">
+            {{ vivaService.activeSession().courseCode }} • {{ vivaService.activeSession().courseName }}
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#F59E0B]/20 text-[#FDE68A] border border-[#F59E0B]/40">
+            Target Bloom: {{ vivaService.activeSession().bloomTarget }}
+          </span>
+        </div>
+
+        <h1 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
+          <span>{{ vivaService.activeSession().studentName }}</span>
+          <span class="text-xs font-mono font-semibold text-white/70">({{ vivaService.activeSession().rollNumber }})</span>
+        </h1>
+
+        <p class="text-xs text-white/80 flex items-center gap-2">
+          <span class="text-[#21DB93] font-bold">Topic Focus:</span>
+          <span>{{ vivaService.activeSession().assignedTopic }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Timer, WebRTC Telemetry & Quick Exit -->
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- 15-Min Countdown Clock -->
+      <div class="px-4 py-2 rounded-2xl bg-black/40 border border-white/20 flex items-center gap-3 shadow-inner">
+        <div class="text-right">
+          <span class="text-[9px] font-black uppercase tracking-wider text-white/60 block">Remaining Time</span>
+          <span class="text-lg font-black font-mono text-[#21DB93] tracking-wider">{{ formattedRemainingTime }}</span>
+        </div>
+        <div class="w-2.5 h-2.5 rounded-full bg-[#21DB93] animate-ping"></div>
+      </div>
+
+      <!-- WebRTC Telemetry Pill -->
+      <div class="px-3 py-2 rounded-2xl bg-white/10 border border-white/15 text-[11px] font-mono space-y-0.5 hidden sm:block">
+        <div class="flex items-center gap-1.5 text-[#21DB93] font-bold">
+          <span>📶</span>
+          <span>WebRTC: {{ vivaService.activeSession().webrtcStatus }}</span>
+        </div>
+        <div class="text-[10px] text-white/70 flex items-center gap-2">
+          <span>{{ vivaService.activeSession().latencyMs }}ms latency</span>
+          <span>•</span>
+          <span>{{ vivaService.activeSession().bitrateMbps }} Mbps</span>
+        </div>
+      </div>
+
+      <!-- Link back to Class Scheduler -->
+      <a routerLink="/mentor/class-scheduler"
+         class="px-4 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white text-xs font-black transition-all cursor-pointer border border-white/20 flex items-center gap-1.5 shadow-sm">
+        <span>📅</span>
+        <span>Class Scheduler</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- 3-COLUMN MAIN WORKSPACE: VIDEO HUD (LEFT) | STT TRANSCRIPT (CENTER) | AI CO-PILOT & RUBRICS (RIGHT) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+    <!-- LEFT COLUMN (3/12): AUDIO-VISUAL HUD & PROCTOR INTEGRITY -->
+    <div class="lg:col-span-3 space-y-4">
+      
+      <!-- Examinee Student Video Stream Tile -->
+      <div class="relative rounded-2xl bg-[#0B4A39] overflow-hidden shadow-md border border-[#ECEEEE] aspect-[4/3] flex flex-col justify-between p-3">
+        <!-- Background Mock Video Frame -->
+        <img
+          [src]="vivaService.activeSession().studentAvatar"
+          [alt]="vivaService.activeSession().studentName"
+          class="absolute inset-0 w-full h-full object-cover opacity-85"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
+
+        <!-- Face Tracking Overlay Box -->
+        <div class="absolute inset-6 border border-[#21DB93]/60 rounded-xl pointer-events-none flex items-start justify-end p-1.5">
+          <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-[#21DB93] text-[#0B4A39]">
+            Gaze: Centered
+          </span>
+        </div>
+
+        <!-- Top Badges -->
+        <div class="relative z-10 flex items-center justify-between">
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/60 text-white backdrop-blur-md flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Examinee Feed
+          </span>
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#0B4A39] text-[#21DB93] border border-[#21DB93]/30">
+            720p HD
+          </span>
+        </div>
+
+        <!-- Bottom Name & Audio Waveform -->
+        <div class="relative z-10 space-y-1.5">
+          <div class="flex items-center justify-between text-white">
+            <div>
+              <p class="text-xs font-black leading-tight">{{ vivaService.activeSession().studentName }}</p>
+              <p class="text-[10px] text-white/70">{{ vivaService.activeSession().rollNumber }}</p>
+            </div>
+
+            <!-- Animated Audio Waveform -->
+            <div class="flex items-center gap-0.5 h-5 px-1.5 py-0.5 rounded-md bg-black/50 backdrop-blur-sm">
+              <span class="w-1 bg-[#21DB93] rounded-full wave-bar"></span>
+              <span class="w-1 bg-[#21DB93] rounded-full wave-bar"></span>
+              <span class="w-1 bg-[#21DB93] rounded-full wave-bar"></span>
+              <span class="w-1 bg-[#21DB93] rounded-full wave-bar"></span>
+              <span class="w-1 bg-[#21DB93] rounded-full wave-bar"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Examiner Faculty Video Tile & Controls -->
+      <div class="relative rounded-2xl bg-[#0B4A39] overflow-hidden shadow-md border border-[#ECEEEE] aspect-[16/10] flex flex-col justify-between p-3">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0B4A39] to-[#0B4A39] flex items-center justify-center">
+          <div class="text-center space-y-1">
+            <div class="w-12 h-12 mx-auto rounded-full bg-white/20 flex items-center justify-center text-xl font-bold text-white shadow-inner">
+              AT
+            </div>
+            <p class="text-xs font-bold text-white">Prof. Aris Thorne (Examiner)</p>
+          </div>
+        </div>
+
+        <!-- Controls Overlay -->
+        <div class="relative z-10 flex items-center justify-between">
+          <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-black/60 text-white">
+            Examiner Mic Active
+          </span>
+        </div>
+
+        <div class="relative z-10 flex items-center justify-center gap-2 pt-2">
+          <button
+            (click)="toggleMic()"
+            [ngClass]="isMuted() ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all cursor-pointer backdrop-blur-md">
+            {{ isMuted() ? '🔇' : '🎙️' }}
+          </button>
+          <button
+            (click)="toggleCamera()"
+            [ngClass]="!isCameraOn() ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all cursor-pointer backdrop-blur-md">
+            {{ isCameraOn() ? '📹' : '🚫' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Proctor Integrity Checklist -->
+      <div class="p-4 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-2.5 text-xs">
+        <h4 class="font-black text-[#0B4A39] text-xs flex items-center justify-between">
+          <span>🛡️ Proctor Integrity Live HUD</span>
+          <span class="text-[10px] font-bold text-emerald-600">Active</span>
+        </h4>
+
+        <div class="space-y-1.5 text-[11px]">
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-[#F8FAF9]">
+            <span class="text-[#5A6066]">Primary Face Detection</span>
+            <span class="font-bold text-emerald-600">✓ Verified</span>
+          </div>
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-[#F8FAF9]">
+            <span class="text-[#5A6066]">Secondary Faces in Frame</span>
+            <span class="font-bold text-emerald-600">0 (Clean)</span>
+          </div>
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-[#F8FAF9]">
+            <span class="text-[#5A6066]">Browser Window Focus</span>
+            <span class="font-bold text-emerald-600">Locked (100%)</span>
+          </div>
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-[#F8FAF9]">
+            <span class="text-[#5A6066]">Microphone Stream</span>
+            <span class="font-bold text-emerald-600">Real-time STT Active</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CENTER COLUMN (5/12): LIVE SPEECH-TO-TEXT TRANSCRIPT FEED -->
+    <div class="lg:col-span-5 flex flex-col h-[750px] bg-white rounded-3xl border border-[#ECEEEE] shadow-sm overflow-hidden">
+      
+      <!-- Transcript Header -->
+      <div class="p-4 bg-[#F8FAF9] border-b border-[#ECEEEE] flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-[#21DB93] animate-ping"></div>
+          <div>
+            <h3 class="text-xs font-black text-[#0B4A39]">Live Speech-to-Text (STT) Transcript</h3>
+            <p class="text-[10px] text-[#5A6066]">Synchronized in real time with Gemini syllabus embeddings</p>
+          </div>
+        </div>
+
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
+          ● Audio Streaming
+        </span>
+      </div>
+
+      <!-- Transcript Message Stream Area -->
+      <div class="flex-1 p-5 overflow-y-auto space-y-4">
+        @for (turn of vivaService.transcripts(); track turn.id) {
+          <div class="space-y-1.5 animate-in fade-in duration-200"
+               [ngClass]="turn.speaker === 'EXAMINER' ? 'items-end' : 'items-start'">
+            
+            <!-- Speaker Header Pill -->
+            <div class="flex items-center gap-2 text-[10px] font-bold"
+                 [ngClass]="turn.speaker === 'EXAMINER' ? 'justify-end text-[#0B4A39]' : 'justify-start text-[#0B4A39]'">
+              <span>{{ turn.speaker === 'EXAMINER' ? '🧑‍🏫 ' + turn.speakerName : '🎓 ' + turn.speakerName }}</span>
+              <span class="text-[#5A6066] font-mono">{{ turn.timestamp }}</span>
+              @if (turn.bloomTaxonomyLevel) {
+                <span class="px-1.5 py-0.2 rounded text-[8px] font-black uppercase bg-[#F4F6F5] text-[#0B4A39]">
+                  {{ turn.bloomTaxonomyLevel }}
+                </span>
+              }
+            </div>
+
+            <!-- Dialogue Bubble -->
+            <div class="p-4 rounded-2xl text-xs leading-relaxed max-w-[95%] shadow-sm"
+                 [ngClass]="turn.speaker === 'EXAMINER'
+                   ? 'ml-auto bg-[#0B4A39] text-white rounded-tr-none border border-[#0B4A39]'
+                   : 'mr-auto bg-[#FCFCFB] text-[#0B4A39] rounded-tl-none border border-[#ECEEEE]'">
+              <p>{{ turn.text }}</p>
+
+              <!-- Detected Syllabus Concept Keywords -->
+              @if (turn.detectedKeywords && turn.detectedKeywords.length > 0) {
+                <div class="mt-2.5 pt-2 border-t border-black/10 flex flex-wrap items-center gap-1">
+                  <span class="text-[9px] font-bold uppercase text-[#0B4A39]">Syllabus Insights Detected:</span>
+                  @for (kw of turn.detectedKeywords; track kw) {
+                    <span class="px-1.5 py-0.5 rounded bg-white text-[#0B4A39] font-mono text-[9px] font-bold border border-[#A7F3D0]">
+                      ✓ {{ kw }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Examiner Live Question Input Bar -->
+      <div class="p-3.5 bg-[#F8FAF9] border-t border-[#ECEEEE] shrink-0 space-y-2">
+        <form (ngSubmit)="sendExaminerQuestion()" class="flex items-center gap-2">
+          <input
+            type="text"
+            [(ngModel)]="examinerInputText"
+            name="examinerInput"
+            placeholder="Ask candidate a question or select from AI Suggestions..."
+            class="flex-1 px-4 py-2.5 rounded-xl bg-white border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] shadow-inner"
+          />
+          <button
+            type="submit"
+            [disabled]="!examinerInputText.trim()"
+            class="px-4 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-40 text-white text-xs font-black shadow-md cursor-pointer transition-all shrink-0 flex items-center gap-1.5">
+            <span>Ask</span>
+            <span>➔</span>
+          </button>
+        </form>
+        <p class="text-[10px] text-[#5A6066] px-1">Tip: Click any AI probe card on the right to inject question instantly.</p>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN (4/12): REAL-TIME GEMINI AI CO-PILOT & RUBRIC SCORING -->
+    <div class="lg:col-span-4 space-y-4">
+
+      <!-- GEMINI AI DYNAMIC PROBE SUGGESTIONS -->
+      <div class="p-5 rounded-3xl bg-white border border-[#ECEEEE] shadow-sm space-y-3.5">
+        <div class="flex items-center justify-between border-b border-[#FCFCFB] pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🧠</span>
+            <div>
+              <h3 class="text-xs font-black text-[#0B4A39]">Gemini AI Co-Pilot Probes</h3>
+              <p class="text-[10px] text-[#5A6066]">Grounded in CS801 Knowledge Base</p>
+            </div>
+          </div>
+
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]">
+            ⚡ Live Probing
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          @for (probe of vivaService.aiProbeSuggestions(); track probe.id) {
+            <div class="p-3.5 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-2 hover:border-[#0B4A39] transition-all"
+                 [ngClass]="{'opacity-60 bg-gray-50': probe.isAsked}">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase"
+                      [ngClass]="{
+                        'bg-purple-100 text-purple-800': probe.probeType === 'DEPTH_PROBE',
+                        'bg-amber-100 text-amber-800': probe.probeType === 'EDGE_CASE_PROBE',
+                        'bg-blue-100 text-blue-800': probe.probeType === 'REMEDIAL_PROBE'
+                      }">
+                  {{ probe.probeType === 'DEPTH_PROBE' ? '🔍 Depth Probe' : probe.probeType === 'EDGE_CASE_PROBE' ? '⚡ Edge-Case' : '💡 Remedial' }}
+                </span>
+
+                <span class="text-[9px] font-bold text-[#5A6066] uppercase font-mono">
+                  Bloom: {{ probe.targetBloomLevel }}
+                </span>
+              </div>
+
+              <p class="text-xs font-bold text-[#0B4A39] leading-snug">{{ probe.questionText }}</p>
+
+              <p class="text-[10px] text-[#5A6066] bg-white p-2 rounded-xl border border-[#FCFCFB]">
+                <strong class="text-[#0B4A39]">Expected Insight:</strong> {{ probe.expectedInsight }}
+              </p>
+
+              <div class="pt-1 flex items-center justify-between">
+                <span class="text-[9px] text-[#8C959B] truncate max-w-[180px]">{{ probe.syllabusConceptSource }}</span>
+                <button
+                  (click)="askSuggestedProbe(probe)"
+                  [disabled]="probe.isAsked"
+                  class="px-2.5 py-1 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-40 text-white text-[10px] font-black shadow-sm cursor-pointer transition-all flex items-center gap-1">
+                  <span>{{ probe.isAsked ? '✓ Asked' : '🎙️ Ask This' }}</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- REAL-TIME BLOOM'S TAXONOMY RUBRIC SCORING -->
+      <div class="p-5 rounded-3xl bg-white border border-[#ECEEEE] shadow-sm space-y-4">
+        
+        <!-- Rubric Header & Total Score Gauge -->
+        <div class="flex items-center justify-between border-b border-[#FCFCFB] pb-3">
+          <div>
+            <h3 class="text-xs font-black text-[#0B4A39] flex items-center gap-1.5">
+              <span>📊 Real-Time Rubric Grading</span>
+            </h3>
+            <p class="text-[10px] text-[#5A6066]">{{ vivaService.aiEvaluationMetrics().syllabusAlignment }}</p>
+          </div>
+
+          <!-- Total Score Pill -->
+          <div class="text-right">
+            <span class="text-[10px] font-bold text-[#5A6066] uppercase block">Total Mark</span>
+            <span class="text-lg font-black text-[#0B4A39] font-mono">
+              {{ vivaService.totalScore() }} <span class="text-xs text-[#5A6066]">/ 25</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 4 Rubric Scoring Sliders -->
+        <div class="space-y-3.5">
+          @for (rub of vivaService.rubricDimensions(); track rub.id) {
+            <div class="space-y-1.5 p-3 rounded-2xl bg-[#F8FAF9] border border-[#FCFCFB]">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-[#0B4A39]">{{ rub.name }}</span>
+                <span class="font-mono font-black text-[#0B4A39]">{{ rub.assignedScore }} / {{ rub.maxScore }}</span>
+              </div>
+
+              <!-- Scoring Slider -->
+              <input
+                type="range"
+                [min]="0"
+                [max]="rub.maxScore"
+                [step]="0.5"
+                [value]="rub.assignedScore"
+                (input)="onScoreChange(rub.id, $event)"
+                class="w-full accent-[#0B4A39] cursor-pointer"
+              />
+
+              <!-- AI Critique Insight -->
+              <p class="text-[10px] text-[#5A6066] italic">
+                🤖 <strong>AI Note:</strong> {{ rub.aiFeedbackCritique }}
+              </p>
+            </div>
+          }
+        </div>
+
+        <!-- Examiner Notes Box -->
+        <div class="space-y-1">
+          <label class="text-[10px] font-bold text-[#5A6066] uppercase">Examiner Viva Assessment Notes</label>
+          <textarea
+            [(ngModel)]="vivaService.examinerNotes"
+            rows="2"
+            class="w-full p-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"></textarea>
+        </div>
+
+        <!-- Action Button: Save & Sync to Gradebook -->
+        <button
+          (click)="saveAndSyncToGradebook()"
+          class="w-full py-3 rounded-2xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-black shadow-md cursor-pointer transition-all flex items-center justify-center gap-2 border border-[#21DB93]/30">
+          <span>💾 Record & Sync Gradebook ({{ vivaService.totalScore() }}/25)</span>
+          <span>➔</span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SYNC SUCCESS & NEXT STUDENT MODAL -->
+  @if (showSyncSuccessModal()) {
+    <div class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-lg bg-white rounded-[28px] overflow-hidden shadow-2xl border border-white/40 space-y-5 p-6">
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 mx-auto rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold shadow-inner">
+            ✓
+          </div>
+          <h3 class="text-lg font-black text-[#0B4A39]">Viva Evaluation Recorded!</h3>
+          <p class="text-xs text-[#5A6066] max-w-sm mx-auto">
+            Gradebook synchronized with <strong>{{ vivaService.totalScore() }}/25 Marks</strong> for <strong>{{ vivaService.activeSession().studentName }}</strong> ({{ vivaService.activeSession().rollNumber }}).
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs space-y-1 text-center">
+          <span class="text-[10px] uppercase font-bold text-[#5A6066]">Next Candidate in Roster:</span>
+          <p class="text-sm font-black text-[#0B4A39]">
+            {{ nextStudentCandidate() || 'All scheduled candidate slots completed!' }}
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 pt-2">
+          <button
+            (click)="returnToClassScheduler()"
+            class="px-4 py-2.5 rounded-xl border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:bg-white cursor-pointer">
+            Return to Scheduler
+          </button>
+
+          @if (nextStudentCandidate()) {
+            <button
+              (click)="continueToNextStudent()"
+              class="px-5 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-black shadow-md cursor-pointer transition-all flex items-center gap-1.5">
+              <span>Evaluate {{ nextStudentCandidate() }}</span>
+              <span>➔</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

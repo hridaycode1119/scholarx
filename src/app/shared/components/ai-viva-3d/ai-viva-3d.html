@@ -1,0 +1,98 @@
+<div
+  class="ai-viva-companion-container"
+  [class.compact]="compactMode"
+  [class.stern-alert]="state === 'STERN_WARNING' || state === 'TAB_SWITCH_ALERT' || state === 'FACE_HIDDEN_ALERT'"
+>
+  <!-- 1. Real-Time Interactive 3D WebGL Avatar Viewport -->
+  <div class="video-frame-wrapper">
+    
+    <!-- Three.js 3D WebGL Canvas Container -->
+    <div #threeContainer class="ai-viva-three-container"></div>
+
+    <!-- Cybernetic Scanning Overlay Line -->
+    <div class="hud-scan-beam" [class.alert]="state === 'STERN_WARNING' || state === 'TAB_SWITCH_ALERT'"></div>
+
+    <!-- Holographic Floating Focus Halo -->
+    <div class="teacher-focus-halo" [class.speaking]="isSpeaking" [class.warning]="state === 'STERN_WARNING' || state === 'TAB_SWITCH_ALERT'"></div>
+
+    <!-- Glowing Corner Target Brackets -->
+    <div class="hud-corner top-left"></div>
+    <div class="hud-corner top-right"></div>
+    <div class="hud-corner bottom-left"></div>
+    <div class="hud-corner bottom-right"></div>
+  </div>
+
+  <!-- 2. Ambient Cyber Glowing Aura -->
+  <div
+    class="siri-ambient-aura"
+    [class.speaking]="isSpeaking"
+    [class.listening]="isListening"
+    [class.warning]="state === 'STERN_WARNING' || state === 'TAB_SWITCH_ALERT' || state === 'FACE_HIDDEN_ALERT'"
+  ></div>
+
+  <!-- 3. Minimal Clean Floating Status Badge (Top-Left) -->
+  @if (showStatusBadge) {
+    <div class="ai-clean-status-pill" [attr.data-state]="state">
+      <span class="live-dot" [class.speaking]="isSpeaking" [class.warn]="state === 'STERN_WARNING' || state === 'TAB_SWITCH_ALERT'"></span>
+      <span class="teacher-title">
+        @switch (state) {
+          @case ('WELCOMING') { 3D AI VIVA • Welcome Wave }
+          @case ('SPEAKING') { 3D AI VIVA • Explaining }
+          @case ('LISTENING') { 3D AI VIVA • Listening }
+          @case ('THINKING') { 3D AI VIVA • Analyzing }
+          @case ('SMART') { 3D AI VIVA • Analyzing }
+          @case ('SUPPORTIVE') { 3D AI VIVA • Supportive }
+          @case ('MOTIVATIONAL') { 3D AI VIVA • Thumbs Up }
+          @case ('FRIENDLY') { 3D AI VIVA • Peace Sign }
+          @case ('STERN_WARNING') { ⚠️ Warning • Attention Required }
+          @case ('TAB_SWITCH_ALERT') { 🚨 Tab Shift • Focus Lost }
+          @case ('FACE_HIDDEN_ALERT') { 📷 Face Check • Re-align }
+          @default { 3D AI VIVA • Live }
+        }
+      </span>
+      @if (isSpeaking) {
+        <span class="speaking-wave-mini">
+          <span></span><span></span><span></span>
+        </span>
+      }
+    </div>
+  }
+
+  <!-- 4. Studio Controls & Gesture Tester (Only shown when showControls is true, e.g. Studio modal) -->
+  @if (showControls && !compactMode) {
+    <div class="clean-gesture-bar">
+      <!-- Camera Presets -->
+      <div class="camera-dock">
+        <button type="button" class="btn-preset-chip" [class.active]="currentPreset() === 'HERO_34'" (click)="setPreset('HERO_34')">🎥 Hero 3/4</button>
+        <button type="button" class="btn-preset-chip" [class.active]="currentPreset() === 'CLOSEUP_FACE'" (click)="setPreset('CLOSEUP_FACE')">🔍 Face</button>
+        <button type="button" class="btn-preset-chip" [class.active]="currentPreset() === 'FULL_BODY'" (click)="setPreset('FULL_BODY')">🧍 Body</button>
+        <button type="button" class="btn-preset-chip" [class.active]="currentPreset() === 'ORBIT'" (click)="setPreset('ORBIT')">🔄 360° Orbit</button>
+      </div>
+
+      <!-- Gestures -->
+      <div class="gesture-dock">
+        @for (g of GESTURES; track g.name) {
+          <button
+            type="button"
+            class="btn-clean-chip"
+            [class.active]="state === g.name"
+            [class.warn]="g.name === 'STERN_WARNING' || g.name === 'TAB_SWITCH_ALERT' || g.name === 'DISQUALIFIED'"
+            (click)="triggerGesture(g.name)"
+            [title]="g.description"
+          >
+            <span>{{ g.icon }}</span>
+            <span>{{ g.label }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Export GLB -->
+      @if (showGlbDownload) {
+        <button type="button" class="btn-export-chip" (click)="exportGlbModel()">
+          <span>💾</span>
+          <span>Export 3D Rig (.GLB)</span>
+        </button>
+      }
+    </div>
+  }
+</div>

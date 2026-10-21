@@ -1,0 +1,2486 @@
+<div class="space-y-6 animate-in fade-in duration-300">
+
+  <!-- Toast Alert -->
+  @if (variationSuccessToast()) {
+    <div class="fixed top-5 right-5 z-60 max-w-md p-4 rounded-2xl bg-[#0B4A39] text-white text-xs font-bold shadow-2xl border border-[#21DB93]/60 animate-in fade-in flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="text-[#21DB93] text-base">✨</span>
+        <span>{{ variationSuccessToast() }}</span>
+      </div>
+      <button (click)="variationSuccessToast.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  <!-- Page Header & Main View Mode Switcher -->
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">⚡</span>
+        <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          University PYQ Miner & Self-Practice Studio
+        </h1>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+          AI Thinker 2.0
+        </span>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        Explore curated past examination questions by university, subject, and topic. Study with AI Thinker intuitive analogies, formal math derivations, diagrams, and video lectures.
+      </p>
+    </div>
+
+    <!-- Mode Switcher Tabs (PYQ Miner vs Mentor Assigned Papers) -->
+    <div class="flex items-center p-1.5 rounded-2xl bg-white border border-[#e9ecea] shadow-xs self-start lg:self-auto gap-1">
+      <button
+        (click)="activeViewMode.set('PYQ_MINER')"
+        class="px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-2"
+        [ngClass]="activeViewMode() === 'PYQ_MINER' ? 'bg-[#0b4a39] text-white shadow-sm' : 'text-[#5a6066] hover:text-[#14171c] hover:bg-[#f4f6f5]'">
+        <span>🎓 University PYQ Miner</span>
+      </button>
+
+      <button
+        (click)="activeViewMode.set('MENTOR_PAPERS')"
+        class="px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-2"
+        [ngClass]="activeViewMode() === 'MENTOR_PAPERS' ? 'bg-[#0b4a39] text-white shadow-sm' : 'text-[#5a6066] hover:text-[#14171c] hover:bg-[#f4f6f5]'">
+        <span>📋 Mentor Practice Papers</span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+              [ngClass]="activeViewMode() === 'MENTOR_PAPERS' ? 'bg-white/20 text-white' : 'bg-[#21db93]/20 text-[#0b4a39]'">
+          {{ mentorPapers().length }}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 1: UNIVERSITY PYQ MINER FLOW -->
+  @if (activeViewMode() === 'PYQ_MINER') {
+
+    <!-- 1. STEP 1: SELECT COLLEGE / UNIVERSITY & INSTANT SEARCH -->
+    <section class="p-6 rounded-2xl bg-white border border-[#e9ecea] shadow-xs space-y-4">
+      
+      <!-- Section Title & Status -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🏛️</span>
+          <div>
+            <h2 class="text-sm font-extrabold text-[#14171c] uppercase tracking-wider">
+              Step 1: University & Entrance Exam PYQ Archive
+            </h2>
+            <p class="text-[11px] text-[#5a6066]">
+              Defaults to your registered university. Search instantly by campus location, university name, or national entrance exams (JEE, NEET, GATE).
+            </p>
+          </div>
+        </div>
+
+        <!-- Registered Switcher Pill -->
+        @if (selectedCollegeId() !== registeredCollege().id) {
+          <button
+            type="button"
+            (click)="revertToRegisteredCollege()"
+            class="px-3 py-1.5 rounded-xl bg-[#f4f6f5] border border-[#e9ecea] text-[#0b4a39] text-xs font-bold hover:bg-[#eceeee] transition-all cursor-pointer flex items-center gap-1.5 self-start sm:self-auto shadow-xs">
+            <span>↺</span> Revert to Registered University ({{ registeredCollege().shortCode }})
+          </button>
+        } @else {
+          <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-[#21db93]/15 text-[#0b4a39] border border-[#21db93]/30 flex items-center gap-1.5 self-start sm:self-auto">
+            <span>✓</span> Default Registered Institution
+          </span>
+        }
+      </div>
+
+      <!-- CURRENTLY ACTIVE INSTITUTION BANNER CARD -->
+      <div class="p-5 sm:p-6 rounded-2xl bg-[#fafaf9] border border-[#e9ecea] space-y-3.5 shadow-xs">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-start sm:items-center gap-3.5">
+            <span class="text-4xl sm:text-5xl p-2.5 rounded-2xl bg-white shadow-xs border border-[#e9ecea] shrink-0">
+              {{ selectedCollege().logoIcon }}
+            </span>
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="text-base sm:text-lg font-black text-[#14171c] tracking-tight">
+                  {{ selectedCollege().name }}
+                </h3>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider"
+                      [ngClass]="selectedCollege().category === 'NATIONAL_ENTRANCE_EXAM' ? 'bg-rose-500/10 text-rose-700 border border-rose-500/20' :
+                                selectedCollege().id === registeredCollege().id ? 'bg-[#21db93]/15 text-[#0b4a39] border border-[#21db93]/30' :
+                                'bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20'">
+                  {{ selectedCollege().category === 'NATIONAL_ENTRANCE_EXAM' ? 'National Entrance Examination' : selectedCollege().tier }}
+                </span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#f4f6f5] text-[#5a6066] border border-[#e9ecea]">
+                  {{ selectedCollege().pyqCount || 180 }}+ PYQ Questions
+                </span>
+              </div>
+
+              <!-- Campus Location Pill -->
+              <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#5a6066]">
+                <span class="flex items-center gap-1 text-[#0b4a39] font-bold">
+                  <span>📍 Campus Location:</span>
+                  <span>{{ selectedCollege().campusLocation || (selectedCollege().city + ', ' + selectedCollege().state) }}</span>
+                </span>
+                <span class="text-[#8c959b]">•</span>
+                <span class="text-[#5a6066]">{{ selectedCollege().city }}, {{ selectedCollege().country || selectedCollege().state }}</span>
+              </div>
+
+              <!-- Official Website & Accreditation Badge -->
+              <div class="flex flex-wrap items-center gap-2 text-xs pt-0.5">
+                @if (selectedCollege().websiteUrl) {
+                  <a [href]="selectedCollege().websiteUrl" target="_blank" rel="noopener noreferrer"
+                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#e9ecea] text-[#0b4a39] font-mono text-[11px] font-bold hover:bg-[#f4f6f5] transition-all cursor-pointer">
+                    <span>🌐 Portal:</span>
+                    <span>{{ selectedCollege().websiteUrl }}</span>
+                    <span>↗</span>
+                  </a>
+                }
+                @if (selectedCollege().accreditation) {
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-800 text-[11px] font-semibold">
+                    <span>🏅</span>
+                    <span>{{ selectedCollege().accreditation }}</span>
+                  </span>
+                }
+                @if (selectedCollege().officialSiteVerified) {
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#21db93]/15 border border-[#21db93]/30 text-[#0b4a39] text-[10px] font-black uppercase">
+                    <span>✓ COE Verified Portal</span>
+                  </span>
+                }
+              </div>
+
+              <p class="text-xs text-[#5a6066] pt-0.5">
+                {{ selectedCollege().highlight }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Archive Stat Badge & Official Sync Button -->
+          <div class="flex flex-col gap-2 shrink-0 self-start sm:self-auto min-w-[200px]">
+            <div class="p-3 rounded-xl bg-white border border-[#e9ecea] text-xs space-y-1 shadow-xs">
+              <div class="text-[10px] font-black uppercase tracking-wider text-[#8c959b]">Available Archive</div>
+              <div class="text-sm font-black text-[#0b4a39] font-mono">
+                2021 – 2025 (5 Years)
+              </div>
+              <div class="text-[10px] font-semibold text-[#0b4a39] flex items-center gap-1">
+                <span class="text-[#21db93]">●</span> {{ collegeQuestionPapers().length }} Official Papers Indexed
+              </div>
+            </div>
+
+            <!-- Official Portal Live Sync Button -->
+            <button
+              type="button"
+              (click)="syncOfficialSite()"
+              [disabled]="isSyncingOfficialSite()"
+              class="w-full px-4 py-2.5 rounded-full bg-[#0b4a39] hover:bg-[#08382b] text-white font-bold text-xs transition-all cursor-pointer shadow-[0_4px_14px_rgba(11,74,57,0.22)] flex items-center justify-center gap-1.5 disabled:opacity-60">
+              @if (isSyncingOfficialSite()) {
+                <span class="animate-spin text-sm">⏳</span>
+                <span>Connecting COE Portal...</span>
+              } @else {
+                <span>⚡ Sync from Official Portal</span>
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- Official Site Sync Feedback Status Banner -->
+        @if (officialSiteSyncStatus()) {
+          <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs text-indigo-800 dark:text-indigo-300 font-medium flex items-center gap-2 animate-in fade-in">
+            <span class="text-base text-indigo-600">🌐</span>
+            <span>{{ officialSiteSyncStatus() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- GLOBAL FILTERS (COUNTRY & INSTITUTION TYPE) + INSTANT AS-YOU-TYPE SEARCH BAR -->
+      <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+        
+        <!-- 1. Country & Institution Type Filters Strip -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 pb-1 border-b border-[#e9ecea]">
+          
+          <!-- Country Filter -->
+          <div class="space-y-1.5">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#5a6066] flex items-center gap-1">
+              <span>🌍</span> Country Filter:
+            </span>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              @for (c of [
+                { id: 'ALL', label: 'All Countries 🌐' },
+                { id: 'India', label: 'India 🇮🇳' },
+                { id: 'United States', label: 'United States 🇺🇸' },
+                { id: 'United Kingdom', label: 'United Kingdom 🇬🇧' },
+                { id: 'Singapore', label: 'Singapore 🇸🇬' }
+              ]; track c.id) {
+                <button
+                  type="button"
+                  (click)="countryFilter.set(c.id)"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+                  [ngClass]="countryFilter() === c.id ? 'bg-[#0b4a39] text-white shadow-xs' : 'bg-white text-[#5a6066] border border-[#e9ecea] hover:border-[#0b4a39]'">
+                  {{ c.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Institution Type Filter -->
+          <div class="space-y-1.5">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#5a6066] flex items-center gap-1">
+              <span>🏛️</span> Institution Classification:
+            </span>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              @for (t of [
+                { id: 'ALL', label: 'All Institutions' },
+                { id: 'GOVT', label: 'Govt Universities' },
+                { id: 'PRIVATE', label: 'Private Deemed' },
+                { id: 'AUTONOMOUS', label: 'Autonomous Colleges' },
+                { id: 'ENTRANCE', label: 'National Entrance Boards' }
+              ]; track t.id) {
+                <button
+                  type="button"
+                  (click)="institutionTypeFilter.set(t.id)"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+                  [ngClass]="institutionTypeFilter() === t.id ? 'bg-[#0b4a39] text-white shadow-xs' : 'bg-white text-[#5a6066] border border-[#e9ecea] hover:border-[#0b4a39]'">
+                  {{ t.label }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Instant As-You-Type Search Bar -->
+        <div class="relative w-full">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8c959b] text-sm">🔍</span>
+          <input
+            type="text"
+            [ngModel]="uniSearchQuery()"
+            (ngModelChange)="uniSearchQuery.set($event); isSearchActive.set(true)"
+            (keyup.enter)="searchAndSelectGlobalUniversity()"
+            placeholder="Type to instantly search university, campus location (e.g. 'Sharda Greater Noida', 'Agra', 'Amity', 'BITS', 'JEE', 'NEET', 'GATE', 'COEP', 'DU')..."
+            class="w-full pl-10 pr-10 py-3 rounded-xl bg-white border border-[#e9ecea] text-xs font-semibold text-[#14171c] placeholder-[#8c959b] focus:outline-none focus:ring-2 focus:ring-[#21db93]/50 focus:border-[#0b4a39] shadow-xs"
+          />
+          @if (uniSearchQuery()) {
+            <button
+              type="button"
+              (click)="uniSearchQuery.set(''); isSearchActive.set(false)"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs font-bold cursor-pointer p-1">
+              ✕
+            </button>
+          }
+        </div>
+
+        <!-- Quick Search Tags -->
+        <div class="flex items-center gap-1.5 overflow-x-auto text-[10px] text-slate-500 dark:text-slate-400 pt-0.5">
+          <span class="font-bold shrink-0">Popular Institutions:</span>
+          @for (tag of ['Sharda Greater Noida', 'Sharda Agra', 'Amity Noida', 'BITS Pilani', 'JEE Advanced', 'NEET UG', 'GATE CS', 'IIT Bombay', 'AKTU Lucknow', 'SPPU Pune', 'Delhi University', 'VIT Vellore', 'Manipal', 'COEP Pune', 'GP Mumbai']; track tag) {
+            <button
+              type="button"
+              (click)="uniSearchQuery.set(tag); isSearchActive.set(true)"
+              class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-slate-700 dark:text-slate-300 font-medium shrink-0 cursor-pointer">
+              {{ tag }}
+            </button>
+          }
+        </div>
+
+        <!-- INSTANT SEARCH RESULTS DROPDOWN / MULTI-CAMPUS DISAMBIGUATION -->
+        @if (uniSearchQuery().trim().length > 0) {
+          <div class="p-3 rounded-xl bg-white dark:bg-slate-850 border border-indigo-200 dark:border-indigo-800/60 shadow-lg space-y-2 animate-in fade-in duration-150">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 pb-1 border-b border-slate-100 dark:border-slate-800">
+              <span class="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
+                <span>⚡</span> Instant Matches for "{{ uniSearchQuery() }}" ({{ instantSearchResults().length }} Found):
+              </span>
+              <span class="text-[10px] text-slate-400 font-normal">Select campus to load PYQ curriculum</span>
+            </div>
+
+            @if (instantSearchResults().length > 0) {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1">
+                @for (col of instantSearchResults(); track col.id) {
+                  <div
+                    (click)="selectCollege(col.id)"
+                    class="p-3 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 hover:shadow-md"
+                    [ngClass]="selectedCollegeId() === col.id ?
+                      'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs' :
+                      'bg-slate-50/60 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+                    
+                    <div class="flex items-start gap-2.5">
+                      <span class="text-2xl p-1.5 rounded-lg bg-white dark:bg-slate-700 shadow-xs shrink-0">{{ col.logoIcon }}</span>
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <h4 class="text-xs font-black text-slate-900 dark:text-white leading-tight">
+                            {{ col.name }}
+                          </h4>
+                          @if (col.category === 'NATIONAL_ENTRANCE_EXAM') {
+                            <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-500/20 text-rose-500 border border-rose-500/30">
+                              ENTRANCE EXAM
+                            </span>
+                          }
+                        </div>
+
+                        <!-- Exact Campus Location -->
+                        <p class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                          <span>📍</span>
+                          <span>{{ col.campusLocation || (col.city + ', ' + col.state) }}</span>
+                        </p>
+
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">
+                          {{ col.tier }} • {{ col.pyqCount || 180 }} PYQs • Years: 2021–2025
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      (click)="selectCollege(col.id)"
+                      class="px-2.5 py-1 rounded-lg text-[10px] font-black shrink-0 transition-all cursor-pointer"
+                      [ngClass]="selectedCollegeId() === col.id ? 'bg-indigo-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-indigo-600 hover:text-white'">
+                      {{ selectedCollegeId() === col.id ? '✓ Active' : 'Select Campus →' }}
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <!-- Fallback to add custom global university -->
+              <div class="p-4 text-center space-y-2">
+                <p class="text-xs text-slate-600 dark:text-slate-400">
+                  No predefined campus matched <strong>"{{ uniSearchQuery() }}"</strong>.
+                </p>
+                <button
+                  type="button"
+                  (click)="searchAndSelectGlobalUniversity()"
+                  class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black transition-all cursor-pointer shadow-sm">
+                  ⚡ Index & Mine Official 5-Year Papers for "{{ uniSearchQuery() }}"
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- CASCADING ACADEMIC DISCIPLINE HIERARCHY (SCHOOL -> COURSE -> SPECIALIZATION -> SUBJECTS) -->
+      <div class="p-6 rounded-2xl bg-white border border-[#e9ecea] space-y-5 shadow-xs">
+        
+        <!-- STEP 1: SCHOOL & DEPARTMENT HIERARCHY SELECTOR WITH TYPE-AHEAD SEARCH -->
+        <div class="space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-[#0b4a39] flex items-center gap-1.5">
+                <span>🏛️</span>
+                <span>Step 1: Select School / Faculty of {{ selectedCollege().shortCode }}</span>
+              </span>
+              <p class="text-xs text-[#5a6066] mt-0.5">
+                Choose or type your academic discipline (e.g. Engineering, Medical Sciences, Law, Business Studies).
+              </p>
+            </div>
+            <span class="text-[10px] text-[#5a6066] bg-[#f4f6f5] px-2.5 py-1 rounded-lg border border-[#e9ecea]">
+              {{ filteredSchools().length }} Faculties Listed
+            </span>
+          </div>
+
+          <!-- Instant Search / Filter for School & Department -->
+          <div class="relative w-full">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[#8c959b] text-xs">🔍</span>
+            <input
+              type="text"
+              [ngModel]="schoolSearchQuery()"
+              (ngModelChange)="schoolSearchQuery.set($event)"
+              placeholder="Type your department or school (e.g. 'Engineering', 'Medical', 'Law', 'Computer Science', 'Management')..."
+              class="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-[#e9ecea] text-xs text-[#14171c] placeholder-[#8c959b] focus:outline-none focus:ring-2 focus:ring-[#21db93]/50 focus:border-[#0b4a39] shadow-xs"
+            />
+          </div>
+
+          <!-- School / Faculty Cards Horizontal Side Scroll Rail -->
+          <div class="flex gap-3 overflow-x-auto pb-3 pt-1 snap-x scrollbar-indigo">
+            @for (school of filteredSchools(); track school.code) {
+              <div
+                (click)="selectSchool(school)"
+                class="min-w-[260px] sm:min-w-[280px] max-w-[310px] shrink-0 snap-start p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between space-y-2.5 hover:shadow-md"
+                [ngClass]="activeSchool().code === school.code ?
+                  'bg-[#f4f6f5] border-[#0b4a39] ring-2 ring-[#21db93]/30 shadow-xs' :
+                  'bg-white border-[#e9ecea] hover:border-[#0b4a39]'">
+                
+                <div class="flex items-start gap-2.5">
+                  <span class="text-2xl p-2 rounded-xl bg-white border border-[#e9ecea] shadow-2xs shrink-0">{{ school.icon }}</span>
+                  <div class="space-y-0.5">
+                    <h4 class="text-xs font-black text-[#14171c] leading-snug">
+                      {{ school.shortName }}
+                    </h4>
+                    <p class="text-[10px] text-[#5a6066] line-clamp-2">
+                      {{ school.description }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Departments Included Summary -->
+                <div class="pt-2 border-t border-[#e9ecea] text-[10px] text-[#5a6066] space-y-1">
+                  <div class="font-bold text-[#14171c] flex items-center justify-between">
+                    <span>Departments:</span>
+                    <span class="text-[#0b4a39] font-mono">{{ school.departments.length }}</span>
+                  </div>
+                  <div class="text-[9px] text-[#8c959b] truncate">
+                    {{ school.departments.join(', ') }}
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider"
+                        [ngClass]="activeSchool().code === school.code ? 'bg-[#0b4a39] text-white' : 'bg-[#f4f6f5] text-[#5a6066] border border-[#e9ecea]'">
+                    {{ school.code }}
+                  </span>
+                  <span class="text-[10px] font-bold"
+                        [ngClass]="activeSchool().code === school.code ? 'text-[#0b4a39]' : 'text-[#8c959b]'">
+                    {{ activeSchool().code === school.code ? '✓ Active Faculty' : 'Select →' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- STEP 2: CONSTITUENT ACADEMIC DEPARTMENTS & DIVISIONS -->
+        <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                <span>🏢</span>
+                <span>Step 2: Select Academic Department / Division ({{ activeSchool().shortName }}):</span>
+              </span>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Choose or type your department to instantly filter all available undergraduate & postgraduate degrees.
+              </p>
+            </div>
+            <span class="text-[10px] text-slate-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 self-start sm:self-auto">
+              {{ availableDepartmentsForSchool().length }} Academic Departments
+            </span>
+          </div>
+
+          <!-- Real-Time Department Search / Filter Input -->
+          <div class="relative w-full">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input
+              type="text"
+              id="department-filter-input"
+              [ngModel]="departmentSearchQuery()"
+              (ngModelChange)="departmentSearchQuery.set($event)"
+              placeholder="Filter academic departments (e.g. 'Biotechnology', 'Electronics', 'Mechanical', 'Civil', 'AI')..."
+              class="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs"
+            />
+          </div>
+
+          <!-- Interactive Department Pills Strip with Program Count Badges -->
+          <div class="flex items-center gap-2 flex-wrap pt-0.5">
+            <!-- All Departments Pill -->
+            <button
+              type="button"
+              (click)="selectDepartmentFilter('ALL')"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border shadow-xs"
+              [ngClass]="selectedDepartmentFilter() === 'ALL' ?
+                'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-500/20' :
+                'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+              <span>✨ All Departments</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase"
+                    [ngClass]="selectedDepartmentFilter() === 'ALL' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'">
+                {{ activeSchool().programs.length }} Degrees
+              </span>
+            </button>
+
+            <!-- Constituent Departments Pills -->
+            @for (dept of filteredDepartmentsForSchool(); track dept) {
+              <button
+                type="button"
+                (click)="selectDepartmentFilter(dept)"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border shadow-xs"
+                [ngClass]="selectedDepartmentFilter() === dept ?
+                  'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-500/20' :
+                  'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+                <span>{{ dept }}</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase"
+                      [ngClass]="selectedDepartmentFilter() === dept ? 'bg-white/20 text-white' : 'bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800'">
+                  {{ departmentProgramCountMap()[dept] || 0 }} {{ (departmentProgramCountMap()[dept] || 0) === 1 ? 'Degree' : 'Degrees' }}
+                </span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- STEP 3: AVAILABLE DEGREE PROGRAMS UNDER SELECTED DEPARTMENT / SCHOOL -->
+        <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800 space-y-2.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span>🎓</span>
+              <span>Step 3: Available Degree Programs ({{ selectedDepartmentFilter() === 'ALL' ? 'All Engineering & Technology Departments' : selectedDepartmentFilter() }}):</span>
+            </span>
+            <span class="text-[10px] text-slate-400">
+              Showing {{ availableCoursesForSchool().length }} Degree Programs
+            </span>
+          </div>
+
+          <!-- Programs Horizontal Side Scroll Rail with sleek scrollbar -->
+          <div class="flex gap-3 overflow-x-auto pb-3 pt-1 snap-x scrollbar-indigo">
+            @for (course of availableCoursesForSchool(); track course.shortCode) {
+              <button
+                type="button"
+                (click)="selectCourse(course)"
+                class="min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start p-3 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 border"
+                [ngClass]="activeCourseProgram().shortCode === course.shortCode ?
+                  'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 shadow-xs ring-2 ring-indigo-500/20' :
+                  'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+                
+                <div class="flex items-start justify-between gap-2">
+                  <h5 class="text-xs font-bold leading-snug"
+                      [ngClass]="activeCourseProgram().shortCode === course.shortCode ? 'text-indigo-900 dark:text-white' : 'text-slate-900 dark:text-white'">
+                    {{ course.name }}
+                  </h5>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase shrink-0"
+                        [ngClass]="activeCourseProgram().shortCode === course.shortCode ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'">
+                    {{ course.shortCode }}
+                  </span>
+                </div>
+
+                <!-- Degree Level, Duration & Department Metadata -->
+                <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-700/60 text-[10px]">
+                  <div class="flex items-center gap-1.5">
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase"
+                          [ngClass]="course.level === 'PG' ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'">
+                      {{ course.level }}
+                    </span>
+                    <span class="text-slate-500 dark:text-slate-400">
+                      {{ course.durationYears }} Years Duration
+                    </span>
+                  </div>
+
+                  @if (course.departmentName) {
+                    <span class="text-[9px] text-slate-400 truncate max-w-[130px]" [title]="course.departmentName">
+                      {{ course.departmentName.replace('Department of ', '') }}
+                    </span>
+                  }
+                </div>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- STEP 4: SPECIALIZATIONS UNDER SELECTED DEGREE PROGRAM -->
+        @if (availableSpecializations().length > 0) {
+          <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                <span>🎯</span>
+                <span>Step 4: Specialization & Stream ({{ activeCourseProgram().shortCode }}):</span>
+              </span>
+              <span class="text-[10px] text-slate-400">Curriculum subjects adapt to specialization</span>
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-purple">
+              @for (spec of availableSpecializations(); track spec.code) {
+                <button
+                  type="button"
+                  (click)="selectSpecialization(spec)"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border shrink-0 whitespace-nowrap"
+                  [ngClass]="activeSpecialization().code === spec.code ?
+                    'bg-purple-600 text-white border-purple-600 shadow-xs ring-2 ring-purple-500/20' :
+                    'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-purple-400'">
+                  <span>{{ spec.icon || '📌' }}</span>
+                  <span>{{ spec.name }}</span>
+                  <span class="font-mono text-[10px] opacity-80">({{ spec.code }})</span>
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- STEP 5: COURSE CURRICULUM & ALL SUBJECTS CATALOG -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-white to-slate-50 dark:from-slate-800/95 dark:to-slate-900/95 border border-slate-200 dark:border-slate-700/80 space-y-3.5 shadow-sm">
+          
+          <!-- Header Bar with Program and Degree Meta -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-slate-200/70 dark:border-slate-700/70">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm">📖</span>
+                <h4 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                  Step 5: All Curriculum Subjects for {{ activeCourseProgram().name }}
+                </h4>
+                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase"
+                      [ngClass]="activeCourseProgram().level === 'PG' ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'">
+                  {{ activeCourseProgram().level }}
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                Department: <strong class="text-slate-700 dark:text-slate-200">{{ activeCourseProgram().departmentName || selectedDepartmentFilter() || activeSchool().shortName }}</strong> • 
+                Active Stream: <span class="text-purple-600 dark:text-purple-400 font-bold">{{ activeSpecialization().name }}</span>
+              </p>
+            </div>
+            
+            <div class="flex items-center gap-1.5 self-start sm:self-auto">
+              <span class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-200/60 dark:border-indigo-800/60 font-mono">
+                {{ allSubjectsForDegree().length }} Total Subjects
+              </span>
+            </div>
+          </div>
+
+          <!-- Real-Time Subject Search & Category / Semester Filters Strip -->
+          <div class="space-y-2.5">
+            <!-- Search Input -->
+            <div class="relative w-full">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+              <input
+                type="text"
+                id="subject-search-input"
+                [ngModel]="subjectSearchQuery()"
+                (ngModelChange)="subjectSearchQuery.set($event)"
+                placeholder="Search curriculum subjects by title, code (e.g. CE401, ME301, EC401, CS401), or topic..."
+                class="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs"
+              />
+            </div>
+
+            <!-- Filter Controls: Categories & Semesters -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+              
+              <!-- Category Filter Buttons -->
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button
+                  type="button"
+                  (click)="selectedSubjectCategory.set('ALL')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border"
+                  [ngClass]="selectedSubjectCategory() === 'ALL' ?
+                    'bg-indigo-600 text-white border-indigo-600 shadow-xs' :
+                    'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+                  <span>All Categories</span>
+                  <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black"
+                        [ngClass]="selectedSubjectCategory() === 'ALL' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'">
+                    {{ subjectCategoryCounts().all }}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="selectedSubjectCategory.set('CORE')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border"
+                  [ngClass]="selectedSubjectCategory() === 'CORE' ?
+                    'bg-blue-600 text-white border-blue-600 shadow-xs' :
+                    'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-50/50'">
+                  <span>🔷 Core</span>
+                  <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black"
+                        [ngClass]="selectedSubjectCategory() === 'CORE' ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-950 text-blue-600'">
+                    {{ subjectCategoryCounts().core }}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="selectedSubjectCategory.set('ELECTIVE')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border"
+                  [ngClass]="selectedSubjectCategory() === 'ELECTIVE' ?
+                    'bg-purple-600 text-white border-purple-600 shadow-xs' :
+                    'bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50 hover:bg-purple-50/50'">
+                  <span>🔶 Electives</span>
+                  <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black"
+                        [ngClass]="selectedSubjectCategory() === 'ELECTIVE' ? 'bg-white/20 text-white' : 'bg-purple-100 dark:bg-purple-950 text-purple-600'">
+                    {{ subjectCategoryCounts().elective }}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="selectedSubjectCategory.set('ALLIED')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border"
+                  [ngClass]="selectedSubjectCategory() === 'ALLIED' ?
+                    'bg-emerald-600 text-white border-emerald-600 shadow-xs' :
+                    'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50 hover:bg-emerald-50/50'">
+                  <span>🟢 Allied & Foundation</span>
+                  <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black"
+                        [ngClass]="selectedSubjectCategory() === 'ALLIED' ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600'">
+                    {{ subjectCategoryCounts().allied }}
+                  </span>
+                </button>
+              </div>
+
+              <!-- Semester Filter Pills -->
+              <div class="flex items-center gap-1 flex-wrap">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mr-1">Semester:</span>
+                @for (semOpt of [
+                  { id: 'ALL', label: 'All Sem' },
+                  { id: '1-2', label: 'Sem 1-2' },
+                  { id: '3-4', label: 'Sem 3-4' },
+                  { id: '5-6', label: 'Sem 5-6' },
+                  { id: '7-8', label: 'Sem 7-8' }
+                ]; track semOpt.id) {
+                  <button
+                    type="button"
+                    (click)="selectedSemesterFilter.set(semOpt.id)"
+                    class="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer border"
+                    [ngClass]="selectedSemesterFilter() === semOpt.id ?
+                      'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-xs' :
+                      'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400'">
+                    {{ semOpt.label }}
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- All Subjects Grid Cards with scroll containment so page does not become overly long -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-1 max-h-[480px] overflow-y-auto pr-1.5 scrollbar-thin">
+            @for (sub of filteredSubjectsForDegree(); track sub.code) {
+              <div
+                (click)="selectSubject(sub.code)"
+                class="p-3.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between space-y-2.5 border"
+                [ngClass]="selectedSubjectCode() === sub.code ?
+                  'bg-indigo-50/80 dark:bg-indigo-950/70 border-indigo-500 shadow-xs ring-2 ring-indigo-500/20' :
+                  'bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:shadow-xs'">
+                
+                <div class="space-y-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <span class="font-mono text-xs font-black tracking-wide"
+                          [ngClass]="selectedSubjectCode() === sub.code ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-white'">
+                      {{ sub.code }}
+                    </span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-black uppercase shrink-0"
+                          [ngClass]="sub.category === 'CORE' ? 'bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400' :
+                                    sub.category === 'ELECTIVE' ? 'bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400' :
+                                    'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400'">
+                      {{ sub.category || 'CORE' }}
+                    </span>
+                  </div>
+                  <h5 class="text-xs font-bold leading-snug"
+                      [ngClass]="selectedSubjectCode() === sub.code ? 'text-indigo-950 dark:text-white' : 'text-slate-800 dark:text-slate-200'">
+                    {{ sub.name }}
+                  </h5>
+                </div>
+
+                <!-- Syllabus Topics Preview List -->
+                @if (sub.topics && sub.topics.length > 0) {
+                  <div class="pt-1.5 border-t border-slate-100 dark:border-slate-700/50 space-y-1">
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">Syllabus Coverage:</span>
+                    <div class="flex flex-wrap gap-1">
+                      @for (t of sub.topics.slice(0, 3); track t) {
+                        <span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 truncate max-w-[180px]" [title]="t">
+                          • {{ t }}
+                        </span>
+                      }
+                      @if (sub.topics.length > 3) {
+                        <span class="text-[9px] text-slate-400 font-bold self-center">
+                          +{{ sub.topics.length - 3 }} more
+                        </span>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Semester, Credits & Select Indicator Footer -->
+                <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-700/60 text-[10px]">
+                  <span class="text-slate-500 dark:text-slate-400 font-mono">
+                    Sem {{ sub.semester }} • {{ sub.credits }} Credits
+                  </span>
+                  <span class="font-bold text-[10px]"
+                        [ngClass]="selectedSubjectCode() === sub.code ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'">
+                    {{ selectedSubjectCode() === sub.code ? '✓ Active Subject' : 'Select Subject →' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (filteredSubjectsForDegree().length === 0) {
+            <div class="py-8 text-center text-xs text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
+              No subjects matching "{{ subjectSearchQuery() }}" in {{ selectedSubjectCategory() === 'ALL' ? 'the selected category' : selectedSubjectCategory() }}.
+            </div>
+          }
+        </div>
+
+        <!-- 4. 5-Year Academic Year Filter Strip (2021 to 2025) -->
+        <div class="pt-2 border-t border-slate-200/60 dark:border-slate-800 space-y-1.5">
+          <div class="flex items-center justify-between text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span class="flex items-center gap-1.5">
+              <span>📅</span> 5-Year Official Examination Papers Filter (2021 – 2025):
+            </span>
+            <span class="text-indigo-600 dark:text-indigo-400 font-mono">
+              Filtered: {{ collegeQuestionPapers().length }} Papers
+            </span>
+          </div>
+
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button
+              type="button"
+              (click)="selectedAcademicYear.set('ALL')"
+              class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [ngClass]="selectedAcademicYear() === 'ALL' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'">
+              All 5 Years (2021–2025)
+            </button>
+            @for (yr of ['2025', '2024', '2023', '2022', '2021']; track yr) {
+              <button
+                type="button"
+                (click)="selectedAcademicYear.set(yr)"
+                class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer font-mono"
+                [ngClass]="selectedAcademicYear() === yr ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'">
+                {{ yr }}
+              </button>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mode Selector: Curated Questions vs Official Papers Archive -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div class="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 gap-1">
+          <button
+            type="button"
+            (click)="pyqSubMode.set('CURATED_QUESTIONS')"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+            [ngClass]="pyqSubMode() === 'CURATED_QUESTIONS' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-slate-600 dark:text-slate-400'">
+            <span>📝 Curated High-Yield PYQs</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+              {{ filteredPyqs().length }}
+            </span>
+          </button>
+          <button
+            type="button"
+            (click)="pyqSubMode.set('OFFICIAL_PAPERS')"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+            [ngClass]="pyqSubMode() === 'OFFICIAL_PAPERS' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-slate-600 dark:text-slate-400'">
+            <span>📑 Official Question Papers Archive</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+              {{ collegeQuestionPapers().length }} Papers
+            </span>
+          </button>
+        </div>
+
+        <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+          <span class="text-emerald-500 font-bold">● Active Campus:</span>
+          <span class="font-bold text-slate-700 dark:text-slate-200">{{ selectedCollege().name }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUB-MODE 1: CURATED QUESTIONS VIEW -->
+    @if (pyqSubMode() === 'CURATED_QUESTIONS') {
+
+      <!-- 2. STEP 2: SELECT SUBJECT & DEEP TOPICS -->
+      <section class="p-5 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">📚</span>
+          <div>
+            <h2 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
+              Step 2: Choose Subject & Specific Topics
+            </h2>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">
+              Select curriculum subject and fine-tune by exam module topics.
+            </p>
+          </div>
+        </div>
+
+        <!-- Subject Selector Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1">
+          <button
+            (click)="selectSubject('ALL')"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 border"
+            [ngClass]="selectedSubjectCode() === 'ALL' ?
+              'bg-indigo-600 text-white border-indigo-600 shadow-sm' :
+              'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'">
+            <span>All Course Subjects ({{ allSubjectsForDegree().length }})</span>
+          </button>
+
+          @for (s of allSubjectsForDegree(); track s.code) {
+            <button
+              (click)="selectSubject(s.code)"
+              class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 border"
+              [ngClass]="selectedSubjectCode() === s.code ?
+                'bg-indigo-600 text-white border-indigo-600 shadow-sm' :
+                'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'">
+              <span>{{ s.name }}</span>
+              <span class="font-mono text-[10px] opacity-80">({{ s.code }})</span>
+            </button>
+          }
+        </div>
+
+        <!-- Topics Selector Strip -->
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Filter by Topic:</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              (click)="selectTopic('ALL')"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [ngClass]="selectedTopic() === 'ALL' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/40' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'">
+              All Topics ({{ currentSubject().topics.length }})
+            </button>
+
+            @for (top of availableTopics(); track top) {
+              <button
+                (click)="selectTopic(top)"
+                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border"
+                [ngClass]="selectedTopic() === top ?
+                  'bg-indigo-600 text-white border-indigo-600 shadow-sm' :
+                  'bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+                {{ top }}
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. STEP 3: QUESTION VOLUME, IMPORTANCE FILTERS & AI THINKER DIFFICULTY TUNER -->
+      <section class="p-5 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        
+        <!-- Filter Row 1: Target Question Volume & Importance Focus -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+          
+          <!-- Volume Selector -->
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <span>📊</span> Question Paper Volume (Up to 100+ Questions):
+              </span>
+              <span class="text-indigo-600 dark:text-indigo-400 font-mono font-bold">
+                Showing: {{ filteredPyqs().length }} Questions
+              </span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              @for (vol of [
+                { count: 12, label: '12 Questions' },
+                { count: 24, label: '24 (Full Paper)' },
+                { count: 50, label: '50 Questions' },
+                { count: 100, label: '100+ (Mega Bank)' }
+              ]; track vol.count) {
+                <button
+                  type="button"
+                  (click)="targetQuestionVolume.set(vol.count)"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer font-mono"
+                  [ngClass]="targetQuestionVolume() === vol.count ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+                  {{ vol.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Importance & Recurrence Filter -->
+          <div class="space-y-1.5">
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <span>⭐</span> High-Yield & Importance Filter:
+            </span>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                (click)="questionImportanceFilter.set('ALL')"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                [ngClass]="questionImportanceFilter() === 'ALL' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'">
+                All Questions
+              </button>
+
+              <button
+                type="button"
+                (click)="questionImportanceFilter.set('IMPORTANT_ONLY')"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border"
+                [ngClass]="questionImportanceFilter() === 'IMPORTANT_ONLY' ? 'bg-amber-500 text-slate-900 border-amber-500 shadow-xs' : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900 hover:bg-amber-100'">
+                <span>⭐ Most Important Only</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="questionImportanceFilter.set('HIGH_YIELD')"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border"
+                [ngClass]="questionImportanceFilter() === 'HIGH_YIELD' ? 'bg-purple-600 text-white border-purple-600 shadow-xs' : 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900 hover:bg-purple-100'">
+                <span>🔥 Frequently Repeated (90%+)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Row 2: Course Outcomes (CO1 - CO6) Alignment -->
+        <div class="space-y-1.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <span>🎯</span> Course Outcome Alignment (CO1 – CO6):
+          </span>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button
+              type="button"
+              (click)="selectedCOFilter.set('ALL')"
+              class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [ngClass]="selectedCOFilter() === 'ALL' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'">
+              All COs
+            </button>
+            @for (co of ['CO1', 'CO2', 'CO3', 'CO4', 'CO5', 'CO6']; track co) {
+              <button
+                type="button"
+                (click)="selectedCOFilter.set(co)"
+                class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer font-mono border"
+                [ngClass]="selectedCOFilter() === co ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'">
+                {{ co }} Target
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Filter Row 3: AI Thinker Difficulty & Search Input -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold text-slate-400 mr-1">🤖 Difficulty:</span>
+
+            <button
+              (click)="filterDifficulty.set('ALL')"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [ngClass]="filterDifficulty() === 'ALL' ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+              All
+            </button>
+            <button
+              (click)="filterDifficulty.set('EASY')"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [ngClass]="filterDifficulty() === 'EASY' ? 'bg-emerald-600 text-white' : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'">
+              🟢 Easy
+            </button>
+            <button
+              (click)="filterDifficulty.set('MEDIUM')"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [ngClass]="filterDifficulty() === 'MEDIUM' ? 'bg-amber-600 text-white' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'">
+              🟡 Medium
+            </button>
+            <button
+              (click)="filterDifficulty.set('HARD')"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [ngClass]="filterDifficulty() === 'HARD' ? 'bg-rose-600 text-white' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'">
+              🔴 Hard
+            </button>
+          </div>
+
+          <!-- Search & High Yield Toggle -->
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer select-none">
+              <input type="checkbox" [(ngModel)]="onlyHighYield" class="rounded text-indigo-600 focus:ring-indigo-500" />
+              <span>🔥 Top Recurrence Only</span>
+            </label>
+
+            <div class="relative w-full sm:w-56">
+              <input
+                type="text"
+                [(ngModel)]="searchQuery"
+                placeholder="Search questions & solutions..."
+                class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500"
+              />
+              <span class="absolute left-2.5 top-2 text-xs text-slate-400">🔍</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. STEP 4: CURATED QUESTIONS STREAM -->
+      <div class="space-y-5">
+
+        <!-- GEMINI AI QUESTION & MODEL SOLUTION GENERATOR CARD -->
+        <div class="p-5 rounded-2xl bg-[#0f1419] text-white border border-[#eceeee] shadow-lg space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1.5 max-w-2xl">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-300 border border-indigo-400/30">
+                  ✨ Gemini AI Syllabus Engine
+                </span>
+                <span class="text-xs font-mono font-bold text-slate-300">
+                  {{ currentSubject().code }} • {{ currentSubject().name }}
+                </span>
+              </div>
+              <h3 class="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                <span>⚡ Dynamic Exam Question & Answer Generator</span>
+              </h3>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                When official sample question papers are absent or for comprehensive revision, Gemini dynamically synthesizes a complete university question paper covering every syllabus topic with authentic <strong>2-Mark (Core Principles)</strong>, <strong>5-Mark (Analytical)</strong>, and <strong>10-Mark (Comprehensive Derivation & Design)</strong> questions, along with step-by-step model solutions and scoring rubrics.
+              </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
+              <button
+                type="button"
+                id="gemini-generate-questions-btn"
+                (click)="generateExamQuestionsWithGemini()"
+                [disabled]="isGeneratingWithGemini()"
+                class="px-4 py-2.5 rounded-xl bg-[#10b981] hover:bg-[#0ea371] text-black text-xs font-bold shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                @if (isGeneratingWithGemini()) {
+                  <span class="animate-spin text-sm">⏳</span>
+                  <span>Synthesizing Exam Questions...</span>
+                } @else {
+                  <span>⚡ Generate AI Exam Questions (2M, 5M & 10M)</span>
+                }
+              </button>
+            </div>
+          </div>
+
+          @if (geminiGenerationStatus()) {
+            <div class="p-3 rounded-xl bg-indigo-950/80 border border-indigo-400/40 text-xs text-indigo-200 flex items-center gap-2 animate-pulse">
+              <span class="animate-spin text-sm">🔄</span>
+              <span>{{ geminiGenerationStatus() }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <h3 class="text-base font-black text-slate-900 dark:text-white">
+              Curated Examination Questions & In-Depth Solutions
+            </h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+              {{ filteredPyqs().length }} Questions Loaded
+            </span>
+          </div>
+        </div>
+
+        <!-- Question Cards Grid -->
+        <div class="space-y-6">
+          @for (pyq of filteredPyqs(); track pyq.id) {
+            <div class="p-6 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-500/40 transition-all space-y-4">
+              
+              <!-- Question Header Strip -->
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="space-y-1.5 flex-1 min-w-[280px]">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <!-- Distinctive Marks Badge -->
+                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black font-mono shadow-xs tracking-wide"
+                          [ngClass]="{
+                            'bg-emerald-600 text-white': pyq.marks === 2,
+                            'bg-amber-600 text-white': pyq.marks === 5,
+                            'bg-indigo-600 text-white': !pyq.marks || pyq.marks === 10,
+                            'bg-purple-600 text-white': pyq.marks && pyq.marks !== 2 && pyq.marks !== 5 && pyq.marks !== 10
+                          }">
+                      ⚖️ {{ pyq.marks || 10 }} MARKS
+                    </span>
+
+                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider"
+                          [ngClass]="pyq.difficulty === 'EASY' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' :
+                                    pyq.difficulty === 'MEDIUM' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400' :
+                                    'bg-rose-500/15 text-rose-600 dark:text-rose-400'">
+                      {{ pyq.difficulty }}
+                    </span>
+
+                    <span class="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">
+                      {{ pyq.subjectCode }} • {{ pyq.topic }}
+                    </span>
+
+                    <!-- Target CO Badge -->
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-mono">
+                      🎯 {{ pyq.targetCO }}
+                    </span>
+
+                    <!-- Subject Classification Badge (Core / Elective / Allied) -->
+                    @if (pyq.subjectCategory) {
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase"
+                            [ngClass]="pyq.subjectCategory === 'CORE' ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/20' :
+                                      pyq.subjectCategory === 'ELECTIVE' ? 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/20' :
+                                      'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'">
+                        {{ pyq.subjectCategory }}
+                      </span>
+                    }
+
+                    <!-- High-Yield / Most Important Badge -->
+                    @if (pyq.isImportant || (pyq.importanceScore && pyq.importanceScore >= 9.0)) {
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                        <span>⭐ Important</span>
+                        <span>({{ pyq.importanceScore || 9.2 }}/10)</span>
+                      </span>
+                    }
+
+                    @if (pyq.isHighYield) {
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
+                        🔥 {{ pyq.recurrenceRate }}% Recurrence
+                      </span>
+                    }
+
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                      {{ pyq.yearAsked }}
+                    </span>
+                  </div>
+
+                  <h4 class="text-base font-extrabold text-slate-900 dark:text-white leading-relaxed pt-1">
+                    {{ pyq.questionText }}
+                  </h4>
+                </div>
+
+                <!-- Action Strip: Gemini Model Answer & 10M Modal Launcher -->
+                <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                  <button
+                    type="button"
+                    (click)="enhanceAnswerWithGemini(pyq)"
+                    [disabled]="isDeepeningQuestionId() === pyq.id"
+                    class="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-black border border-purple-200 dark:border-purple-800 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-60">
+                    @if (isDeepeningQuestionId() === pyq.id) {
+                      <span class="animate-spin text-xs">⏳</span>
+                      <span>Gemini Generating...</span>
+                    } @else {
+                      <span>✨ Ask Gemini Model Solution</span>
+                    }
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="open10MarkModelModal(pyq)"
+                    class="px-3 py-1.5 rounded-xl bg-[#10b981] hover:bg-[#0ea371] text-black text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                    <span>📖 Full Answer</span>
+                    <span class="text-[10px] opacity-80 font-mono">Rubric ↗</span>
+                  </button>
+
+                  <!-- Difficulty Badge -->
+                  <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0"
+                        [ngClass]="{
+                          'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30': pyq.difficulty === 'EASY',
+                          'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30': pyq.difficulty === 'MEDIUM',
+                          'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30': pyq.difficulty === 'HARD'
+                        }">
+                    ● {{ pyq.difficulty }}
+                  </span>
+                </div>
+              </div>
+
+            <!-- AI Thinker Question Variations Generator Bar -->
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                <span class="text-indigo-500">🤖</span>
+                <span class="font-bold">AI Thinker Variation:</span>
+                <span class="text-[11px] text-slate-400">Generate fresh question variations at different difficulty levels:</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button
+                  (click)="generateQuestionVariation(pyq, 'EASY')"
+                  [disabled]="isGeneratingVariation()"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold border border-emerald-500/30 transition-all cursor-pointer">
+                  + Easy Variant
+                </button>
+
+                <button
+                  (click)="generateQuestionVariation(pyq, 'MEDIUM')"
+                  [disabled]="isGeneratingVariation()"
+                  class="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 text-[11px] font-bold border border-amber-500/30 transition-all cursor-pointer">
+                  + Medium Variant
+                </button>
+
+                <button
+                  (click)="generateQuestionVariation(pyq, 'HARD')"
+                  [disabled]="isGeneratingVariation()"
+                  class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 text-[11px] font-bold border border-rose-500/30 transition-all cursor-pointer">
+                  + Hard Variant
+                </button>
+              </div>
+            </div>
+
+            <!-- Solution Tabs Bar (Simple Intuition vs Math Derivations vs Architecture Diagram vs Video) -->
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
+                  <!-- Tab 0: 10-Mark Breakdown -->
+                  @if (pyq.structuredExamMarking) {
+                    <button
+                      (click)="open10MarkModelModal(pyq)"
+                      class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 bg-gradient-to-r from-indigo-500/15 to-purple-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/25">
+                      <span>⚖️ 10M Marking Scheme & Breakdown</span>
+                    </button>
+                  }
+
+                  <!-- Tab 1: Simple Intuitive Explanation -->
+                  <button
+                    (click)="setSolutionTab(pyq.id, 'SIMPLE')"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    [ngClass]="getSolutionTab(pyq.id) === 'SIMPLE' ?
+                      'bg-indigo-600 text-white shadow-sm' :
+                      'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    <span>💡 Simple Analogy & Intuition</span>
+                  </button>
+
+                  <!-- Tab 2: Math & Derivations -->
+                  <button
+                    (click)="setSolutionTab(pyq.id, 'MATH')"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    [ngClass]="getSolutionTab(pyq.id) === 'MATH' ?
+                      'bg-indigo-600 text-white shadow-sm' :
+                      'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    <span>📐 Math & Derivations</span>
+                  </button>
+
+                  <!-- Tab 3: Architecture Diagram -->
+                  <button
+                    (click)="setSolutionTab(pyq.id, 'DIAGRAM')"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    [ngClass]="getSolutionTab(pyq.id) === 'DIAGRAM' ?
+                      'bg-indigo-600 text-white shadow-sm' :
+                      'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    <span>📊 System Diagram</span>
+                  </button>
+
+                  <!-- Tab 4: YouTube Lecture -->
+                  <button
+                    (click)="setSolutionTab(pyq.id, 'VIDEO')"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    [ngClass]="getSolutionTab(pyq.id) === 'VIDEO' ?
+                      'bg-red-600 text-white shadow-sm' :
+                      'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-500/20'">
+                    <span>▶️ YouTube Video Lecture</span>
+                  </button>
+
+                  <!-- Tab 5: Mark Rubric -->
+                  <button
+                    (click)="setSolutionTab(pyq.id, 'RUBRIC')"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    [ngClass]="getSolutionTab(pyq.id) === 'RUBRIC' ?
+                      'bg-indigo-600 text-white shadow-sm' :
+                      'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                    <span>📋 Examiner Rubric</span>
+                  </button>
+                </div>
+
+                <!-- Practice Result State Toggles -->
+                <div class="flex items-center gap-2">
+                  <button
+                    (click)="markQuestionState(pyq.id, 'PRACTICED')"
+                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 hover:bg-emerald-500/20 text-slate-700 dark:text-slate-300 hover:text-emerald-400 transition-all cursor-pointer">
+                    ✓ Mark Practiced
+                  </button>
+                  <button
+                    (click)="markQuestionState(pyq.id, 'MASTERED')"
+                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30 transition-all cursor-pointer">
+                    🏆 Mastered
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tab Content Area -->
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 text-xs">
+                
+                <!-- 1. TAB: SIMPLE INTUITIVE EXPLANATION -->
+                @if (getSolutionTab(pyq.id) === 'SIMPLE') {
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black uppercase text-[10px] tracking-wider">
+                      <span>💡 AI THINKER INTUITIVE EXPLANATION (SIMPLIFIED FOR FAST UNDERSTANDING)</span>
+                    </div>
+
+                    <p class="text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                      {{ pyq.aiThinkerSolution?.simpleExplanation || pyq.examSolution?.workingPrinciple }}
+                    </p>
+
+                    <!-- Examiner Keywords Strip -->
+                    @if (pyq.aiThinkerSolution?.examinerKeywords; as keywords) {
+                      <div class="pt-2 border-t border-slate-200/60 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Must-Include Keywords:</span>
+                        @for (k of keywords; track k) {
+                          <span class="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/20 font-mono text-[10px] font-bold">
+                            {{ k }}
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- 2. TAB: MATHEMATICAL DERIVATION & FORMULAS -->
+                @if (getSolutionTab(pyq.id) === 'MATH') {
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black uppercase text-[10px] tracking-wider">
+                      <span>📐 FORMAL MATHEMATICAL PROOFS & INVARIANTS</span>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
+                      {{ pyq.aiThinkerSolution?.mathematicalDerivation || pyq.examSolution?.stepByStepDerivation }}
+                    </div>
+                  </div>
+                }
+
+                <!-- 3. TAB: SYSTEM ARCHITECTURE DIAGRAM -->
+                @if (getSolutionTab(pyq.id) === 'DIAGRAM') {
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black uppercase text-[10px] tracking-wider">
+                      <span>📊 SYSTEM ARCHITECTURE & TOPOLOGY DIAGRAM</span>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs whitespace-pre-wrap border border-slate-800 overflow-x-auto shadow-inner leading-relaxed">
+                      {{ pyq.aiThinkerSolution?.architectureDiagram || 'Diagram formulation rendered in architecture viewer.' }}
+                    </div>
+                  </div>
+                }
+
+                <!-- 4. TAB: YOUTUBE VIDEO LECTURE REFERENCE -->
+                @if (getSolutionTab(pyq.id) === 'VIDEO') {
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-red-600 dark:text-red-400 font-black uppercase text-[10px] tracking-wider">
+                      <span>▶️ CURATED VIDEO EXPLAINER & LECTURE REFERENCE</span>
+                    </div>
+
+                    @if (pyq.youtubeReference; as yt) {
+                      <div class="p-4 rounded-xl bg-white dark:bg-white border border-red-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                          <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-red-600/30">
+                            ▶
+                          </div>
+                          <div>
+                            <h5 class="text-xs font-black text-slate-900 dark:text-white">{{ yt.title }}</h5>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                              Channel: <strong>{{ yt.channelName }}</strong> • Duration: {{ yt.duration }}
+                            </p>
+                            @if (yt.timestampNote) {
+                              <span class="text-[10px] font-bold text-amber-500">⏱️ {{ yt.timestampNote }}</span>
+                            }
+                          </div>
+                        </div>
+
+                        <a
+                          [href]="yt.youtubeUrl"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-md flex items-center gap-1.5 transition-all cursor-pointer self-start sm:self-auto shrink-0">
+                          <span>Watch on YouTube</span>
+                          <span>↗</span>
+                        </a>
+                      </div>
+                    } @else {
+                      <p class="text-slate-400 italic">No video lecture linked for this specific variation.</p>
+                    }
+                  </div>
+                }
+
+                <!-- 5. TAB: EXAMINER RUBRIC -->
+                @if (getSolutionTab(pyq.id) === 'RUBRIC') {
+                  <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Official Examiner Grading Rubric</span>
+                    <div class="space-y-2">
+                      @for (rub of pyq.evaluationRubric; track rub.criterion) {
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-white dark:bg-white border border-slate-200 dark:border-slate-800 text-xs">
+                          <div>
+                            <p class="font-bold text-slate-900 dark:text-white">{{ rub.criterion }}</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">{{ rub.description }}</p>
+                          </div>
+                          <span class="px-2 py-1 rounded bg-indigo-50 dark:bg-indigo-950/60 font-mono font-bold text-indigo-600 dark:text-indigo-400 shrink-0">
+                            {{ rub.marks }} Marks
+                          </span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+
+    </div>
+
+    } @else {
+
+      <!-- SUB-MODE 2: OFFICIAL UNIVERSITY QUESTION PAPERS ARCHIVE -->
+      <section class="space-y-6">
+        <div class="p-5 rounded-2xl bg-[#0f1419] border border-[#eceeee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
+              <span>📑</span> Official University Examination Papers Archive
+            </div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white">
+              {{ selectedCollege().name }} Official Papers & Exam Booklets
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Authentic past question papers complete with Controller of Examinations (COE) verification, Release Dates, and Published Dates.
+            </p>
+          </div>
+
+          <div class="text-xs font-mono px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-black self-start sm:self-auto">
+            {{ collegeQuestionPapers().length }} Official Papers Available
+          </div>
+        </div>
+
+        <!-- Papers Cards Stream -->
+        <div class="space-y-4">
+          @for (paper of collegeQuestionPapers(); track paper.id) {
+            <div class="p-5 rounded-2xl bg-white dark:bg-white border transition-all hover:border-indigo-500/60 shadow-sm space-y-4"
+                 [ngClass]="selectedPaperId() === paper.id ? 'ring-2 ring-indigo-500/30 border-indigo-500' : 'border-slate-200 dark:border-slate-800'">
+              
+              <!-- Paper Header -->
+              <div class="flex flex-col md:flex-row md:items-start justify-between gap-3">
+                <div class="space-y-1.5">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider"
+                          [ngClass]="paper.examinationType === 'END_SEM' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' :
+                                    paper.examinationType === 'MID_SEM' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                                    'bg-purple-500/20 text-purple-400 border border-purple-500/30'">
+                      {{ paper.examinationType === 'END_SEM' ? 'Final End-Semester Examination' :
+                         paper.examinationType === 'MID_SEM' ? 'Mid-Term Examination' : 'Special Supplementary' }}
+                    </span>
+
+                    <span class="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">
+                      Code: {{ paper.paperCode }}
+                    </span>
+
+                    @if (paper.controllerOfExamsVerified) {
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                        <span>✓</span> Verified by Controller of Exams (COE)
+                      </span>
+                    }
+
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                      {{ paper.academicYear }} • {{ paper.semester }}
+                    </span>
+                  </div>
+
+                  <h4 class="text-lg font-black text-slate-900 dark:text-white pt-1">
+                    {{ paper.paperTitle }}
+                  </h4>
+
+                  <p class="text-xs text-slate-500 dark:text-slate-400">
+                    Subject: <strong class="text-slate-700 dark:text-slate-200">{{ paper.subjectName }} ({{ paper.subjectCode }})</strong>
+                  </p>
+                </div>
+
+                <!-- Dates & Metadata Box -->
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs space-y-1 self-start shrink-0">
+                  <div class="flex items-center justify-between gap-4">
+                    <span class="text-slate-400">📅 Release / Exam Date:</span>
+                    <strong class="text-slate-900 dark:text-white font-mono">{{ paper.examDate }}</strong>
+                  </div>
+                  <div class="flex items-center justify-between gap-4">
+                    <span class="text-slate-400">🚀 Official Published Date:</span>
+                    <strong class="text-indigo-600 dark:text-indigo-400 font-mono">{{ paper.publishedDate }}</strong>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 pt-1 border-t border-slate-200 dark:border-slate-800 text-[11px]">
+                    <span class="text-slate-400">Duration & Marks:</span>
+                    <span class="font-bold text-slate-700 dark:text-slate-300">{{ paper.durationMinutes }} Mins • {{ paper.totalMarks }} Marks</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action to Drill into Paper Questions -->
+              <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                <span class="text-xs text-slate-500">
+                  Includes <strong class="text-slate-900 dark:text-white">{{ paper.questionCount }} Questions</strong> with step-by-step AI Thinker solutions and rubrics
+                </span>
+
+                <button
+                  type="button"
+                  (click)="selectPaper(selectedPaperId() === paper.id ? null : paper.id)"
+                  class="px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5"
+                  [ngClass]="selectedPaperId() === paper.id ?
+                    'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white' :
+                    'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs'">
+                  <span>{{ selectedPaperId() === paper.id ? '▲ Collapse Paper' : '▼ Open & Practice Questions' }}</span>
+                </button>
+              </div>
+
+              <!-- Drill-Down Questions in this Official Paper -->
+              @if (selectedPaperId() === paper.id) {
+                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4 animate-in fade-in duration-200">
+                  <div class="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                    <span>📝 Official Exam Questions ({{ paper.paperCode }}):</span>
+                  </div>
+
+                  @for (q of paper.questions; track q.id; let idx = $index) {
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-3">
+                      <div class="flex items-start justify-between gap-3">
+                        <div class="space-y-1.5 w-full">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-600 text-white">Q{{ idx + 1 }}</span>
+                            @if (q.yearAsked) {
+                              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                                📅 {{ q.yearAsked }}
+                              </span>
+                            }
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                              ⚖️ {{ q.marks || 10 }} Marks
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                              🎯 {{ q.targetCO }}
+                            </span>
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ q.topic }}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">{{ q.difficulty }}</span>
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-500/15 text-purple-600 dark:text-purple-400">{{ q.bloomLevel }}</span>
+                          </div>
+                          <p class="text-sm font-bold text-slate-900 dark:text-white leading-relaxed pt-1">
+                            {{ q.questionText }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- AI Thinker Solutions Multi-Tab -->
+                      <div class="pt-2 border-t border-slate-200/60 dark:border-slate-800 space-y-2">
+                        <div class="flex items-center gap-1.5 text-xs flex-wrap">
+                          <button
+                            type="button"
+                            (click)="setSolutionTab(q.id, 'SIMPLE')"
+                            class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer"
+                            [ngClass]="getSolutionTab(q.id) === 'SIMPLE' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+                            💡 Simple (ELI5)
+                          </button>
+                          <button
+                            type="button"
+                            (click)="setSolutionTab(q.id, 'MATH')"
+                            class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer"
+                            [ngClass]="getSolutionTab(q.id) === 'MATH' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+                            📐 Math Derivation
+                          </button>
+                          <button
+                            type="button"
+                            (click)="setSolutionTab(q.id, 'DIAGRAM')"
+                            class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer"
+                            [ngClass]="getSolutionTab(q.id) === 'DIAGRAM' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+                            📊 Architecture Diagram
+                          </button>
+                          <button
+                            type="button"
+                            (click)="setSolutionTab(q.id, 'RUBRIC')"
+                            class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer"
+                            [ngClass]="getSolutionTab(q.id) === 'RUBRIC' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+                            🎯 Rubric
+                          </button>
+                          <button
+                            type="button"
+                            (click)="setSolutionTab(q.id, 'VIDEO')"
+                            class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer"
+                            [ngClass]="getSolutionTab(q.id) === 'VIDEO' ? 'bg-red-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+                            ▶️ Video Lecture
+                          </button>
+                        </div>
+
+                        @if (getSolutionTab(q.id) === 'SIMPLE') {
+                          <div class="p-3.5 rounded-xl bg-white dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed border border-slate-200 dark:border-slate-700">
+                            {{ q.aiThinkerSolution?.simpleExplanation }}
+                          </div>
+                        }
+                        @if (getSolutionTab(q.id) === 'MATH') {
+                          <div class="p-3.5 rounded-xl bg-slate-950 text-emerald-300 font-mono text-xs border border-slate-800 overflow-x-auto">
+                            <pre class="whitespace-pre-wrap">{{ q.aiThinkerSolution?.mathematicalDerivation }}</pre>
+                          </div>
+                        }
+                        @if (getSolutionTab(q.id) === 'DIAGRAM') {
+                          <div class="p-3.5 rounded-xl bg-slate-950 text-indigo-300 font-mono text-xs border border-slate-800 overflow-x-auto">
+                            <pre class="whitespace-pre-wrap">{{ q.aiThinkerSolution?.architectureDiagram }}</pre>
+                          </div>
+                        }
+                        @if (getSolutionTab(q.id) === 'RUBRIC') {
+                          <div class="p-3.5 rounded-xl bg-white dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-300 space-y-1.5 border border-slate-200 dark:border-slate-700">
+                            <div class="font-bold text-slate-900 dark:text-white">Keywords Required for Full Marks:</div>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                              @for (kw of q.aiThinkerSolution?.examinerKeywords; track kw) {
+                                <span class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-500/20">
+                                  {{ kw }}
+                                </span>
+                              }
+                            </div>
+                          </div>
+                        }
+                        @if (getSolutionTab(q.id) === 'VIDEO') {
+                          <div class="p-3.5 rounded-xl bg-slate-900 text-white border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="space-y-1">
+                              <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-black bg-red-600 text-white">YouTube</span>
+                                <span class="text-xs font-bold">{{ q.youtubeReference?.title || 'Comprehensive Concept Lecture' }}</span>
+                              </div>
+                              <p class="text-[11px] text-slate-400">
+                                Channel: <strong>{{ q.youtubeReference?.channelName || 'Top CS Faculty' }}</strong> • Duration: {{ q.youtubeReference?.duration || '14:20' }} • Note: {{ q.youtubeReference?.timestampNote || 'Step-by-step breakdown' }}
+                              </p>
+                            </div>
+                            @if (q.youtubeReference?.youtubeUrl) {
+                              <a [href]="q.youtubeReference?.youtubeUrl" target="_blank" rel="noopener noreferrer"
+                                 class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-sm flex items-center gap-1.5 self-start sm:self-auto shrink-0 transition-all cursor-pointer">
+                                <span>▶</span> Watch Tutorial ↗
+                              </a>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+          }
+        </div>
+      </section>
+
+    }
+
+  } @else if (activeViewMode() === 'MENTOR_PAPERS') {
+
+    <!-- ======================================================= -->
+    <!-- FACULTY & MENTOR ASSIGNED PRACTICE PAPERS STREAM        -->
+    <!-- ======================================================= -->
+    <section class="space-y-6">
+      
+      <!-- Section Header -->
+      <div class="p-6 rounded-3xl bg-gradient-to-r from-[#0B4A39]/10 via-[#21DB93]/10 to-indigo-50/40 dark:from-[#0B4A39]/20 dark:via-slate-900 dark:to-slate-800 border border-[#0B4A39]/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-[#0B4A39] text-white flex items-center justify-center text-2xl shadow-md shrink-0">
+            📋
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+              Faculty & Mentor Assigned Practice Papers
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Official university question papers, midterm oral viva drills, and practice assessments published by your professors.
+            </p>
+          </div>
+        </div>
+
+        <span class="px-3.5 py-1.5 rounded-full bg-[#0B4A39] text-white text-xs font-black self-start md:self-auto shadow-xs">
+          {{ mentorPapers().length }} Assigned Papers
+        </span>
+      </div>
+
+      <!-- Empty State -->
+      @if (mentorPapers().length === 0) {
+        <div class="p-12 text-center bg-white dark:bg-white rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
+          <div class="w-14 h-14 rounded-2xl bg-[#E6F4F0] text-[#0B4A39] text-2xl flex items-center justify-center mx-auto">
+            📄
+          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">No Mentor Practice Papers Assigned Yet</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+            When your course mentor publishes a practice paper from the assessment studio, it will instantly appear here with active timing and rubrics.
+          </p>
+        </div>
+      } @else {
+        <!-- Grid of Format Boxes -->
+        <div class="grid grid-cols-1 gap-6">
+          @for (paper of mentorPapers(); track paper.id) {
+            
+            <!-- THE SPECIFIED FORMAT BOX WITH 3D ANIMATION & ACCEPT/DENY -->
+            <div class="practice-card-3d p-6 sm:p-7 rounded-3xl bg-white dark:bg-white border-2 shadow-lg hover:shadow-2xl transition-all space-y-5"
+                 [ngClass]="paper.isTerminated || paper.status === 'TERMINATED' ? 'border-red-300 dark:border-red-900/60 bg-red-50/10' :
+                            getStudentPaperStatus(paper) === 'ACCEPTED' ? 'border-emerald-500/40 dark:border-emerald-500/30' :
+                            getStudentPaperStatus(paper) === 'DENIED' ? 'border-rose-400/40 dark:border-rose-900/40 bg-rose-50/5' :
+                            'border-slate-200 dark:border-slate-800 hover:border-[#21DB93]'">
+              
+              <!-- Row 1: Status Badges, Acceptance State Badge, Mode & Target CO -->
+              <div class="flex items-center justify-between flex-wrap gap-2.5">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <!-- Live Lifecycle Status -->
+                  <span class="px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 shadow-2xs"
+                    [ngClass]="paper.isTerminated || paper.status === 'TERMINATED' ? 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30' :
+                               paper.status === 'EXPIRED' ? 'bg-slate-500/15 text-slate-600 dark:text-slate-400 border border-slate-500/30' :
+                               'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'">
+                    @if (paper.isTerminated || paper.status === 'TERMINATED') {
+                      <span>⏹️ TERMINATED BY MENTOR</span>
+                    } @else if (paper.status === 'EXPIRED') {
+                      <span>⌛ EXPIRED</span>
+                    } @else {
+                      <span>🟢 ACTIVE ASSIGNMENT</span>
+                    }
+                  </span>
+
+                  <!-- Mode Badge -->
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-bold"
+                    [ngClass]="paper.paperContentMode === 'QUESTIONS_ONLY' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800' : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'">
+                    {{ paper.paperContentMode === 'QUESTIONS_ONLY' ? '📝 Questions Only' : '💡 7-Pillar Model Solutions' }}
+                  </span>
+
+                  <!-- 3D Student Acceptance State Pill -->
+                  @if (getStudentPaperStatus(paper) === 'ACCEPTED') {
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shadow-xs">
+                      <span>✓</span>
+                      <span>ACCEPTED BY YOU</span>
+                    </span>
+                  } @else if (getStudentPaperStatus(paper) === 'DENIED') {
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1.5 shadow-xs">
+                      <span>✕</span>
+                      <span>DECLINED BY YOU</span>
+                    </span>
+                  } @else {
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1.5 shadow-xs animate-pulse">
+                      <span>⏳</span>
+                      <span>RESPONSE REQUIRED</span>
+                    </span>
+                  }
+                </div>
+
+                <div class="flex items-center gap-2">
+                  @if (paper.targetCO) {
+                    <span class="px-2.5 py-1 rounded-lg bg-[#E6F4F0] dark:bg-[#0B4A39]/30 text-[#0B4A39] dark:text-[#21DB93] text-xs font-black border border-[#21DB93]/30">
+                      🎯 {{ paper.targetCO }}
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <!-- Row 2: Assignment Name & Class Info -->
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-wider text-[#0B4A39] dark:text-[#21DB93] block mb-1">
+                  ASSIGNMENT NAME
+                </span>
+                <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
+                  {{ paper.paperTitle || paper.title }}
+                </h3>
+                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold flex-wrap">
+                  <span class="text-[#0B4A39] dark:text-slate-200 font-bold">📚 {{ paper.className || paper.subjectCode }}</span>
+                  <span>•</span>
+                  <span>Assigned by {{ paper.uploadedBy || 'Course Faculty' }}</span>
+                </div>
+              </div>
+
+              <!-- Row 3: Topic Callout -->
+              <div class="p-3.5 rounded-2xl bg-teal-500/10 dark:bg-teal-950/30 border border-teal-500/20 flex items-center gap-3">
+                <span class="text-2xl shrink-0">🎯</span>
+                <div class="min-w-0">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-teal-700 dark:text-teal-300 block">
+                    ASSIGNMENT TOPIC
+                  </span>
+                  <span class="text-sm font-black text-slate-900 dark:text-white truncate block">
+                    {{ paper.topic || paper.targetCO || 'Raft Consensus Algorithm & Log Reconciliation' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Row 4: Place, Time and Date, and Active Duration Grid -->
+              <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs font-mono">
+                <div>
+                  <span class="text-[10px] font-bold text-slate-500 uppercase block font-sans">📍 Place & Venue</span>
+                  <span class="font-extrabold text-slate-900 dark:text-white font-sans text-xs">
+                    {{ paper.placeLocation || 'Apex Virtual LMS Lab & Exam Portal' }}
+                  </span>
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-slate-500 uppercase block font-sans">🕒 Release Time & Date</span>
+                  <span class="font-extrabold text-slate-900 dark:text-white">
+                    {{ paper.releaseTime || paper.publishedAt || 'Immediately' }}
+                  </span>
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-slate-500 uppercase block font-sans">⏰ End Time & Date (Deadline)</span>
+                  <span class="font-extrabold text-[#0B4A39] dark:text-[#21DB93]">
+                    {{ paper.endTime || 'Open-ended' }}
+                  </span>
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-slate-500 uppercase block font-sans">⏳ Active Duration</span>
+                  <span class="font-extrabold text-slate-900 dark:text-white">
+                    {{ paper.durationValue || '3 Days Window' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Row 5: For What Reason / Ticket -->
+              <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1">
+                <span class="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300 flex items-center gap-1">
+                  <span>🎫</span>
+                  <span>FOR WHAT REASON / TICKET:</span>
+                </span>
+                <p class="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+                  {{ paper.ticketReason || paper.motive || 'Mandatory preparatory drill ahead of end-semester examinations and oral vivas.' }}
+                </p>
+              </div>
+
+              <!-- Row 6: Interactive 3D Accept / Deny Section directly on the Box -->
+              <div class="p-4 sm:p-5 rounded-2xl border transition-all"
+                   [ngClass]="getStudentPaperStatus(paper) === 'ACCEPTED' ? 'bg-emerald-500/10 dark:bg-emerald-950/20 border-emerald-500/30' :
+                              getStudentPaperStatus(paper) === 'DENIED' ? 'bg-rose-500/10 dark:bg-rose-950/20 border-rose-500/30' :
+                              'bg-slate-100/90 dark:bg-slate-850/80 border-dashed border-teal-500/40'">
+
+                @if (getStudentPaperStatus(paper) === 'PENDING') {
+                  <!-- Pending State: 3D Accept and Deny Action Buttons -->
+                  <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div class="space-y-0.5">
+                      <span class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+                        Action Required: Accept or Deny this Practice Paper
+                      </span>
+                      <p class="text-xs text-slate-500 dark:text-slate-400">
+                        Please confirm your participation. Accepting will immediately unlock the assessment drill.
+                      </p>
+                    </div>
+
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <!-- 3D Accept Button -->
+                      <button
+                        type="button"
+                        id="acceptPaperBtn-{{ paper.id }}"
+                        (click)="acceptAssignment(paper)"
+                        class="btn-3d-accept px-5 py-2.5 text-xs font-black flex items-center gap-2">
+                        <span>✓</span>
+                        <span>Accept Assignment</span>
+                      </button>
+
+                      <!-- 3D Deny Button -->
+                      <button
+                        type="button"
+                        id="denyPaperBtn-{{ paper.id }}"
+                        (click)="openDenyModal(paper)"
+                        class="btn-3d-deny px-5 py-2.5 text-xs font-black flex items-center gap-2">
+                        <span>✕</span>
+                        <span>Deny / Decline</span>
+                      </button>
+                    </div>
+                  </div>
+                } @else if (getStudentPaperStatus(paper) === 'ACCEPTED') {
+                  <!-- Accepted State -->
+                  <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-black text-lg shadow-md shrink-0">
+                        ✓
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="text-xs font-black text-emerald-700 dark:text-emerald-300">Assignment Accepted & Participation Confirmed</span>
+                          @if (getStudentResponseItem(paper)?.respondedAt) {
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">({{ getStudentResponseItem(paper)?.respondedAt }})</span>
+                          }
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300">
+                          Your response has been relayed to the course mentor. Question drill runner is unlocked.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <button
+                        type="button"
+                        id="changeToDeclineBtn-{{ paper.id }}"
+                        (click)="openDenyModal(paper)"
+                        class="text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 font-bold underline transition-colors cursor-pointer">
+                        Change to Decline
+                      </button>
+
+                      <!-- Open Assessment Paper Button (Unlocked) -->
+                      <button
+                        type="button"
+                        id="openPaperBtn-{{ paper.id }}"
+                        (click)="openMentorPaper(paper)"
+                        class="btn-3d-accept px-6 py-2.5 text-xs font-black flex items-center gap-2">
+                        <span>📄</span>
+                        <span>Open Assessment Paper →</span>
+                      </button>
+                    </div>
+                  </div>
+                } @else if (getStudentPaperStatus(paper) === 'DENIED') {
+                  <!-- Denied State -->
+                  <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center font-black text-lg shadow-md shrink-0">
+                        ✕
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="text-xs font-black text-rose-700 dark:text-rose-300">Assignment Declined</span>
+                          @if (getStudentResponseItem(paper)?.respondedAt) {
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">({{ getStudentResponseItem(paper)?.respondedAt }})</span>
+                          }
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300">
+                          Decline Reason: <span class="italic font-semibold text-rose-600 dark:text-rose-400">"{{ getStudentResponseItem(paper)?.declineReason || 'Schedule conflict' }}"</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                      <!-- 3D Reconsider & Accept Button -->
+                      <button
+                        type="button"
+                        id="reconsiderBtn-{{ paper.id }}"
+                        (click)="reconsiderAssignment(paper)"
+                        class="btn-3d-neutral px-5 py-2.5 text-xs font-black flex items-center gap-2">
+                        <span>↩</span>
+                        <span>Reconsider & Accept</span>
+                      </button>
+                    </div>
+                  </div>
+                }
+
+              </div>
+
+              <!-- Row 7: Metrics & Quick Summary -->
+              <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400 font-bold">
+                <div class="flex items-center gap-3">
+                  <span>📄 {{ paper.questions.length }} Questions</span>
+                  <span>•</span>
+                  <span>Difficulty: {{ paper.difficulty || 'MEDIUM' }}</span>
+                  @if (submittedPapers()[paper.id]) {
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black">
+                      ✓ Attempt Submitted
+                    </span>
+                  }
+                </div>
+
+                <div class="text-[11px] font-medium text-slate-400">
+                  Apex LMS Sync Verified
+                </div>
+              </div>
+
+            </div>
+
+          }
+        </div>
+      }
+
+    </section>
+
+  }
+
+  <!-- ======================================================= -->
+  <!-- INTERACTIVE QUESTION PAPER RUNNER MODAL                  -->
+  <!-- ======================================================= -->
+  @if (activeMentorPaperModal(); as paper) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+      <div class="relative w-full max-w-4xl max-h-[92vh] bg-white dark:bg-white rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col my-auto">
+        
+        <!-- Modal Top Header -->
+        <div class="p-5 bg-gradient-to-r from-[#0B4A39] via-[#0B4A39] to-[#07152B] text-white border-b border-emerald-800/40 flex items-start justify-between gap-4 shrink-0">
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+                [ngClass]="paper.isTerminated || paper.status === 'TERMINATED' ? 'bg-red-500/20 text-red-300 border border-red-400/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30'">
+                {{ paper.isTerminated || paper.status === 'TERMINATED' ? '⏹️ TERMINATED' : '🟢 ACTIVE' }}
+              </span>
+
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-white/10 text-white">
+                {{ paper.paperContentMode === 'QUESTIONS_ONLY' ? '📝 Questions Only (Unsolved Drill)' : '💡 Questions with 7-Pillar Solutions' }}
+              </span>
+
+              <span class="text-xs font-mono text-emerald-200">
+                {{ paper.className || paper.subjectCode }}
+              </span>
+            </div>
+
+            <h3 class="text-lg font-black text-white leading-snug">
+              {{ paper.paperTitle || paper.title }}
+            </h3>
+
+            <div class="text-[11px] text-emerald-100 flex items-center gap-3 font-mono">
+              <span>🕒 Release: {{ paper.releaseTime }}</span>
+              <span>•</span>
+              <span>⏰ Deadline: {{ paper.endTime }}</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            (click)="closeMentorPaper()"
+            class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-lg transition-all cursor-pointer shrink-0">
+            ✕
+          </button>
+        </div>
+
+        <!-- Terminated Notice Banner if applicable -->
+        @if (paper.isTerminated || paper.status === 'TERMINATED') {
+          <div class="bg-red-500/15 border-b border-red-500/30 p-3 text-center text-xs font-bold text-red-600 dark:text-red-400 flex items-center justify-center gap-2">
+            <span>⚠️</span>
+            <span>This assignment was terminated by your mentor on {{ paper.endTime }}. Answers and submissions are locked in read-only mode.</span>
+          </div>
+        }
+
+        <!-- Paper Body (Scrollable Questions List) -->
+        <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-[#F8FAF9] dark:bg-slate-900">
+          
+          @for (q of paper.questions; track q.id; let qIdx = $index) {
+            <div class="p-5 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              
+              <!-- Question Top Bar: Sequential Number, Marks, Bloom, and CO on the far right -->
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2.5 py-1 rounded-lg bg-[#0B4A39] text-white text-xs font-black">
+                    Q{{ qIdx + 1 }}
+                  </span>
+                  @if (q.paperReference) {
+                    <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-semibold">
+                      Paper Ref: {{ q.paperReference }}
+                    </span>
+                  }
+                  <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white text-[10px] font-black">
+                    {{ q.marks || 10 }} Marks
+                  </span>
+                  <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold">
+                    {{ q.bloomLevel }}
+                  </span>
+                </div>
+
+                <!-- Course Outcome Badge on Far Right -->
+                <div class="ml-auto">
+                  <span class="px-2.5 py-1 rounded-lg bg-[#ECFDF5] dark:bg-[#0B4A39]/30 text-[#0B4A39] dark:text-[#21DB93] text-xs font-black border border-[#21DB93]/30 flex items-center gap-1 shadow-2xs">
+                    <span>🎯</span>
+                    <span>{{ q.detectedCO || q.targetCO || 'CO2' }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Question Text -->
+              <div class="text-sm font-serif leading-relaxed text-slate-900 dark:text-white font-medium">
+                {{ q.questionText || q.question }}
+              </div>
+
+              <!-- Attached Vectorized Diagram Preview if present -->
+              @if (q.extractedDiagram) {
+                <div class="p-3 bg-cyan-50/50 dark:bg-cyan-950/20 rounded-xl border border-cyan-200 dark:border-cyan-800/40 text-xs">
+                  <div class="font-mono font-bold text-cyan-800 dark:text-cyan-300 uppercase text-[10px]">
+                    📊 Extracted Diagram: {{ q.extractedDiagram.figureNumber }} — {{ q.extractedDiagram.title }}
+                  </div>
+                  <p class="text-slate-600 dark:text-slate-400 text-[11px] mt-0.5">{{ q.extractedDiagram.caption }}</p>
+                </div>
+              }
+
+              <!-- MODE A: QUESTIONS ONLY (Interactive Student Answer Draft Workspace) -->
+              @if (paper.paperContentMode === 'QUESTIONS_ONLY') {
+                <div class="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div class="flex items-center justify-between text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                    <span class="flex items-center gap-1">
+                      <span>✍️</span>
+                      <span>Your Answer / Solution Workspace:</span>
+                    </span>
+                    <span class="font-mono text-[10px] text-slate-400">
+                      {{ getWordCount(studentDraftAnswers()[q.id]) }} words
+                    </span>
+                  </div>
+
+                  <textarea
+                    rows="4"
+                    [ngModel]="studentDraftAnswers()[q.id] || ''"
+                    (ngModelChange)="saveDraftAnswer(q.id, $event)"
+                    [disabled]="paper.isTerminated || paper.status === 'TERMINATED'"
+                    placeholder="Write your derivation, solution steps, architectural points, or oral viva defense arguments here..."
+                    class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0B4A39] transition-all disabled:opacity-60">
+                  </textarea>
+                </div>
+              }
+
+              <!-- MODE B: WITH MODEL SOLUTIONS (7 Pillars) -->
+              @if (paper.paperContentMode !== 'QUESTIONS_ONLY') {
+                <div class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  
+                  <!-- Tabs: Analogy vs Math vs Diagram vs Rubric -->
+                  <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-850 rounded-xl overflow-x-auto text-[11px]">
+                    <button
+                      type="button"
+                      (click)="setMentorQuestionTab(q.id, 'SIMPLE')"
+                      class="px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer"
+                      [ngClass]="getMentorQuestionTab(q.id) === 'SIMPLE' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                      💡 Plain English Analogy
+                    </button>
+                    <button
+                      type="button"
+                      (click)="setMentorQuestionTab(q.id, 'MATH')"
+                      class="px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer"
+                      [ngClass]="getMentorQuestionTab(q.id) === 'MATH' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                      📐 Mathematical Proof
+                    </button>
+                    <button
+                      type="button"
+                      (click)="setMentorQuestionTab(q.id, 'DIAGRAM')"
+                      class="px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer"
+                      [ngClass]="getMentorQuestionTab(q.id) === 'DIAGRAM' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                      🏗️ Architecture Diagram
+                    </button>
+                    <button
+                      type="button"
+                      (click)="setMentorQuestionTab(q.id, 'RUBRIC')"
+                      class="px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer"
+                      [ngClass]="getMentorQuestionTab(q.id) === 'RUBRIC' ? 'bg-[#0B4A39] text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+                      🎯 Examiner Rubrics
+                    </button>
+                  </div>
+
+                  <!-- Tab Content -->
+                  <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+                    @if (getMentorQuestionTab(q.id) === 'SIMPLE') {
+                      <p class="text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                        {{ q.detailedIndianSolution?.keyFactors?.join(' ') || q.aiThinkerSolution?.simpleExplanation || 'Intuitive fundamental concept formulation.' }}
+                      </p>
+                    } @else if (getMentorQuestionTab(q.id) === 'MATH') {
+                      <div class="font-mono text-xs whitespace-pre-wrap text-emerald-800 dark:text-emerald-300 leading-relaxed">
+                        {{ q.detailedIndianSolution?.mathematicalThings || q.aiThinkerSolution?.mathematicalDerivation || 'Formal mathematical derivation per university syllabus.' }}
+                      </div>
+                    } @else if (getMentorQuestionTab(q.id) === 'DIAGRAM') {
+                      <div class="font-mono text-[11px] whitespace-pre bg-slate-900 text-emerald-300 p-3 rounded-lg overflow-x-auto shadow-inner leading-tight">
+                        {{ q.detailedIndianSolution?.properFigure || q.aiThinkerSolution?.architectureDiagram || '+---------+   Request   +---------+\n| Client  | ----------> | Server  |\n+---------+             +---------+' }}
+                      </div>
+                    } @else if (getMentorQuestionTab(q.id) === 'RUBRIC') {
+                      <div class="space-y-2">
+                        <div class="font-mono text-xs text-slate-800 dark:text-slate-200">
+                          {{ q.detailedIndianSolution?.examinerRubric || 'Grading Rubric: Definition (2M) + Diagram (3M) + Derivation (3M) + Keywords (2M)' }}
+                        </div>
+                        <div class="flex flex-wrap gap-1 pt-1">
+                          @for (kw of (q.detailedIndianSolution?.highlightPoints || q.aiThinkerSolution?.examinerKeywords || []); track kw) {
+                            <span class="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
+                              ✓ {{ kw }}
+                            </span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                </div>
+              }
+
+            </div>
+          }
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 bg-white dark:bg-white border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shrink-0">
+          <div class="text-xs text-slate-500 font-semibold">
+            @if (paper.paperContentMode === 'QUESTIONS_ONLY') {
+              <span>Self-practice drill: draft your answers and submit when done.</span>
+            } @else {
+              <span>Accredited Indian University 7-Pillar Model Solutions & Rubrics.</span>
+            }
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              (click)="closeMentorPaper()"
+              class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer">
+              Close
+            </button>
+
+            @if (!paper.isTerminated && paper.status !== 'TERMINATED') {
+              <button
+                type="button"
+                id="submitPracticeBtn-{{ paper.id }}"
+                (click)="submitMentorPaper(paper.id)"
+                class="px-6 py-2 rounded-xl text-xs font-black shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
+                [ngClass]="submittedPapers()[paper.id] ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 cursor-default' : 'bg-gradient-to-r from-[#21DB93] to-[#0B4A39] hover:from-[#1bb87b] hover:to-[#08382B] text-[#0B4A39] hover:text-white'">
+                <span>✓</span>
+                <span>{{ submittedPapers()[paper.id] ? 'Drill Attempt Recorded' : 'Submit Drill Attempt' }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ======================================================= -->
+  <!-- 10-MARK EXAMINER MODEL ANSWER MODAL & RUBRIC DRILLDOWN  -->
+  <!-- ======================================================= -->
+  @if (active10MarkModalQuestion(); as modalQ) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-white rounded-3xl border border-indigo-500/30 shadow-2xl overflow-hidden flex flex-col">
+        
+        <!-- Modal Header -->
+        <div class="p-5 bg-[#12171c] text-white border-b border-[#eceeee] flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                ⚖️ 10 Marks Comprehensive Model Solution
+              </span>
+              <span class="text-xs font-mono text-slate-300">
+                {{ modalQ.subjectCode }} • {{ modalQ.topic }}
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-400/30">
+                Target: {{ modalQ.targetCO }}
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                {{ modalQ.bloomLevel }}
+              </span>
+            </div>
+
+            <h3 class="text-base font-extrabold text-white leading-snug">
+              {{ modalQ.questionText }}
+            </h3>
+          </div>
+
+          <button
+            type="button"
+            (click)="close10MarkModelModal()"
+            class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-lg transition-all cursor-pointer shrink-0">
+            ✕
+          </button>
+        </div>
+
+        <!-- Modal Body (Scrollable) -->
+        <div class="p-6 overflow-y-auto space-y-6 text-slate-800 dark:text-slate-200">
+          
+          <!-- 1. MARKS ALLOCATION BREAKDOWN BAR -->
+          <div class="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black uppercase tracking-wider text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
+                <span>📊</span>
+                <span>Official Examiner Marks Breakdown ([2M + 3M + 2M + 2M + 1M = 10 Marks])</span>
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-black bg-indigo-600 text-white">
+                Total: 10 Marks
+              </span>
+            </div>
+
+            <!-- Visual Progress Segments -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
+              @for (comp of (modalQ.structuredExamMarking?.breakdown || [
+                { component: 'Concept Definition & Intro', marks: 2, description: 'Core principles and problem context.' },
+                { component: 'System Flow Architecture', marks: 3, description: 'Block diagrams and protocol message steps.' },
+                { component: 'Formal Mathematical Derivation', marks: 2, description: 'Invariant proofs and complexity bounds.' },
+                { component: 'Edge Cases & Tradeoffs', marks: 2, description: 'Failure modes and recovery mechanisms.' },
+                { component: 'Examiner Rubric Keywords', marks: 1, description: 'Essential terminology and grading rubric.' }
+              ]); track comp.component) {
+                <div class="p-2.5 rounded-xl bg-white dark:bg-slate-850 border border-indigo-100 dark:border-indigo-900/50 space-y-1 shadow-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-indigo-600 dark:text-indigo-400">{{ comp.marks }} Marks</span>
+                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                  </div>
+                  <div class="text-[11px] font-extrabold text-slate-900 dark:text-white leading-tight">
+                    {{ comp.component }}
+                  </div>
+                  <p class="text-[9px] text-slate-500 dark:text-slate-400">
+                    {{ comp.description }}
+                  </p>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- 2. OVERALL CONCEPTUAL VIEW & TOPIC BRIEFING -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
+              <span>🌐</span>
+              <span>1. Overall Conceptual View & Topic Executive Summary:</span>
+            </div>
+            <div class="p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-900/40 text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+              {{ modalQ.structuredExamMarking?.overallView || modalQ.aiThinkerSolution?.simpleExplanation }}
+            </div>
+          </div>
+
+          <!-- 3. IN-DEPTH ACADEMIC SOLUTION -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+              <span>📖</span>
+              <span>2. In-Depth Academic Narrative (Multi-Paragraph Formal Explanation):</span>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed space-y-2 whitespace-pre-line">
+              {{ modalQ.structuredExamMarking?.detailedTopicExplanation || modalQ.examSolution?.workingPrinciple || modalQ.aiThinkerSolution?.simpleExplanation }}
+            </div>
+          </div>
+
+          <!-- 4. SYSTEM ARCHITECTURE / ASCII FLOW DIAGRAM -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span>🏗️</span>
+              <span>3. System Architecture & Component Interaction Flow Diagram:</span>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs whitespace-pre-wrap border border-slate-800 overflow-x-auto shadow-inner leading-relaxed">
+              {{ modalQ.structuredExamMarking?.architectureDiagram || modalQ.aiThinkerSolution?.architectureDiagram }}
+            </div>
+          </div>
+
+          <!-- 5. FORMAL MATHEMATICAL PROOF & STEP-BY-STEP DERIVATION -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+              <span>📐</span>
+              <span>4. Formal Mathematical Derivation & Algorithmic Invariants:</span>
+            </div>
+            <div class="p-4 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
+              {{ modalQ.structuredExamMarking?.mathematicalDerivation || modalQ.aiThinkerSolution?.mathematicalDerivation }}
+            </div>
+          </div>
+
+          <!-- 6. EXAMINER CHECKLIST FOR FULL 10/10 MARKS -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-rose-600 dark:text-rose-400">
+              <span>🎯</span>
+              <span>5. Examiner Rubric Checklist (Must Include for 10/10 Marks):</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              @for (point of (modalQ.structuredExamMarking?.examinerKeyPoints || modalQ.aiThinkerSolution?.examinerKeywords || []); track point) {
+                <div class="p-3 rounded-xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 flex items-start gap-2 text-xs">
+                  <span class="text-emerald-500 font-bold shrink-0">✓</span>
+                  <span class="font-medium text-slate-700 dark:text-slate-300">{{ point }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
+            <span>💡 High-yield 10-mark model answer aligned to {{ selectedCollege().shortCode }} end-semester rubric.</span>
+          </div>
+
+          <button
+            type="button"
+            (click)="close10MarkModelModal()"
+            class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black transition-all cursor-pointer shadow-sm">
+            Close Solution
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ======================================================= -->
+  <!-- DENY / DECLINE REASON MODAL                             -->
+  <!-- ======================================================= -->
+  @if (denyingPaperModal(); as denyPaper) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
+      <div class="relative w-full max-w-lg bg-white dark:bg-white rounded-3xl border border-rose-300 dark:border-rose-900/60 shadow-2xl overflow-hidden flex flex-col my-auto">
+        <!-- Header -->
+        <div class="p-5 bg-gradient-to-r from-rose-600 to-rose-800 text-white flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">✕</span>
+            <div>
+              <h3 class="text-base font-black">Decline Practice Assignment</h3>
+              <p class="text-xs text-rose-100">Your mentor will be notified with the selected reason.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            (click)="closeDenyModal()"
+            class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black transition-colors cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 space-y-4">
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">ASSIGNMENT</span>
+            <span class="text-sm font-black text-slate-900 dark:text-white">{{ denyPaper.paperTitle || denyPaper.title }}</span>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+              Reason for Declining:
+            </label>
+            <div class="grid grid-cols-1 gap-2">
+              <button
+                type="button"
+                (click)="declineReasonInput.set('Schedule conflict with semester laboratory submissions')"
+                [ngClass]="declineReasonInput() === 'Schedule conflict with semester laboratory submissions' ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 font-bold' : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'"
+                class="p-2.5 text-left text-xs rounded-xl border transition-all cursor-pointer">
+                📌 Schedule conflict with semester laboratory submissions
+              </button>
+              <button
+                type="button"
+                (click)="declineReasonInput.set('Concurrent oral viva & CIE test preparation')"
+                [ngClass]="declineReasonInput() === 'Concurrent oral viva & CIE test preparation' ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 font-bold' : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'"
+                class="p-2.5 text-left text-xs rounded-xl border transition-all cursor-pointer">
+                📚 Concurrent oral viva & CIE test preparation
+              </button>
+              <button
+                type="button"
+                (click)="declineReasonInput.set('Medical leave certificate submitted to HOD office')"
+                [ngClass]="declineReasonInput() === 'Medical leave certificate submitted to HOD office' ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 font-bold' : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'"
+                class="p-2.5 text-left text-xs rounded-xl border transition-all cursor-pointer">
+                🏥 Medical leave certificate submitted to HOD office
+              </button>
+            </div>
+
+            <textarea
+              [(ngModel)]="declineReasonInput"
+              rows="2"
+              placeholder="Or write custom reason..."
+              class="w-full mt-2 p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none">
+            </textarea>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            (click)="closeDenyModal()"
+            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button
+            type="button"
+            id="confirmDenyBtn"
+            (click)="confirmDenyAssignment()"
+            class="btn-3d-deny px-5 py-2 text-xs font-black">
+            Confirm Decline
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Floating Toast Notification -->
+  @if (practiceToastMessage(); as toast) {
+    <div class="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-slate-900 text-white border border-emerald-500/50 shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5">
+      <span class="text-xl">🔔</span>
+      <span class="text-xs font-bold text-emerald-300">{{ toast }}</span>
+    </div>
+  }
+
+</div>
+

@@ -1,0 +1,519 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Hero Welcome Banner in Deep Pine (#0B4A39) -->
+  <div class="relative bg-[#0B4A39] text-white rounded-[22px] p-8 overflow-hidden shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div class="space-y-4 max-w-xl">
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+        Welcome back,<br>{{ mentorName() }}!
+      </h1>
+      <div class="flex flex-wrap items-center gap-2.5">
+        <span class="px-3.5 py-1.5 rounded-full bg-white/10 text-xs font-semibold tracking-wide backdrop-blur-sm">
+          ID: {{ facultyId() }}
+        </span>
+        <span class="px-3.5 py-1.5 rounded-full bg-white/10 text-xs font-semibold tracking-wide backdrop-blur-sm">
+          {{ department() }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Circular Progress Gauge in Neon Mint (#21DB93) -->
+    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 shrink-0">
+      <div class="relative w-24 h-24 flex items-center justify-center">
+        <svg class="w-full h-full gauge-ring" viewBox="0 0 36 36">
+          <path
+            class="text-white/10"
+            stroke-width="3.5"
+            stroke="currentColor"
+            fill="none"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+          <path
+            class="text-[#21DB93] drop-shadow-[0_0_8px_rgba(33,219,147,0.5)]"
+            stroke-dasharray="94.2, 100"
+            stroke-width="3.5"
+            stroke-linecap="round"
+            stroke="currentColor"
+            fill="none"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span class="text-lg font-black text-white leading-none">94.2%</span>
+          <span class="text-[9px] font-medium text-[#21DB93] tracking-wider uppercase mt-1">Attendance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row of 4 Action / Stat Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm flex items-center gap-4 hover:border-[#0B4A39] transition-all">
+      <div class="w-12 h-12 rounded-2xl bg-[#E6F4F0] flex items-center justify-center text-[#0B4A39] shrink-0">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      </div>
+      <div>
+        <span class="block text-xl font-extrabold text-[#0B4A39]">{{ classes().length }}</span>
+        <span class="block text-xs font-semibold text-[#5A6066]">Active Classes</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm flex items-center gap-4 hover:border-[#0B4A39] transition-all">
+      <div class="w-12 h-12 rounded-2xl bg-[#E6F4F0] flex items-center justify-center text-[#0B4A39] shrink-0">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+      </div>
+      <div>
+        <span class="block text-xl font-extrabold text-[#0B4A39]">{{ pendingRequests().length + 5 }}</span>
+        <span class="block text-xs font-semibold text-[#5A6066]">Pending Approvals</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm flex items-center gap-4 hover:border-[#0B4A39] transition-all">
+      <div class="w-12 h-12 rounded-2xl bg-[#E6F4F0] flex items-center justify-center text-[#0B4A39] shrink-0">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"></path></svg>
+      </div>
+      <div>
+        <span class="block text-xl font-extrabold text-[#0B4A39]">03</span>
+        <span class="block text-xs font-semibold text-[#5A6066]">Oral VIVAs</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-[18px] p-5 border border-[#ECEEEE] shadow-sm flex items-center gap-4 hover:border-[#0B4A39] transition-all">
+      <div class="w-12 h-12 rounded-2xl bg-[#E6F4F0] flex items-center justify-center text-[#0B4A39] shrink-0">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+      </div>
+      <div>
+        <span class="block text-xl font-extrabold text-[#0B4A39]">186</span>
+        <span class="block text-xs font-semibold text-[#5A6066]">Students</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPUS BROADCASTS & PICTURE ADS (Audience: Mentors/All) -->
+  @if (broadcastService.mentorVisibleBroadcasts().length > 0) {
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-base">📢</span>
+          <h2 class="text-xs font-extrabold uppercase tracking-wider text-[#0B4A39]">Campus Broadcasts & Academic Highlights</h2>
+        </div>
+        <span class="text-[11px] font-bold text-[#0B4A39]">Official University Bulletin</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @for (ad of broadcastService.mentorVisibleBroadcasts(); track ad.id) {
+          <div class="rounded-2xl border border-[#ECEEEE] bg-white overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row">
+            <div class="sm:w-1/3 aspect-video sm:aspect-auto bg-[#0B4A39] relative shrink-0">
+              <img [src]="ad.imageUrl" [alt]="ad.title" class="w-full h-full object-cover" />
+              <div class="absolute top-2 left-2 flex flex-col gap-1">
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-black text-white uppercase bg-[#0B4A39]">
+                  {{ ad.category === 'BANNER_AD' ? 'Highlight' : 'Workshop' }}
+                </span>
+                @if (ad.requiresRegistration) {
+                  <span class="px-1.5 py-0.5 rounded text-[8px] font-black text-[#0B4A39] uppercase bg-[#21DB93]">
+                    Registration Open
+                  </span>
+                }
+              </div>
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between space-y-2">
+              <div>
+                <h3 class="text-xs font-bold text-[#0B4A39] leading-snug">{{ ad.title }}</h3>
+                <p class="text-[11px] font-semibold text-[#0B4A39]">{{ ad.tagline }}</p>
+
+                <!-- Sponsor & Mentor Routing Pill -->
+                <div class="mt-1.5 p-1.5 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-[10px] text-[#5A6066] flex items-center justify-between">
+                  <span>🏛️ {{ ad.sponsorCollege || 'Apex Institute' }}</span>
+                  <span class="font-bold text-[#0B4A39]">Mentor: {{ ad.assignedMentorId || 'SX-M401' }}</span>
+                </div>
+
+                <p class="text-[11px] text-[#5A6066] line-clamp-2 leading-relaxed mt-1.5">{{ ad.description }}</p>
+              </div>
+
+              <div class="pt-2 border-t border-[#ECEEEE] flex items-center justify-between text-[11px]">
+                <button
+                  (click)="broadcastService.openAdDetails(ad)"
+                  class="font-bold text-[#0B4A39] hover:underline cursor-pointer flex items-center gap-1">
+                  <span>📄 Details & Rules</span>
+                </button>
+
+                @if (ad.requiresRegistration) {
+                  <span class="px-2.5 py-1 rounded-lg bg-[#E6F4F0] text-[#0B4A39] font-bold text-[10px] flex items-center gap-1 border border-[#0B4A39]/20">
+                    <span>👥</span>
+                    <span>Student Nominations: {{ ad.registrationCount || 0 }}</span>
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- CLASS RESULTS & ACADEMIC PERFORMANCE PROGRESS HUB -->
+  <div class="bg-white rounded-[24px] p-6 border border-[#ECEEEE] shadow-sm space-y-6">
+    <!-- Hub Header & Search Bar -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-[#E6F4F0] text-[#0B4A39] flex items-center justify-center font-bold text-lg">
+            📊
+          </div>
+          <div>
+            <h2 class="text-base font-extrabold uppercase tracking-wider text-[#0B4A39]">
+              Class Results & Performance Progress Hub
+            </h2>
+            <p class="text-xs text-[#5A6066]">
+              Live syllabus progress, student average scores, and outcome attainment across all generated classrooms.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Search / Filter Bar -->
+      <div class="flex items-center gap-3">
+        <div class="relative w-full sm:w-64">
+          <input
+            type="text"
+            [value]="classFilterQuery()"
+            (input)="updateClassFilter($event)"
+            placeholder="Filter by class, code..."
+            class="w-full pl-9 pr-4 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-semibold text-[#0B4A39] placeholder-[#8C959B] focus:outline-none focus:border-[#0B4A39] transition-all"
+          />
+          <svg class="w-4 h-4 text-[#8C959B] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        <span class="px-3 py-1.5 rounded-xl text-xs font-black bg-[#E6F4F0] text-[#0B4A39] border border-[#0B4A39]/20 shrink-0">
+          {{ filteredClassSummaries().length }} Classes
+        </span>
+      </div>
+    </div>
+
+    <!-- Aggregate Performance Summary Strip -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-2xl bg-gradient-to-r from-[#0B4A39] via-[#0B4A39] to-[#0B4A39] text-white">
+      <!-- KPI 1: Cohort Average Score -->
+      <div class="space-y-1">
+        <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">Cohort Avg Score</span>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-black text-white">{{ cohortOverallAverage() }}%</span>
+          <span class="text-xs font-bold text-[#21DB93] px-2 py-0.5 rounded bg-white/10">Grade A</span>
+        </div>
+        <p class="text-[10px] text-white/75">Across all enrolled students</p>
+      </div>
+
+      <!-- KPI 2: Total Enrolled Students -->
+      <div class="space-y-1">
+        <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">Total Enrolled</span>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-black text-white">{{ cohortTotalEnrolled() }}</span>
+          <span class="text-xs font-semibold text-white/80">Active</span>
+        </div>
+        <p class="text-[10px] text-white/75">Under institutional monitoring</p>
+      </div>
+
+      <!-- KPI 3: Avg Syllabus / Viva Progress -->
+      <div class="space-y-1">
+        <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">Curriculum Progress</span>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-black text-white">{{ cohortAvgProgress() }}%</span>
+          <span class="text-xs font-semibold text-[#21DB93]">On Track</span>
+        </div>
+        <p class="text-[10px] text-white/75">Assessments completed</p>
+      </div>
+
+      <!-- KPI 4: Top Performing Cohort -->
+      <div class="space-y-1">
+        <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">Top Performing Cohort</span>
+        <div class="flex items-baseline gap-2">
+          <span class="text-lg font-black text-white truncate max-w-[140px]">{{ topPerformingClass()?.subjectCode || 'N/A' }}</span>
+          <span class="text-xs font-bold text-[#21DB93]">{{ topPerformingClass()?.averageScore }}%</span>
+        </div>
+        <p class="text-[10px] text-white/75 truncate">{{ topPerformingClass()?.name || 'Academic Class' }}</p>
+      </div>
+    </div>
+
+    <!-- Class Progress & Results Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      @for (cls of filteredClassSummaries(); track cls.id) {
+        <div class="p-5 rounded-2xl border border-[#ECEEEE] bg-[#F8FAF9] hover:bg-white hover:border-[#0B4A39] hover:shadow-md transition-all space-y-4 flex flex-col justify-between">
+          
+          <!-- Top Row: Class Identity & Status -->
+          <div class="space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider bg-[#0B4A39] text-white">
+                    {{ cls.subjectCode }}
+                  </span>
+                  <span class="text-[10px] font-bold text-[#5A6066] bg-white border border-[#ECEEEE] px-2 py-0.5 rounded-lg">
+                    Sem {{ cls.semester }}
+                  </span>
+                  <span class="text-[10px] font-mono text-[#0B4A39] bg-[#E6F4F0] px-2 py-0.5 rounded-lg font-bold">
+                    🔑 {{ cls.joinCode }}
+                  </span>
+                </div>
+                <h3 class="text-sm font-black text-[#0B4A39] mt-1.5 leading-snug">{{ cls.name }}</h3>
+                <p class="text-[10px] text-[#5A6066] font-semibold">{{ cls.department }}</p>
+              </div>
+
+              <!-- Performance Status Pill -->
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-black tracking-wider uppercase shrink-0 border"
+                    [ngClass]="cls.statusColor">
+                ● {{ cls.statusLabel }}
+              </span>
+            </div>
+
+            <!-- Core Academic Results Strip: Average Score & Progress -->
+            <div class="p-3.5 rounded-xl bg-white border border-[#ECEEEE] space-y-3 shadow-2xs">
+              <!-- Average Score Metric -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-[#5A6066] block">Class Average Score</span>
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-2xl font-black text-[#0B4A39]">{{ cls.averageScore }}%</span>
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-lg border font-mono" [ngClass]="cls.gradeBadgeColor">
+                      Grade {{ cls.gradeBadge }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Pass Rate Metric -->
+                <div class="text-right">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-[#5A6066] block">Pass Rate</span>
+                  <span class="text-base font-black text-[#0B4A39]">{{ cls.passRate }}%</span>
+                </div>
+              </div>
+
+              <!-- Progress Bar: Syllabus & Assessment Completion -->
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-[11px] font-bold">
+                  <span class="text-[#5A6066]">Course & Assessment Progress</span>
+                  <span class="text-[#0B4A39]">{{ cls.progressPercent }}% Complete</span>
+                </div>
+                <div class="w-full h-2.5 bg-[#FCFCFB] rounded-full overflow-hidden p-0.5">
+                  <div
+                    class="h-full rounded-full bg-gradient-to-r from-[#0B4A39] to-[#21DB93] transition-all duration-500"
+                    [style.width.%]="cls.progressPercent">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Metrics Mini Grid: Enrolled Students, Completed VIVAs -->
+              <div class="grid grid-cols-2 gap-2 pt-1 border-t border-[#F4F6F5] text-[11px]">
+                <div class="flex items-center gap-1.5 text-[#5A6066]">
+                  <span>👥</span>
+                  <span><strong>{{ cls.enrolledCount }}</strong> Students</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-[#5A6066] justify-end">
+                  <span>🎙️</span>
+                  <span><strong>{{ cls.completedVivas }}/{{ cls.totalVivas }}</strong> VIVAs Done</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grade Spectrum Breakdown Bar -->
+            <div class="space-y-1 text-[10px]">
+              <div class="flex items-center justify-between font-bold text-[#8C959B]">
+                <span>Grade Distribution:</span>
+                <span>A+ ({{ cls.distribution.aPlus }}%) • A ({{ cls.distribution.a }}%) • B ({{ cls.distribution.b }}%) • Rem ({{ cls.distribution.remedial }}%)</span>
+              </div>
+              <div class="w-full h-1.5 flex rounded-full overflow-hidden gap-0.5">
+                <div class="bg-[#10B981] h-full" [style.width.%]="cls.distribution.aPlus" title="Grade A+"></div>
+                <div class="bg-[#0B4A39] h-full" [style.width.%]="cls.distribution.a" title="Grade A"></div>
+                <div class="bg-[#F59E0B] h-full" [style.width.%]="cls.distribution.b" title="Grade B"></div>
+                <div class="bg-[#EF4444] h-full" [style.width.%]="cls.distribution.remedial" title="Needs Remediation"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Navigation Actions -->
+          <div class="pt-2 border-t border-[#ECEEEE] flex items-center justify-between gap-2 text-xs">
+            <a [routerLink]="['/mentor/classes', cls.id]"
+               [queryParams]="{ tab: 'assessments' }"
+               class="px-3 py-1.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white font-bold text-[11px] transition-all cursor-pointer shadow-2xs flex items-center gap-1">
+              <span>📊 Gradebook</span>
+              <span>→</span>
+            </a>
+
+            <div class="flex items-center gap-1.5">
+              <a [routerLink]="['/mentor/classes', cls.id]"
+                 [queryParams]="{ tab: 'analytics' }"
+                 title="View CO Attainment & Class Analytics"
+                 class="px-2.5 py-1.5 rounded-xl border border-[#ECEEEE] hover:bg-[#FCFCFB] text-[#0B4A39] font-bold text-[11px] transition-all cursor-pointer">
+                📈 Analytics
+              </a>
+              <a [routerLink]="['/mentor/classes', cls.id]"
+                 [queryParams]="{ tab: 'live-view' }"
+                 title="Proctor Live Camera Stream"
+                 class="p-1.5 rounded-xl border border-[#ECEEEE] hover:bg-[#FCFCFB] text-[#5A6066] hover:text-[#0B4A39] transition-all cursor-pointer">
+                📹
+              </a>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+
+    @if (filteredClassSummaries().length === 0) {
+      <div class="p-8 text-center rounded-2xl bg-[#F8FAF9] border border-dashed border-[#ECEEEE] space-y-2">
+        <span class="text-3xl">🔍</span>
+        <h4 class="text-sm font-bold text-[#0B4A39]">No matching classrooms found</h4>
+        <p class="text-xs text-[#5A6066]">No class matches "{{ classFilterQuery() }}". Try clearing the filter.</p>
+        <button (click)="classFilterQuery.set('')" class="text-xs font-bold text-[#0B4A39] hover:underline cursor-pointer">
+          Clear Filter
+        </button>
+      </div>
+    }
+  </div>
+
+
+
+  <!-- Primary Content Grid (2 Columns) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left Column (Assessments & Classes) - 2 Cols Wide -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Active Assessment Card matching the screenshot -->
+      <div class="bg-white rounded-[20px] p-6 border border-[#ECEEEE] shadow-sm space-y-4 hover:shadow-md transition-all">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-[#0B4A39]">Mid-Term Oral VIVA</h2>
+            <p class="text-sm font-semibold text-[#5A6066] mt-0.5">Distributed Systems (CS401)</p>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs font-medium text-[#5A6066]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Nov 28, 2026
+          </div>
+        </div>
+
+        <!-- Assessment Format Chip -->
+        <div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#E6F4F0] text-[#0B4A39]">
+            Oral Assessment
+          </span>
+        </div>
+
+        <!-- Competency Chips -->
+        <div class="space-y-1.5">
+          <span class="text-xs font-semibold text-[#5A6066] block">Competency chips</span>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full bg-[#F4F6F5] text-[#0B4A39] text-xs font-bold">CO1</span>
+            <span class="px-3 py-1 rounded-full bg-[#F4F6F5] text-[#0B4A39] text-xs font-bold">CO2</span>
+            <span class="px-3 py-1 rounded-full bg-[#F4F6F5] text-[#0B4A39] text-xs font-bold">CO3</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-[#5A6066] leading-relaxed">
+          Comprehensive AI-proctored oral viva evaluating understanding of RPC protocols, Paxos consensus, and crash-fault recovery mechanisms in high-scale clusters.
+        </p>
+
+        <!-- Action Button in Solid Deep Teal (#0B4A39) -->
+        <div class="pt-2">
+          <button class="px-6 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] active:bg-[#0A3835] text-white text-sm font-bold shadow-sm transition-all cursor-pointer">
+            View Details
+          </button>
+        </div>
+      </div>
+
+      <!-- Second Assessment Card -->
+      <div class="bg-white rounded-[20px] p-6 border border-[#ECEEEE] shadow-sm space-y-4 hover:shadow-md transition-all">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-[#0B4A39]">Congestion Control Practical Drill</h2>
+            <p class="text-sm font-semibold text-[#5A6066] mt-0.5">Computer Networks (CS302)</p>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs font-medium text-[#5A6066]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Dec 04, 2026
+          </div>
+        </div>
+
+        <div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#E6F4F0] text-[#0B4A39]">
+            Scenario Analysis
+          </span>
+        </div>
+
+        <div class="space-y-1.5">
+          <span class="text-xs font-semibold text-[#5A6066] block">Competency chips</span>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full bg-[#F4F6F5] text-[#0B4A39] text-xs font-bold">CO2</span>
+            <span class="px-3 py-1 rounded-full bg-[#F4F6F5] text-[#0B4A39] text-xs font-bold">CO4</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-[#5A6066] leading-relaxed">
+          Diagnostic assessment on TCP Reno vs Tahoe fast retransmit behaviors during packet loss in wireless high-latency links.
+        </p>
+
+        <div class="pt-2">
+          <button class="px-6 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] active:bg-[#0A3835] text-white text-sm font-bold shadow-sm transition-all cursor-pointer">
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column (Candidate Queue & Chats, Upcoming Deadlines) - 1 Col Wide -->
+    <div class="space-y-6">
+
+      <!-- Candidate Queue & Chats Card -->
+      <div class="bg-white rounded-[20px] p-6 border border-[#ECEEEE] shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-[#0B4A39]">Candidate Queue & Chats</h3>
+
+        <!-- Search Bar -->
+        <div class="relative">
+          <input
+            type="text"
+            placeholder="Search candidates..."
+            class="w-full pl-9 pr-4 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] placeholder-[#8C959B] focus:outline-none focus:border-[#0B4A39] transition-all"
+          />
+          <svg class="w-4 h-4 text-[#8C959B] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+
+        <!-- Contacts / Examinees List -->
+        <div class="space-y-3 pt-1">
+          @for (contact of contacts(); track contact.name) {
+            <div class="flex items-center justify-between p-2 rounded-xl hover:bg-[#F4F6F5] transition-all cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-[#F4F6F5] text-[#0B4A39] flex items-center justify-center font-bold text-xs">
+                  {{ contact.name.slice(0, 2).toUpperCase() }}
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-[#0B4A39]">{{ contact.name }}</p>
+                  <p class="text-[10px] text-[#5A6066]">{{ contact.role }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full" [ngClass]="contact.online ? 'bg-[#21DB93]' : 'bg-[#ECEEEE]'"></span>
+                <span class="text-[11px] font-semibold text-[#5A6066]">{{ contact.status }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Upcoming Deadlines Card -->
+      <div class="bg-white rounded-[20px] p-6 border border-[#ECEEEE] shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-[#0B4A39]">Upcoming Tasks</h3>
+        <div class="space-y-3">
+          @for (task of upcomingTasks(); track task.title) {
+            <div class="flex items-start gap-3 p-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE]/60">
+              <div class="p-1.5 rounded-lg bg-[#E6F4F0] text-[#0B4A39] shrink-0 mt-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-bold text-[#0B4A39] truncate">{{ task.title }}</p>
+                <p class="text-[10px] font-semibold text-[#5A6066] mt-0.5">{{ task.deadline }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

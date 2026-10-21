@@ -1,0 +1,36 @@
+.scholarx-home-viewport {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow-x: clip;
+  background-color: #fcfcfb;
+  font-family: var(--font-sans, 'Inter', ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+
+  .font-serif {
+    font-family: var(--font-serif, 'Libre Caslon Text', 'Newsreader', Georgia, serif);
+  }
+
+  /* Smooth card hover elevations */
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-duration: 250ms;
+  }
+
+  /* Subtle selection color */
+  ::selection {
+    background-color: rgba(33, 219, 147, 0.25);
+    color: #0b4a39;
+  }
+
+  /* Full hero section background image gradient opacity mask */
+  .hero-gradient-mask {
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.05) 8%, rgba(0, 0, 0, 0.6) 24%, #000 42%, #000 100%), linear-gradient(to top, transparent 0%, #000 5%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.05) 8%, rgba(0, 0, 0, 0.6) 24%, #000 42%, #000 100%), linear-gradient(to top, transparent 0%, #000 5%);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
+  }
+}
+

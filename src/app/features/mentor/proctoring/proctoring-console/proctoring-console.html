@@ -1,0 +1,882 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Dynamic Toast Notification Bar -->
+  @if (hardwareActionToast()) {
+    <div class="p-4 rounded-2xl bg-[#0B4A39] text-white flex items-center justify-between text-xs font-bold shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+      <div class="flex items-center gap-2.5">
+        <span class="text-base text-[#21DB93]">⚡</span>
+        <span>{{ hardwareActionToast() }}</span>
+      </div>
+      <button (click)="hardwareActionToast.set(null)" class="text-white/60 hover:text-white font-mono text-sm cursor-pointer">✕</button>
+    </div>
+  }
+
+  <!-- ALL-HANDS LIVE VOICE BROADCAST ACTIVE BANNER -->
+  @if (isAllHandsAudioActive()) {
+    <div class="p-4 rounded-2xl bg-[#DC2626] text-white flex items-center justify-between text-xs font-black shadow-lg animate-pulse">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-3 rounded-full bg-white animate-ping"></span>
+        <span class="text-sm">🔴 LIVE ALL-HANDS AUDIO BROADCAST ACTIVE</span>
+        <span class="opacity-90 font-normal">Every student currently in <strong class="underline">{{ selectedClassName() }}</strong> can hear your voice in real time!</span>
+      </div>
+
+      <button
+        (click)="toggleAllHandsAudio()"
+        class="px-4 py-1.5 rounded-xl bg-white text-[#DC2626] font-black text-xs hover:bg-white/90 shadow-sm cursor-pointer transition-all">
+        End All-Hands Voice Broadcast
+      </button>
+    </div>
+  }
+
+  <!-- DIRECT 1-ON-1 AUDIO ACTIVE BANNER -->
+  @if (activeDirectAudioStudentId()) {
+    <div class="p-4 rounded-2xl bg-[#0B4A39] text-white flex items-center justify-between text-xs font-bold shadow-lg">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#21DB93] animate-ping"></span>
+        <span>🎙️ 2-Way Direct Voice Line Active with Examinee</span>
+        <span class="opacity-80 font-mono text-[11px]">(Private 1-on-1 audio channel)</span>
+      </div>
+
+      <button
+        (click)="activeDirectAudioStudentId.set(null)"
+        class="px-4 py-1.5 rounded-xl bg-white text-[#0B4A39] font-black text-xs hover:bg-white/90 shadow-sm cursor-pointer transition-all">
+        Hang Up Voice Line
+      </button>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] text-xs font-black uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-[#10B981] animate-ping"></span>
+          ● LIVE PROCTORING STREAM
+        </span>
+        <span class="text-xs font-semibold text-[#5A6066]">
+          Showing: <strong class="text-[#0B4A39]">{{ selectedClassName() }}</strong>
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        Oral VIVA Surveillance & Live Intercom Console
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        Surveillance grid, individual 1-on-1 direct audio call, remote hardware muting/cam toggling, and all-hands class broadcast
+      </p>
+    </div>
+
+    <!-- Class-Wide Audio & Announcement Broadcast Buttons -->
+    <div class="flex flex-wrap items-center gap-3 shrink-0">
+      <!-- All-Hands Audio Toggle Button -->
+      <button
+        (click)="toggleAllHandsAudio()"
+        class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+        [ngClass]="isAllHandsAudioActive() ? 'bg-[#DC2626] text-white animate-pulse' : 'bg-[#0B4A39] hover:bg-[#0F2421] text-white'">
+        <span>🎙️</span>
+        <span>{{ isAllHandsAudioActive() ? 'Mute All-Hands Mic' : 'Broadcast Voice to Class' }}</span>
+      </button>
+
+      <!-- Class-Wide Announcement Button -->
+      <button
+        (click)="showBroadcastModal.set(true)"
+        class="px-4 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">
+        <span>📢</span>
+        <span>Class Announcement</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI TELEMETRY ROW -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Cohort Integrity Index -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[#5A6066]">Cohort Integrity Index</span>
+        <span class="text-base">🛡️</span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-black text-[#0B4A39] font-mono">{{ cohortIntegrityIndex() }}%</span>
+        <span class="text-[10px] font-bold text-emerald-600">Verified Honesty</span>
+      </div>
+      <p class="text-[11px] text-[#5A6066]">Biometric sentry real-time confidence</p>
+    </div>
+
+    <!-- Active Surveillance Streams -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[#5A6066]">Active Streams</span>
+        <span class="text-base">📹</span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-black text-[#0B4A39] font-mono">{{ allCount() }}</span>
+        <span class="text-[10px] font-bold text-[#0B4A39]">WebRTC Feeds</span>
+      </div>
+      <p class="text-[11px] text-[#5A6066]">Concurrent 720p HD peer connections</p>
+    </div>
+
+    <!-- Flagged Anomalies -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[#5A6066]">Flagged Incidents</span>
+        <span class="text-base">🚨</span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-black text-[#EF4444] font-mono">{{ criticalCount() + warningCount() }}</span>
+        <span class="text-[10px] font-bold text-amber-600">Anomalies</span>
+      </div>
+      <p class="text-[11px] text-[#5A6066]">{{ criticalCount() }} Critical • {{ warningCount() }} Warnings</p>
+    </div>
+
+    <!-- Anti-Cheating AI Engine -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[#5A6066]">AI Neural Sentry</span>
+        <span class="text-base">🧠</span>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="text-sm font-black text-[#0B4A39]">Gemini 3.6 Sentry</span>
+      </div>
+      <p class="text-[11px] text-[#5A6066]">Gaze, Multi-face & Tab tracking active</p>
+    </div>
+  </div>
+
+  <!-- Class Filter Bar & Severity Pills -->
+  <div class="bg-white rounded-2xl p-4 border border-[#ECEEEE] shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+
+    <!-- 1. CLASSROOM SELECTOR FILTER -->
+    <div class="flex items-center gap-2.5">
+      <span class="text-xs font-bold text-[#0B4A39] whitespace-nowrap">Filter by Class:</span>
+      <select
+        [ngModel]="selectedClassId()"
+        (ngModelChange)="selectedClassId.set($event)"
+        class="px-3.5 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-bold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all cursor-pointer">
+        @for (cls of availableClasses; track cls.id) {
+          <option [value]="cls.id">{{ cls.name }} ({{ cls.code }})</option>
+        }
+      </select>
+    </div>
+
+    <!-- 2. SEVERITY PILLS -->
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        (click)="activeFilter.set('ALL')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeFilter() === 'ALL' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+        All ({{ allCount() }})
+      </button>
+      <button
+        (click)="activeFilter.set('NORMAL')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeFilter() === 'NORMAL' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+        Normal ({{ normalCount() }})
+      </button>
+      <button
+        (click)="activeFilter.set('WARNING')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeFilter() === 'WARNING' ? 'bg-[#D97706] text-white shadow-2xs' : 'bg-[#FFFBEB] text-[#B45309] hover:bg-[#FDE68A]'">
+        ⚠️ Warnings ({{ warningCount() }})
+      </button>
+      <button
+        (click)="activeFilter.set('CRITICAL')"
+        class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeFilter() === 'CRITICAL' ? 'bg-[#EF4444] text-white shadow-2xs' : 'bg-[#FEF2F2] text-[#EF4444] hover:bg-[#FCA5A5]'">
+        🚨 Critical ({{ criticalCount() }})
+      </button>
+    </div>
+
+    <!-- 3. SEARCH & VIEW TOGGLE -->
+    <div class="flex items-center gap-3">
+      <div class="relative w-full sm:w-56">
+        <input
+          type="text"
+          placeholder="Filter candidate..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+        />
+        <svg class="w-4 h-4 text-[#8C959B] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+
+      <div class="flex items-center border border-[#ECEEEE] rounded-xl overflow-hidden p-0.5 bg-[#F8FAF9]">
+        <button
+          (click)="viewMode.set('GRID')"
+          class="p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+          [ngClass]="viewMode() === 'GRID' ? 'bg-white text-[#0B4A39] shadow-2xs' : 'text-[#8C959B]'">
+          🔲 Grid
+        </button>
+        <button
+          (click)="viewMode.set('LIST')"
+          class="p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+          [ngClass]="viewMode() === 'LIST' ? 'bg-white text-[#0B4A39] shadow-2xs' : 'text-[#8C959B]'">
+          📄 List
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CANDIDATE GRID VIEW -->
+  @if (viewMode() === 'GRID') {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (session of filteredSessions(); track session.studentId) {
+        <div
+          class="bg-white rounded-[22px] border overflow-hidden shadow-sm flex flex-col justify-between transition-all"
+          [ngClass]="{
+            'border-[#ECEEEE] hover:border-[#0B4A39]': !hasCritical(session) && !hasWarning(session),
+            'border-[#FDE68A] bg-[#FFFBEB]/30 ring-1 ring-[#FDE68A]': hasWarning(session),
+            'border-[#FCA5A5] bg-[#FEF2F2]/30 ring-2 ring-[#EF4444]/40 animate-pulse': hasCritical(session)
+          }">
+
+          <!-- Candidate Header -->
+          <div class="p-4 border-b border-[#ECEEEE]/80 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-[#0B4A39] text-[#21DB93] font-black text-xs flex items-center justify-center">
+                {{ getInitials(session.studentName) }}
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-[#0B4A39] leading-snug">{{ session.studentName }}</h3>
+                <span class="text-[10px] text-[#5A6066] font-mono">{{ session.className || 'CS401' }} • ID: {{ session.rollNumber }}</span>
+              </div>
+            </div>
+
+            <!-- Connection Quality Indicator -->
+            <span class="px-2 py-0.5 rounded-full text-[9px] font-black tracking-wide"
+              [ngClass]="{
+                'bg-[#ECFDF5] text-[#065F46]': session.connectionQuality === 'EXCELLENT',
+                'bg-[#FFFBEB] text-[#92400E]': session.connectionQuality === 'FAIR',
+                'bg-[#FEF2F2] text-[#991B1B]': session.connectionQuality === 'POOR'
+              }">
+              {{ session.connectionQuality }}
+            </span>
+          </div>
+
+          <!-- Video Stream Simulation Canvas -->
+          <div class="relative bg-[#0F1E1B] aspect-video w-full flex items-center justify-center overflow-hidden">
+            @if (session.videoActive) {
+              <!-- Simulated Video Avatar Silhouette -->
+              <div class="text-center space-y-2">
+                <div class="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mx-auto text-2xl text-white/60">
+                  👤
+                </div>
+                <div class="flex items-center justify-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#21DB93] animate-pulse"></span>
+                  <span class="text-[10px] font-mono text-white/70">1080p • 30fps</span>
+                </div>
+              </div>
+
+              <!-- Audio Waveform Bars Simulation -->
+              @if (session.audioActive) {
+                <div class="absolute bottom-2.5 left-3 flex items-end gap-1 h-3.5">
+                  <span class="w-1 bg-[#21DB93] rounded-full animate-bounce h-2" style="animation-delay: 0.1s"></span>
+                  <span class="w-1 bg-[#21DB93] rounded-full animate-bounce h-3.5" style="animation-delay: 0.2s"></span>
+                  <span class="w-1 bg-[#21DB93] rounded-full animate-bounce h-2.5" style="animation-delay: 0.3s"></span>
+                  <span class="w-1 bg-[#21DB93] rounded-full animate-bounce h-1.5" style="animation-delay: 0.15s"></span>
+                </div>
+              } @else {
+                <div class="absolute bottom-2.5 left-3 flex items-center gap-1 text-[10px] font-bold text-[#EF4444] bg-black/70 px-2 py-0.5 rounded-md">
+                  <span>🔇</span> Mic Muted
+                </div>
+              }
+            } @else {
+              <!-- Feed Offline / Camera Disconnected -->
+              <div class="text-center space-y-1.5 p-4">
+                <span class="text-2xl">⚠️</span>
+                <p class="text-xs font-bold text-[#EF4444]">Camera Disabled</p>
+                <p class="text-[10px] text-white/50">Video feed muted or permissions offline</p>
+              </div>
+            }
+
+            <!-- Alert Badges Overlay -->
+            @if (session.alerts.length > 0) {
+              <div class="absolute top-2.5 right-2.5 flex flex-col gap-1 items-end">
+                @for (alt of session.alerts; track alt.id) {
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold shadow-sm flex items-center gap-1"
+                    [ngClass]="alt.severity === 'CRITICAL' ? 'bg-[#EF4444] text-white' : 'bg-[#F59E0B] text-[#0B4A39]'">
+                    <span>{{ alt.severity === 'CRITICAL' ? '🚨' : '⚠️' }}</span>
+                    <span>{{ alt.code }}</span>
+                  </span>
+                }
+              </div>
+            }
+
+            <!-- 1-on-1 Audio Active Indicator Overlay -->
+            @if (isDirectAudioActive(session.studentId)) {
+              <div class="absolute inset-0 bg-[#0B4A39]/60 backdrop-blur-xs flex items-center justify-center p-3 text-center">
+                <div class="space-y-1 text-white">
+                  <span class="w-4 h-4 rounded-full bg-[#21DB93] animate-ping mx-auto block"></span>
+                  <p class="text-xs font-black">2-Way Voice Line Active</p>
+                  <p class="text-[10px] opacity-80">You are in direct contact with {{ session.studentName }}</p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Direct Mic Contact & Remote Hardware Controls Bar -->
+          <div class="px-4 py-2.5 bg-[#F8FAF9] border-t border-[#ECEEEE]/80 flex items-center justify-between gap-2">
+            <!-- 1-on-1 Direct Audio Call Button -->
+            <button
+              (click)="toggleDirectAudio(session)"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              [ngClass]="isDirectAudioActive(session.studentId) ? 'bg-[#21DB93] text-[#0B4A39] ring-2 ring-[#21DB93]' : 'bg-white border border-[#ECEEEE] hover:border-[#0B4A39] text-[#0B4A39]'">
+              <span>🎙️</span>
+              <span>{{ isDirectAudioActive(session.studentId) ? 'End Call' : 'Speak to Student' }}</span>
+            </button>
+
+            <!-- Remote Mic & Cam Toggles -->
+            <div class="flex items-center gap-1.5">
+              <!-- Mic Toggle -->
+              <button
+                (click)="toggleStudentMic(session, $event)"
+                [title]="session.audioActive ? 'Remotely Mute Student Mic' : 'Remotely Unmute Student Mic'"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all cursor-pointer border"
+                [ngClass]="session.audioActive ? 'bg-white border-[#ECEEEE] text-[#059669] hover:bg-[#ECFDF5]' : 'bg-[#FEF2F2] border-[#FCA5A5] text-[#EF4444]'">
+                {{ session.audioActive ? '🎤' : '🔇' }}
+              </button>
+
+              <!-- Cam Toggle -->
+              <button
+                (click)="toggleStudentCam(session, $event)"
+                [title]="session.videoActive ? 'Remotely Disable Student Camera' : 'Remotely Enable Student Camera'"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all cursor-pointer border"
+                [ngClass]="session.videoActive ? 'bg-white border-[#ECEEEE] text-[#059669] hover:bg-[#ECFDF5]' : 'bg-[#FEF2F2] border-[#FCA5A5] text-[#EF4444]'">
+                {{ session.videoActive ? '📹' : '📷' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Actions & Risk Meter -->
+          <div class="p-3 bg-white border-t border-[#ECEEEE]/60 space-y-2">
+            <!-- Fraud Risk Pill -->
+            <div class="flex items-center justify-between text-[10px]">
+              <span class="font-bold text-[#5A6066]">AI Biometric Risk:</span>
+              <span class="font-mono font-black"
+                    [ngClass]="(session.fraudRiskScore || 0) > 50 ? 'text-red-600' : (session.fraudRiskScore || 0) > 20 ? 'text-amber-600' : 'text-emerald-600'">
+                {{ session.fraudRiskScore || 0 }}% {{ (session.fraudRiskScore || 0) > 50 ? 'HIGH RISK' : (session.fraudRiskScore || 0) > 20 ? 'SUSPICIOUS' : 'CLEAN' }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between gap-1.5 pt-1">
+              <button
+                (click)="openForensicDossier(session, $event)"
+                class="px-2 py-1 rounded-lg bg-[#E6F4F0] hover:bg-[#0B4A39] text-[#0B4A39] hover:text-white text-[10px] font-black transition-all cursor-pointer border border-[#21DB93]/30 flex items-center gap-1">
+                <span>🔍 Forensic Dossier</span>
+              </button>
+
+              <div class="flex items-center gap-1">
+                <button
+                  (click)="openInspector(session)"
+                  class="px-2 py-1 rounded-lg bg-[#F8FAF9] hover:bg-[#F4F6F5] text-[#5A6066] text-[10px] font-bold transition-all cursor-pointer border border-[#ECEEEE]">
+                  Inspect
+                </button>
+                <button
+                  (click)="openInspector(session)"
+                  class="px-2 py-1 rounded-lg bg-[#0B4A39] hover:bg-[#08382B] text-white text-[10px] font-bold transition-all cursor-pointer shadow-2xs">
+                  📢 Warn
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+  <!-- LIST VIEW -->
+  @if (viewMode() === 'LIST') {
+    <div class="bg-white rounded-[22px] border border-[#ECEEEE] shadow-sm overflow-hidden">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-[#F8FAF9] border-b border-[#ECEEEE] text-[11px] font-bold uppercase tracking-wider text-[#5A6066]">
+            <th class="py-3.5 px-6">Candidate</th>
+            <th class="py-3.5 px-4">Class</th>
+            <th class="py-3.5 px-4">Roll</th>
+            <th class="py-3.5 px-4">Direct Voice Call</th>
+            <th class="py-3.5 px-4">Hardware Controls</th>
+            <th class="py-3.5 px-4">Flags</th>
+            <th class="py-3.5 px-6 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#ECEEEE]">
+          @for (s of filteredSessions(); track s.studentId) {
+            <tr class="hover:bg-[#F4F6F5]/40 transition-all">
+              <td class="py-3.5 px-6 font-bold text-[#0B4A39]">
+                {{ s.studentName }}
+              </td>
+              <td class="py-3.5 px-4 text-[#5A6066]">
+                {{ s.className || 'CS401' }}
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[#5A6066]">
+                {{ s.rollNumber }}
+              </td>
+              <td class="py-3.5 px-4">
+                <button
+                  (click)="toggleDirectAudio(s)"
+                  class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border"
+                  [ngClass]="isDirectAudioActive(s.studentId) ? 'bg-[#21DB93] text-[#0B4A39]' : 'bg-white border-[#ECEEEE] text-[#0B4A39] hover:border-[#0B4A39]'">
+                  🎙️ {{ isDirectAudioActive(s.studentId) ? 'End Call' : 'Speak' }}
+                </button>
+              </td>
+              <td class="py-3.5 px-4">
+                <div class="flex items-center gap-1.5">
+                  <button
+                    (click)="toggleStudentMic(s, $event)"
+                    class="px-2 py-1 rounded text-[11px] font-bold border"
+                    [ngClass]="s.audioActive ? 'bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]' : 'bg-[#FEF2F2] text-[#EF4444] border-[#FCA5A5]'">
+                    {{ s.audioActive ? '🎤 Mic On' : '🔇 Muted' }}
+                  </button>
+                  <button
+                    (click)="toggleStudentCam(s, $event)"
+                    class="px-2 py-1 rounded text-[11px] font-bold border"
+                    [ngClass]="s.videoActive ? 'bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]' : 'bg-[#FEF2F2] text-[#EF4444] border-[#FCA5A5]'">
+                    {{ s.videoActive ? '📹 Cam On' : '📷 Cam Off' }}
+                  </button>
+                </div>
+              </td>
+              <td class="py-3.5 px-4">
+                @if (s.alerts.length === 0) {
+                  <span class="text-[#059669] font-bold text-[11px]">0 Alerts</span>
+                } @else {
+                  <div class="flex items-center gap-1">
+                    @for (a of s.alerts; track a.id) {
+                      <span class="px-2 py-0.5 rounded text-[10px] font-extrabold"
+                        [ngClass]="a.severity === 'CRITICAL' ? 'bg-[#FEF2F2] text-[#EF4444]' : 'bg-[#FFFBEB] text-[#D97706]'">
+                        {{ a.code }}
+                      </span>
+                    }
+                  </div>
+                }
+              </td>
+              <td class="py-3.5 px-6 text-right">
+                <button
+                  (click)="openInspector(s)"
+                  class="px-3 py-1.5 rounded-lg bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all cursor-pointer">
+                  Inspect & Intercom
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- CLASS-WIDE ANNOUNCEMENT BROADCAST MODAL -->
+  @if (showBroadcastModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150">
+      <div class="w-full max-w-lg bg-white rounded-[24px] shadow-2xl p-6 border border-[#ECEEEE] space-y-4">
+        <div class="flex items-center justify-between border-b border-[#ECEEEE] pb-3">
+          <div>
+            <span class="text-[10px] font-bold text-[#0B4A39] uppercase tracking-wider">All-Hands Intercom</span>
+            <h2 class="text-base font-bold text-[#0B4A39]">Broadcast Message to {{ selectedClassName() }}</h2>
+          </div>
+          <button (click)="showBroadcastModal.set(false)" class="text-sm font-bold text-[#8C959B] hover:text-[#0B4A39] cursor-pointer">✕</button>
+        </div>
+
+        <p class="text-xs text-[#5A6066]">
+          This announcement will be dispatched instantaneously to every candidate currently taking an oral viva in this class cohort.
+        </p>
+
+        <!-- Preset Broadcast Templates -->
+        <div class="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            (click)="classBroadcastMessage.set('Attention All Examinees: 10 minutes remaining in the viva session. Please conclude your final answers.')"
+            class="px-2.5 py-1 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-[10px] font-bold text-[#0B4A39] hover:border-[#0B4A39] transition-all cursor-pointer">
+            ⏳ 10 Mins Left
+          </button>
+          <button
+            type="button"
+            (click)="classBroadcastMessage.set('Network sync notice: Please do not refresh your browser; audio questions are progressing as scheduled.')"
+            class="px-2.5 py-1 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-[10px] font-bold text-[#0B4A39] hover:border-[#0B4A39] transition-all cursor-pointer">
+            🌐 Network Notice
+          </button>
+          <button
+            type="button"
+            (click)="classBroadcastMessage.set('Reminder: Maintain eye contact with the camera and avoid background distractions.')"
+            class="px-2.5 py-1 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-[10px] font-bold text-[#0B4A39] hover:border-[#0B4A39] transition-all cursor-pointer">
+            👁️ Camera Reminder
+          </button>
+        </div>
+
+        <textarea
+          [(ngModel)]="classBroadcastMessage"
+          rows="4"
+          placeholder="Type urgent announcement to all students..."
+          class="w-full p-3.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] resize-none"
+        ></textarea>
+
+        @if (broadcastSuccess()) {
+          <div class="p-3 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] text-xs font-bold flex items-center gap-2">
+            <span>✓</span>
+            <span>Announcement broadcasted to all students in {{ selectedClassName() }}!</span>
+          </div>
+        }
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button
+            (click)="showBroadcastModal.set(false)"
+            class="px-4 py-2 rounded-xl bg-white border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:text-[#0B4A39] cursor-pointer">
+            Cancel
+          </button>
+          <button
+            (click)="sendClassBroadcast()"
+            [disabled]="!classBroadcastMessage().trim() || isBroadcasting()"
+            class="px-6 py-2 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-40 text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-2">
+            @if (isBroadcasting()) {
+              <span>Broadcasting...</span>
+            } @else {
+              <span>📢 Broadcast to Everyone</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- CANDIDATE FOCUS INSPECTOR DRAWER -->
+  @if (inspectedSession()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-end bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+      <div class="w-full max-w-xl h-full bg-white shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-[#ECEEEE]">
+
+        <!-- Drawer Header -->
+        <div class="p-6 border-b border-[#ECEEEE] flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold text-[#8C959B] uppercase tracking-wider">Candidate Focus Inspector</span>
+            <h2 class="text-lg font-bold text-[#0B4A39]">{{ inspectedSession()?.studentName }}</h2>
+            <span class="text-xs text-[#5A6066] font-mono">{{ inspectedSession()?.className }} • Roll: {{ inspectedSession()?.rollNumber }}</span>
+          </div>
+
+          <button
+            (click)="closeInspector()"
+            class="w-8 h-8 rounded-full bg-[#F8FAF9] border border-[#ECEEEE] text-[#5A6066] hover:text-[#0B4A39] flex items-center justify-center cursor-pointer font-bold transition-all">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-6 space-y-6 flex-1">
+          <!-- Expanded HD Video View -->
+          <div class="relative bg-[#0F1E1B] aspect-video rounded-2xl overflow-hidden flex items-center justify-center shadow-inner">
+            @if (inspectedSession()?.videoActive) {
+              <div class="text-center space-y-3">
+                <div class="w-24 h-24 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center mx-auto text-4xl text-white/60">
+                  👤
+                </div>
+                <p class="text-xs font-mono text-[#21DB93]">HD Stream Active • Latency: 42ms</p>
+              </div>
+
+              <!-- Audio Level Overlay -->
+              <div class="absolute bottom-3 left-4 flex items-center gap-2 bg-black/60 px-3 py-1 rounded-full text-xs font-mono text-white/80">
+                <span>Mic Audio:</span>
+                <span class="text-[#21DB93] font-bold">{{ inspectedSession()?.audioActive ? '82% (Active)' : 'Muted' }}</span>
+              </div>
+            } @else {
+              <div class="text-center space-y-2 p-6">
+                <span class="text-4xl">⚠️</span>
+                <h3 class="text-sm font-bold text-[#EF4444]">Camera Stream Disabled</h3>
+                <p class="text-xs text-white/50">Examinee video source returned EOF error or was remotely disabled</p>
+              </div>
+            }
+          </div>
+
+          <!-- Direct Hardware & Audio Controls in Inspector -->
+          <div class="p-4 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-3">
+            <h3 class="text-xs font-bold text-[#0B4A39] uppercase tracking-wider">Candidate Direct Controls</h3>
+            <div class="grid grid-cols-3 gap-2">
+              <button
+                (click)="toggleDirectAudio(inspectedSession()!)"
+                class="py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 border"
+                [ngClass]="isDirectAudioActive(inspectedSession()!.studentId) ? 'bg-[#21DB93] text-[#0B4A39] border-[#21DB93]' : 'bg-white border-[#ECEEEE] text-[#0B4A39] hover:border-[#0B4A39]'">
+                <span>🎙️</span>
+                <span>{{ isDirectAudioActive(inspectedSession()!.studentId) ? 'End Call' : 'Speak to Student' }}</span>
+              </button>
+
+              <button
+                (click)="toggleStudentMic(inspectedSession()!)"
+                class="py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 border"
+                [ngClass]="inspectedSession()!.audioActive ? 'bg-white border-[#ECEEEE] text-[#059669]' : 'bg-[#FEF2F2] border-[#FCA5A5] text-[#EF4444]'">
+                <span>{{ inspectedSession()!.audioActive ? '🎤 Mute Mic' : '🎤 Unmute Mic' }}</span>
+              </button>
+
+              <button
+                (click)="toggleStudentCam(inspectedSession()!)"
+                class="py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 border"
+                [ngClass]="inspectedSession()!.videoActive ? 'bg-white border-[#ECEEEE] text-[#059669]' : 'bg-[#FEF2F2] border-[#FCA5A5] text-[#EF4444]'">
+                <span>{{ inspectedSession()!.videoActive ? '📹 Disable Cam' : '📹 Enable Cam' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Integrity Event Timeline -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-[#0B4A39] uppercase tracking-wider">Integrity Event Timeline</h3>
+            <div class="p-4 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-2.5 text-xs">
+              <div class="flex items-center gap-2 text-[#5A6066]">
+                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                <span class="font-mono text-[11px]">14:00:00</span>
+                <span>Oral viva assessment started</span>
+              </div>
+
+              @for (alt of inspectedSession()?.alerts; track alt.id) {
+                <div class="flex items-start gap-2"
+                  [ngClass]="alt.severity === 'CRITICAL' ? 'text-[#EF4444]' : 'text-[#D97706]'">
+                  <span class="w-2 h-2 rounded-full mt-1 shrink-0"
+                    [ngClass]="alt.severity === 'CRITICAL' ? 'bg-[#EF4444]' : 'bg-[#F59E0B]'"></span>
+                  <span class="font-mono text-[11px] shrink-0">{{ alt.timestamp }}</span>
+                  <span class="font-semibold">{{ alt.message }}</span>
+                </div>
+              }
+
+              @if (inspectedSession()?.alerts?.length === 0) {
+                <div class="text-[11px] text-[#059669] font-semibold italic">
+                  ✓ No integrity warnings detected during this session.
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Mentor Live Intercom Form -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold text-[#0B4A39] uppercase tracking-wider">Send Warning to Student's Screen</h3>
+            </div>
+
+            <!-- Preset warning pills -->
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                (click)="intercomMessage.set('Please ensure your face remains centered in the camera frame.')"
+                class="px-2.5 py-1 rounded-lg bg-[#F4F6F5] text-[10px] font-bold text-[#0B4A39] hover:bg-[#ECEEEE] transition-all cursor-pointer">
+                Center Face
+              </button>
+              <button
+                type="button"
+                (click)="intercomMessage.set('Please keep your browser full screen and avoid switching tabs.')"
+                class="px-2.5 py-1 rounded-lg bg-[#F4F6F5] text-[10px] font-bold text-[#0B4A39] hover:bg-[#ECEEEE] transition-all cursor-pointer">
+                No Tab Switch
+              </button>
+              <button
+                type="button"
+                (click)="intercomMessage.set('Please check your microphone connection and speak clearly.')"
+                class="px-2.5 py-1 rounded-lg bg-[#F4F6F5] text-[10px] font-bold text-[#0B4A39] hover:bg-[#ECEEEE] transition-all cursor-pointer">
+                Check Mic
+              </button>
+            </div>
+
+            <textarea
+              [(ngModel)]="intercomMessage"
+              rows="3"
+              placeholder="Type a direct warning to this student..."
+              class="w-full p-3 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] resize-none"
+            ></textarea>
+
+            @if (intercomSuccess()) {
+              <div class="p-3 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] text-xs font-bold flex items-center gap-2">
+                <span>✓</span>
+                <span>Warning broadcasted successfully to candidate terminal.</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-6 border-t border-[#ECEEEE] flex items-center justify-between gap-3 bg-[#F8FAF9]">
+          <button
+            (click)="closeInspector()"
+            class="px-4 py-2.5 rounded-xl bg-white border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:text-[#0B4A39] transition-all cursor-pointer">
+            Close
+          </button>
+
+          <button
+            (click)="sendIntercom()"
+            [disabled]="!intercomMessage().trim() || isIntercomSending()"
+            class="px-6 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-50 text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-2">
+            @if (isIntercomSending()) {
+              <span class="animate-spin text-sm">↻</span>
+              <span>Sending...</span>
+            } @else {
+              <span>📢 Send Warning</span>
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- FORENSIC EVIDENCE DOSSIER MODAL -->
+  @if (selectedForensicSession(); as session) {
+    <div class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-3xl bg-white rounded-[28px] overflow-hidden shadow-2xl border border-white/40 flex flex-col max-h-[92vh]">
+        
+        <!-- Modal Header -->
+        <div class="p-6 bg-gradient-to-r from-[#0B4A39] via-[#0B4A39] to-[#0B4A39] text-white flex items-center justify-between">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/40">
+                🚨 AI Forensic Malpractice Audit Dossier
+              </span>
+              <span class="text-xs text-white/80 font-mono">Case ID: #EV-{{ session.rollNumber }}-2026</span>
+            </div>
+            <h3 class="text-lg font-black text-white flex items-center gap-2">
+              <span>{{ session.studentName }}</span>
+              <span class="text-xs font-normal text-white/70 font-mono">({{ session.rollNumber }})</span>
+            </h3>
+          </div>
+
+          <button
+            (click)="closeForensicDossier()"
+            class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 md:p-8 overflow-y-auto space-y-6 text-xs text-[#5A6066]">
+          
+          <!-- Fraud Risk KPI Matrix Bar -->
+          <div class="p-4 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <span class="text-[10px] uppercase font-bold text-[#8C959B] block">Fraud Risk Probability</span>
+              <span class="text-xl font-black font-mono"
+                    [ngClass]="(session.fraudRiskScore || 0) > 50 ? 'text-red-600' : (session.fraudRiskScore || 0) > 20 ? 'text-amber-600' : 'text-emerald-600'">
+                {{ session.fraudRiskScore || 0 }}% {{ (session.fraudRiskScore || 0) > 50 ? 'CRITICAL' : 'ELEVATED' }}
+              </span>
+            </div>
+            <div>
+              <span class="text-[10px] uppercase font-bold text-[#8C959B] block">Class Section</span>
+              <span class="text-xs font-bold text-[#0B4A39]">{{ session.className || 'CS801 Deep Learning' }}</span>
+            </div>
+            <div>
+              <span class="text-[10px] uppercase font-bold text-[#8C959B] block">Disciplinary Status</span>
+              <span class="text-xs font-black uppercase"
+                    [ngClass]="session.disciplinaryStatus === 'DISQUALIFIED' ? 'text-red-600' : session.disciplinaryStatus === 'WARNED' ? 'text-amber-600' : 'text-emerald-600'">
+                ● {{ session.disciplinaryStatus || 'NONE' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Captured Forensic Evidence Frames & Snapshots -->
+          <div class="space-y-3">
+            <h4 class="font-black text-[#0B4A39] text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <span>📸 Captured Forensic Evidence Snapshots</span>
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Evidence Snapshot Frame 1 -->
+              <div class="p-3 rounded-2xl bg-[#0F1E1B] border border-red-500/40 text-white space-y-2">
+                <div class="relative aspect-video rounded-xl bg-black/60 overflow-hidden flex items-center justify-center">
+                  <div class="text-center space-y-1">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xl font-bold">
+                      👥
+                    </div>
+                    <p class="text-[10px] font-mono text-red-300">Neural Box: Secondary Face at (x:420, y:180)</p>
+                  </div>
+                  <!-- Bounding Box -->
+                  <div class="absolute right-4 top-3 w-16 h-16 border-2 border-red-500 rounded-lg animate-pulse"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="font-mono text-white/70">Frame #4120 • 14:18:10</span>
+                  <span class="px-1.5 py-0.2 rounded bg-red-900/60 text-red-300 font-bold">94.1% Confidence</span>
+                </div>
+              </div>
+
+              <!-- Evidence Snapshot Frame 2 -->
+              <div class="p-3 rounded-2xl bg-[#0F1E1B] border border-amber-500/40 text-white space-y-2">
+                <div class="relative aspect-video rounded-xl bg-black/60 overflow-hidden flex items-center justify-center">
+                  <div class="text-center space-y-1">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">
+                      🪟
+                    </div>
+                    <p class="text-[10px] font-mono text-amber-300">Window Blur: Focus lost for 3.4s</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="font-mono text-white/70">Telemetry #4088 • 14:12:45</span>
+                  <span class="px-1.5 py-0.2 rounded bg-amber-900/60 text-amber-300 font-bold">OS Window Event</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chronological Forensic Incident Log -->
+          <div class="space-y-3">
+            <h4 class="font-black text-[#0B4A39] text-xs uppercase tracking-wider">
+              Audit Chronology & Anomaly Stream
+            </h4>
+
+            <div class="p-4 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-2.5">
+              @for (ev of session.forensicEvidence; track ev.id) {
+                <div class="p-2.5 rounded-xl bg-white border border-[#ECEEEE] flex items-start justify-between gap-3 text-xs">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-[#0B4A39]">{{ ev.anomalyType }}</span>
+                      <span class="text-[10px] font-mono text-[#8C959B]">{{ ev.timestamp }}</span>
+                    </div>
+                    <p class="text-[11px] text-[#5A6066] leading-relaxed">{{ ev.description }}</p>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase shrink-0"
+                        [ngClass]="ev.verifiedStatus === 'CONFIRMED_FRAUD' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'">
+                    {{ ev.verifiedStatus }}
+                  </span>
+                </div>
+              }
+              @if (!session.forensicEvidence || session.forensicEvidence.length === 0) {
+                <p class="text-[11px] text-emerald-700 italic font-semibold">✓ Zero biometric anomalies detected for this examinee.</p>
+              }
+            </div>
+          </div>
+
+          <!-- Official Disciplinary Action Triggers -->
+          <div class="p-4 rounded-2xl bg-[#FEF2F2] border border-[#FCA5A5] space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-xs font-black text-[#991B1B]">Official Examiner Disciplinary Actions</h4>
+                <p class="text-[10px] text-[#7F1D1D]">Select appropriate action per university examination bylaws</p>
+              </div>
+              <span class="text-base">⚖️</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+              <button
+                (click)="issueOfficialWarning(session)"
+                class="py-2.5 px-3 rounded-xl bg-white hover:bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-1.5">
+                <span>⚠️ Issue Warning</span>
+              </button>
+
+              <button
+                (click)="triggerBiometricReauth(session)"
+                class="py-2.5 px-3 rounded-xl bg-white hover:bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-1.5">
+                <span>🔄 3D Facial Re-Auth</span>
+              </button>
+
+              <button
+                (click)="disqualifySession(session)"
+                class="py-2.5 px-3 rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white text-xs font-black transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5">
+                <span>🚨 Disqualify & Freeze</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 bg-[#F8FAF9] border-t border-[#ECEEEE] flex items-center justify-between">
+          <button
+            (click)="closeForensicDossier()"
+            class="px-4 py-2 rounded-xl border border-[#ECEEEE] text-xs font-bold text-[#5A6066] hover:bg-white cursor-pointer">
+            Close
+          </button>
+
+          <button
+            (click)="downloadForensicAuditReport(session)"
+            class="px-5 py-2 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-black shadow-md cursor-pointer transition-all flex items-center gap-1.5">
+            <span>📄 Download Forensic Audit Dossier (PDF)</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

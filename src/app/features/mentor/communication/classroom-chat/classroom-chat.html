@@ -1,0 +1,234 @@
+<div class="max-w-7xl mx-auto h-[calc(100vh-140px)] flex flex-col space-y-4">
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-2xl p-4 md:p-6 border border-[#ECEEEE] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-black tracking-wider uppercase">
+          Real-Time Intercom & Academic Channels
+        </span>
+        <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#10B981] bg-[#ECFDF5] px-2.5 py-0.5 rounded-full">
+          <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
+          Live Gemini 3.6 AI Bot Active
+        </span>
+      </div>
+      <h1 class="text-xl font-extrabold text-[#0B4A39] mt-1">
+        Classroom Discussion & Faculty Desk
+      </h1>
+      <p class="text-xs text-[#5A6066] mt-0.5">
+        Communicate directly with course cohorts, pin exam instructions, and query the syllabus-grounded Gemini AI Bot.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a routerLink="/mentor/class-scheduler" class="px-3.5 py-2 rounded-xl bg-white border border-[#ECEEEE] text-xs font-bold text-[#0B4A39] hover:border-[#0B4A39] transition-all shadow-2xs">
+        📅 Viva Scheduler
+      </a>
+      <a routerLink="/mentor/proctoring" class="px-3.5 py-2 rounded-xl bg-[#0B4A39] text-white text-xs font-bold hover:bg-[#08382B] transition-all shadow-sm">
+        🛡️ Proctoring Console →
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Chat Workspace: Channels + Active Stream -->
+  <div class="flex-1 bg-white rounded-[22px] border border-[#ECEEEE] shadow-sm overflow-hidden flex flex-col md:flex-row">
+
+    <!-- Channels Left Sidebar -->
+    <div class="w-full md:w-80 border-r border-[#ECEEEE] flex flex-col bg-[#F8FAF9]">
+      <div class="p-4 border-b border-[#ECEEEE] flex items-center justify-between">
+        <div>
+          <h2 class="text-xs font-black uppercase tracking-wider text-[#5A6066]">Course Channels</h2>
+          <span class="text-[10px] text-[#8C959B]">Active Semesters</span>
+        </div>
+        <span class="px-2 py-0.5 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-[10px] font-mono font-bold">
+          {{ channels().length }} Active
+        </span>
+      </div>
+
+      <div class="p-3 space-y-1.5 flex-1 overflow-y-auto">
+        @for (chan of channels(); track chan.id) {
+          <button
+            type="button"
+            (click)="selectChannel(chan.id)"
+            class="w-full text-left p-3 rounded-xl transition-all cursor-pointer flex items-center justify-between gap-2"
+            [ngClass]="selectedChannelId() === chan.id ? 'bg-[#0B4A39] text-white shadow-sm' : 'bg-white hover:bg-[#F4F6F5] text-[#0B4A39] border border-[#ECEEEE]'">
+            <div class="space-y-0.5 truncate">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold block truncate">{{ chan.name }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-mono opacity-80" [ngClass]="selectedChannelId() === chan.id ? 'text-[#21DB93]' : 'text-[#0B4A39] font-bold'">
+                  {{ chan.courseCode }}
+                </span>
+                <span class="text-[9px] opacity-70">• Class #{{ chan.classId || '1' }}</span>
+              </div>
+            </div>
+
+            @if (chan.unreadCount > 0) {
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black shrink-0"
+                [ngClass]="selectedChannelId() === chan.id ? 'bg-[#21DB93] text-[#0B4A39]' : 'bg-[#EF4444] text-white animate-pulse'">
+                {{ chan.unreadCount }}
+              </span>
+            }
+          </button>
+        }
+      </div>
+
+      <!-- AI Bot Helper Info Box -->
+      <div class="p-3 m-3 bg-[#E6F4F0] border border-[#A2D9CE] rounded-xl">
+        <div class="flex items-center gap-2">
+          <span class="text-sm">✨</span>
+          <span class="text-[11px] font-bold text-[#0B4A39]">ScholarX AI Co-Tutor</span>
+        </div>
+        <p class="text-[10px] text-[#2C4A45] mt-1 leading-snug">
+          Type <code class="font-mono bg-white px-1 rounded text-[#0B4A39]">@ai</code> or ask any conceptual question to receive live syllabus-referenced answers instantly.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Chat Area -->
+    <div class="flex-1 flex flex-col justify-between bg-white">
+
+      <!-- Active Channel Header -->
+      <div class="p-4 border-b border-[#ECEEEE] flex items-center justify-between bg-[#FCFDFD]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#E6F4F0] border border-[#A2D9CE] flex items-center justify-center font-mono font-black text-sm text-[#0B4A39]">
+            {{ activeChannel()?.courseCode || 'SYS' }}
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-extrabold text-[#0B4A39]">{{ activeChannel()?.name }}</h3>
+              <span class="px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#059669] text-[10px] font-bold">
+                Direct Sync
+              </span>
+            </div>
+            <span class="text-[11px] text-[#5A6066]">48 Enrolled Candidates • Oral Evaluation Cohort Alpha</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-lg bg-[#F8FAF9] border border-[#ECEEEE] text-[11px] font-mono text-[#5A6066]">
+            Channel ID: {{ selectedChannelId() }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Pinned Announcement Banner -->
+      @if (pinnedAnnouncement()) {
+        <div class="bg-[#FFFBEB] border-b border-[#FDE68A] px-4 py-2.5 flex items-center justify-between text-xs text-[#92400E]">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">📌</span>
+            <span class="font-medium">{{ pinnedAnnouncement() }}</span>
+          </div>
+          <button (click)="pinnedAnnouncement.set(null)" class="text-[#92400E] hover:text-[#78350F] font-bold cursor-pointer text-xs">
+            ✕
+          </button>
+        </div>
+      }
+
+      <!-- Messages Stream -->
+      <div id="chat-scroll-container" class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#FAFCFB]">
+        @for (msg of messages(); track msg.id) {
+          <div class="flex items-start gap-3" [ngClass]="msg.isMe ? 'flex-row-reverse' : ''">
+            
+            <!-- Avatar -->
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 shadow-2xs"
+              [ngClass]="{
+                'bg-[#0B4A39] text-white': msg.isMe,
+                'bg-[#21DB93] text-[#0B4A39] border border-[#10B981]': msg.senderName.includes('AI') || msg.senderRole === 'TA',
+                'bg-[#F4F6F5] text-[#0B4A39]': !msg.isMe && !msg.senderName.includes('AI') && msg.senderRole !== 'TA'
+              }">
+              @if (msg.senderName.includes('AI')) {
+                <span>✨</span>
+              } @else {
+                {{ getInitials(msg.senderName) }}
+              }
+            </div>
+
+            <!-- Message Card -->
+            <div class="max-w-lg space-y-1" [ngClass]="msg.isMe ? 'items-end' : ''">
+              <div class="flex items-center gap-2 text-[10px]" [ngClass]="msg.isMe ? 'justify-end' : ''">
+                <span class="font-bold text-[#0B4A39]">{{ msg.senderName }}</span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase"
+                  [ngClass]="{
+                    'bg-[#E6F4F0] text-[#0B4A39]': msg.senderRole === 'FACULTY',
+                    'bg-[#ECFDF5] text-[#059669]': msg.senderRole === 'TA',
+                    'bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]': msg.senderName.includes('AI'),
+                    'bg-[#F8FAF9] text-[#8C959B] border border-[#F4F6F5]': msg.senderRole === 'STUDENT'
+                  }">
+                  {{ msg.senderName.includes('AI') ? 'AI TUTOR BOT' : msg.senderRole }}
+                </span>
+                <span class="text-[#8C959B]">{{ msg.timestamp }}</span>
+              </div>
+
+              <div class="p-3.5 rounded-2xl text-xs leading-relaxed shadow-2xs"
+                [ngClass]="{
+                  'bg-[#0B4A39] text-white rounded-tr-xs': msg.isMe,
+                  'bg-[#F0FDF4] border border-[#86EFAC] text-[#14532D] rounded-tl-xs font-normal': msg.senderName.includes('AI'),
+                  'bg-white border border-[#ECEEEE] text-[#0B4A39] rounded-tl-xs': !msg.isMe && !msg.senderName.includes('AI')
+                }">
+                {{ msg.content }}
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- AI Generating / Thinking indicator -->
+        @if (isAiThinking()) {
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-[#21DB93] text-[#0B4A39] border border-[#10B981] flex items-center justify-center font-black text-xs shrink-0 animate-bounce">
+              ✨
+            </div>
+            <div class="bg-[#F0FDF4] border border-[#86EFAC] p-3 rounded-2xl rounded-tl-xs text-xs text-[#166534] flex items-center gap-2 shadow-2xs">
+              <span class="w-2 h-2 rounded-full bg-[#16A34A] animate-ping"></span>
+              <span class="font-medium">ScholarX AI Tutor is formulating a grounded answer using Gemini 3.6 Flash...</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Quick Prompt Chips -->
+      <div class="px-4 pt-2.5 pb-1 bg-white border-t border-[#F4F6F5] flex items-center gap-2 overflow-x-auto">
+        <span class="text-[10px] font-bold text-[#8C959B] shrink-0 uppercase tracking-wider">💡 Quick Prompts:</span>
+        @for (prompt of quickPrompts; track prompt) {
+          <button
+            type="button"
+            (click)="sendQuickPrompt(prompt)"
+            class="px-2.5 py-1 rounded-lg bg-[#F8FAF9] hover:bg-[#E6F4F0] hover:text-[#0B4A39] border border-[#ECEEEE] text-[10px] font-medium text-[#5A6066] whitespace-nowrap transition-colors cursor-pointer">
+            {{ prompt }}
+          </button>
+        }
+      </div>
+
+      <!-- Input Bar -->
+      <div class="p-4 border-t border-[#ECEEEE] bg-[#F8FAF9]">
+        <form (ngSubmit)="sendMessage()" class="flex items-center gap-3">
+          <input
+            type="text"
+            [(ngModel)]="messageText"
+            name="chatInput"
+            placeholder="Ask a question or type '@ai <query>' to query Gemini tutor bot..."
+            class="flex-1 px-4 py-2.5 rounded-xl bg-white border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] placeholder-[#8C959B] focus:outline-none focus:border-[#0B4A39] shadow-2xs"
+          />
+
+          <button
+            type="submit"
+            [disabled]="!messageText().trim() || isSending()"
+            class="px-5 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-40 text-white text-xs font-bold transition-all shadow-sm cursor-pointer shrink-0 flex items-center gap-1.5">
+            @if (isSending()) {
+              <span class="animate-spin inline-block">⏳</span>
+              <span>Sending...</span>
+            } @else {
+              <span>Send Message</span>
+              <span>➔</span>
+            }
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+

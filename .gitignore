@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production & Build outputs
+dist/
+tmp/
+out-tsc/
+
+# Backend (Managed in separate private repository)
+backend/
+
+# Sensitive Environment & Credentials
+.env
+.env.*
+!.env.example
+*.local.ts
+docs/api_keys.md
+
+# Logs & Runtime telemetry
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.logs/
+
+# Angular & Build cache
+.angular/
+
+# Editor & OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Archive, temporary zips & scratch test images
+archive/
+*.zip
+scratch_*.png
+hero.png
+
+# Python Virtual Environments
+.venv/
+__pycache__/
+*.pyc

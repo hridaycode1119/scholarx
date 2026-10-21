@@ -1,0 +1,339 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Real-Time Student Join Request Toast -->
+  @if (liveJoinToast()) {
+    <div class="p-4 rounded-2xl bg-[#0B4A39] text-white border-2 border-[#21DB93] shadow-xl flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">👥</span>
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">Real-Time Enrollment Notification</span>
+          <p class="text-xs font-bold text-white">{{ liveJoinToast() }}</p>
+        </div>
+      </div>
+      <button (click)="liveJoinToast.set(null)" class="text-white/60 hover:text-white font-mono text-xs cursor-pointer">✕</button>
+    </div>
+  }
+
+  <!-- Class Created Success Banner -->
+  @if (classCreatedSuccess(); as createdCls) {
+    <div class="p-6 rounded-[24px] bg-gradient-to-r from-[#0B4A39] via-[#0B4A39] to-[#0B4A39] text-white border-2 border-[#21DB93]/60 shadow-2xl space-y-4 animate-in fade-in duration-300">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-[#21DB93]/20 border border-[#21DB93]/40 text-[#21DB93] flex items-center justify-center text-2xl font-black shrink-0">
+            🎉
+          </div>
+          <div class="space-y-1">
+            <span class="text-[10px] font-black uppercase tracking-wider text-[#21DB93] block">Classroom Cohort Created Successfully!</span>
+            <h3 class="text-base md:text-lg font-black text-white">{{ createdCls.name }} ({{ createdCls.subjectCode }})</h3>
+            <p class="text-xs text-white/80">Share this direct enrollment link with students to allow 1-click joining:</p>
+          </div>
+        </div>
+
+        <!-- Join Code Badge -->
+        <div class="flex items-center gap-2 bg-black/40 px-3.5 py-2 rounded-xl border border-white/20 self-start md:self-auto shrink-0">
+          <span class="text-[10px] uppercase text-[#21DB93] font-bold">Code:</span>
+          <span class="font-mono text-sm font-black text-white tracking-wider">{{ createdCls.joinCode }}</span>
+        </div>
+      </div>
+
+      <!-- Specific Direct Join Link Strip -->
+      <div class="p-3.5 bg-black/50 rounded-2xl border border-[#21DB93]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 truncate text-xs">
+          <span class="text-base">🔗</span>
+          <div class="truncate">
+            <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Student Join Link</span>
+            <span class="font-mono text-xs text-[#21DB93] font-bold truncate select-all block">{{ getJoinLink(createdCls) }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button
+            (click)="copyJoinLink(createdCls)"
+            class="px-4 py-2 rounded-xl bg-[#21DB93] hover:bg-[#1bb87a] text-[#0B4A39] font-black text-xs transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
+            @if (copiedLinkId() === createdCls.id) {
+              <span>Link Copied! ✓</span>
+            } @else {
+              <span>🔗 Copy Specific Link</span>
+            }
+          </button>
+
+          <a
+            [href]="getJoinLink(createdCls)"
+            target="_blank"
+            class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all flex items-center gap-1">
+            <span>Test Link ↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Header & Actions -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-[#0B4A39]">My Classrooms</h1>
+      <p class="text-xs font-semibold text-[#5A6066] mt-0.5">Manage course cohorts, student enrollments, and oral vivas</p>
+    </div>
+
+    <button
+      (click)="openCreateModal()"
+      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] active:bg-[#0A3835] text-white text-sm font-bold shadow-sm transition-all cursor-pointer shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      Create New Class
+    </button>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-[#ECEEEE] shadow-sm">
+    <div class="relative w-full sm:w-80">
+      <input
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        placeholder="Search by class name, subject code, or join code..."
+        class="w-full pl-9 pr-4 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] placeholder-[#8C959B] focus:outline-none focus:border-[#0B4A39] transition-all"
+      />
+      <svg class="w-4 h-4 text-[#8C959B] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    </div>
+
+    <div class="flex items-center gap-2 text-xs font-semibold text-[#5A6066]">
+      <span>Total Classes:</span>
+      <span class="px-2.5 py-0.5 rounded-full bg-[#F4F6F5] text-[#0B4A39] font-bold">{{ filteredClasses.length }}</span>
+    </div>
+  </div>
+
+  <!-- Loading Shimmer State -->
+  @if (isLoading()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="bg-white rounded-[20px] p-6 border border-[#ECEEEE] shadow-sm animate-pulse space-y-4">
+          <div class="h-4 bg-[#F4F6F5] rounded w-24"></div>
+          <div class="h-6 bg-[#F4F6F5] rounded w-48"></div>
+          <div class="h-10 bg-[#F4F6F5] rounded"></div>
+          <div class="h-8 bg-[#F4F6F5] rounded w-full"></div>
+        </div>
+      }
+    </div>
+  } @else if (filteredClasses.length === 0) {
+    <!-- Empty State -->
+    <div class="bg-white rounded-[20px] p-12 border border-[#ECEEEE] text-center space-y-4 shadow-sm">
+      <div class="w-16 h-16 rounded-3xl bg-[#E6F4F0] text-[#0B4A39] flex items-center justify-center mx-auto text-2xl">
+        📚
+      </div>
+      <h3 class="text-base font-bold text-[#0B4A39]">No classrooms found</h3>
+      <p class="text-xs text-[#5A6066] max-w-sm mx-auto">
+        Create your first classroom cohort to begin generating AI assessments and proctoring oral vivas.
+      </p>
+      <button
+        (click)="openCreateModal()"
+        class="px-5 py-2 rounded-xl bg-[#0B4A39] text-white text-xs font-bold shadow-sm hover:bg-[#08382B] transition-all cursor-pointer">
+        + Create Class
+      </button>
+    </div>
+  } @else {
+    <!-- Classrooms Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (cls of filteredClasses; track cls.id) {
+        <div class="bg-white rounded-[20px] p-6 border border-[#ECEEEE] shadow-sm flex flex-col justify-between hover:border-[#0B4A39] hover:shadow-md transition-all space-y-5">
+          <div class="space-y-3">
+            <!-- Top Badges -->
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-[11px] font-bold">
+                {{ cls.subjectCode }}
+              </span>
+              <span class="text-[11px] font-medium text-[#5A6066]">
+                Sem {{ cls.semester }} • {{ cls.academicYear }}
+              </span>
+            </div>
+
+            <!-- Class Name -->
+            <h2 class="text-lg font-bold text-[#0B4A39] leading-snug">
+              {{ cls.name }}
+            </h2>
+
+            <!-- Direct Specific Join Link & Code Bar -->
+            <div class="p-3 bg-[#F8FAF9] rounded-xl border border-[#ECEEEE] space-y-2">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="block text-[10px] font-semibold text-[#8C959B] uppercase tracking-wider">Access Code</span>
+                  <span class="font-mono text-sm font-black text-[#0B4A39] tracking-wide">{{ cls.joinCode }}</span>
+                </div>
+                <button
+                  (click)="copyJoinCode(cls)"
+                  class="px-2.5 py-1 rounded-lg bg-white border border-[#ECEEEE] text-[#5A6066] hover:text-[#0B4A39] text-xs font-semibold flex items-center gap-1 shadow-2xs transition-all cursor-pointer">
+                  @if (copiedCodeId() === cls.id) {
+                    <span class="text-[#10B981] font-bold">Copied!</span>
+                  } @else {
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    <span>Code</span>
+                  }
+                </button>
+              </div>
+
+              <div class="pt-2 border-t border-[#ECEEEE]/60 flex items-center justify-between gap-2">
+                <span class="text-[11px] font-mono text-[#0B4A39] font-bold truncate">/join?code={{ cls.joinCode }}</span>
+                <button
+                  (click)="copyJoinLink(cls)"
+                  class="px-2.5 py-1 rounded-lg bg-[#E6F4F0] hover:bg-[#D1ECE6] text-[#0B4A39] text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer">
+                  @if (copiedLinkId() === cls.id) {
+                    <span>Link Copied! ✓</span>
+                  } @else {
+                    <span>🔗 Copy Link</span>
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Metadata & Actions -->
+          <div class="space-y-4 pt-2 border-t border-[#ECEEEE]/60">
+            <div class="flex items-center justify-between text-xs font-semibold">
+              <span class="text-[#5A6066] flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-[#8C959B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                {{ cls.enrolledCount }} Enrolled
+              </span>
+
+              @if (cls.pendingRequestsCount > 0) {
+                <a
+                  [routerLink]="['/mentor/classes', cls.id]"
+                  [queryParams]="{ tab: 'enrollment' }"
+                  class="px-2.5 py-1 rounded-full bg-[#FFFBEB] hover:bg-[#FDE68A] text-[#D97706] text-[11px] font-black border border-[#FDE68A] transition-all cursor-pointer flex items-center gap-1 shadow-2xs">
+                  <span>⏳</span>
+                  <span>{{ cls.pendingRequestsCount }} Pending (Review)</span>
+                </a>
+              } @else {
+                <span class="text-[11px] text-[#10B981] font-medium">No Pending</span>
+              }
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <a
+                [routerLink]="['/mentor/classes', cls.id]"
+                [queryParams]="{ tab: 'live-view' }"
+                class="py-2.5 px-2 rounded-xl bg-emerald-50 hover:bg-[#21DB93] text-emerald-800 hover:text-[#0B4A39] border border-emerald-300 text-xs font-black transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>🎥 Live CCTV</span>
+              </a>
+
+              <a
+                [routerLink]="['/mentor/classes', cls.id]"
+                class="py-2.5 px-2 rounded-xl bg-[#F4F6F5] hover:bg-[#0B4A39] text-[#0B4A39] hover:text-white text-xs font-bold transition-all shadow-2xs text-center flex items-center justify-center gap-1">
+                <span>Workspace →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Create Class Modal Dialog -->
+  @if (showCreateModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B4A39]/40 backdrop-blur-xs">
+      <div class="bg-white rounded-[24px] p-8 max-w-lg w-full border border-[#ECEEEE] shadow-xl space-y-6 animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-[#0B4A39]">Create Classroom Cohort</h2>
+            <p class="text-xs text-[#5A6066] mt-0.5">Generate a dedicated workspace for assignments and oral vivas</p>
+          </div>
+          <button (click)="closeCreateModal()" class="text-[#8C959B] hover:text-[#0B4A39] p-1 cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <form (ngSubmit)="submitCreateClass()" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-[#0B4A39] mb-1.5">Class / Course Name *</label>
+            <input
+              type="text"
+              [(ngModel)]="newClass.name"
+              name="name"
+              required
+              placeholder="e.g. Cloud Computing & Microservices"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-[#0B4A39] mb-1.5">Subject Code *</label>
+              <input
+                type="text"
+                [(ngModel)]="newClass.subjectCode"
+                name="subjectCode"
+                required
+                placeholder="e.g. CS504"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-[#0B4A39] mb-1.5">Semester *</label>
+              <select
+                [(ngModel)]="newClass.semester"
+                name="semester"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all">
+                @for (sem of [1,2,3,4,5,6,7,8]; track sem) {
+                  <option [value]="sem">Semester {{ sem }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-[#0B4A39] mb-1.5">Department</label>
+              <input
+                type="text"
+                [(ngModel)]="newClass.department"
+                name="department"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-[#0B4A39] mb-1.5">Academic Year</label>
+              <input
+                type="text"
+                [(ngModel)]="newClass.academicYear"
+                name="academicYear"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#0B4A39] mb-1.5">Description (Optional)</label>
+            <textarea
+              [(ngModel)]="newClass.description"
+              name="description"
+              rows="2"
+              placeholder="Brief course outline or syllabus notes..."
+              class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs text-[#0B4A39] focus:outline-none focus:border-[#0B4A39] transition-all"></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#ECEEEE]">
+            <button
+              type="button"
+              (click)="closeCreateModal()"
+              class="px-4 py-2 rounded-xl text-xs font-bold text-[#5A6066] hover:bg-[#F4F6F5] transition-all cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="isSubmitting() || !newClass.name || !newClass.subjectCode"
+              class="px-5 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all cursor-pointer flex items-center gap-2">
+              @if (isSubmitting()) {
+                <span class="animate-spin text-sm">↻</span>
+                Creating Class...
+              } @else {
+                Create Classroom
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</div>

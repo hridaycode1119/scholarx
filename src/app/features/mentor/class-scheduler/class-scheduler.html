@@ -1,0 +1,687 @@
+<div class="p-6 md:p-8 space-y-6 max-w-[1600px] mx-auto animate-in fade-in duration-200">
+
+  <!-- Success Notification Toast -->
+  @if (successToast()) {
+    <div class="fixed top-5 right-5 z-60 max-w-md p-4 rounded-2xl bg-[#0B4A39] text-white text-xs font-bold shadow-2xl border border-[#21DB93]/50 animate-in fade-in duration-200 flex items-start justify-between gap-3">
+      <div class="flex items-start gap-2.5">
+        <span class="text-base text-[#21DB93]">✓</span>
+        <div class="space-y-1">
+          <span class="text-[#21DB93] font-black uppercase text-[10px] tracking-wider block">Class Assessment & VIVA Scheduler</span>
+          <p class="text-white/90 leading-relaxed">{{ successToast() }}</p>
+        </div>
+      </div>
+      <button (click)="successToast.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono text-sm">✕</button>
+    </div>
+  }
+
+  <!-- TOP HEADER & QUICK CONTROLS -->
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2.5">
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase bg-[#0B4A39] text-white border border-[#21DB93]/30">
+          MENTOR PHASE 1
+        </span>
+        <span class="text-xs font-bold text-[#5A6066]">Course & Section Assessment Orchestration</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-black text-[#0B4A39] tracking-tight mt-1 flex items-center gap-3">
+        <span>📅 Particular Class Exam & Oral VIVA Scheduler</span>
+      </h1>
+      <p class="text-xs md:text-sm text-[#5A6066] mt-1 max-w-3xl">
+        Schedule course-specific examinations, partition enrolled student rosters into 15-minute 1-on-1 viva slots, attach syllabus rubrics, and launch the real-time AI Co-Pilot.
+      </p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="flex flex-wrap items-center gap-2.5">
+      <button
+        (click)="showCreateModal.set(true)"
+        class="px-4 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer border border-[#21DB93]/30">
+        <span>➕ Schedule Class Exam / Viva</span>
+      </button>
+
+      <a
+        routerLink="/mentor/proctoring"
+        class="px-4 py-2.5 rounded-xl bg-white hover:bg-[#F4F6F5] text-[#0B4A39] border border-[#ECEEEE] text-xs font-extrabold transition-all shadow-sm flex items-center gap-2 cursor-pointer">
+        <span>🔍 Central Proctoring Hub</span>
+      </a>
+
+      <a
+        routerLink="/mentor/classes"
+        class="px-4 py-2.5 rounded-xl bg-white hover:bg-[#F4F6F5] text-[#0B4A39] border border-[#ECEEEE] text-xs font-extrabold transition-all shadow-sm flex items-center gap-2 cursor-pointer">
+        <span>🎓 My Classes Roster</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- LEVEL 1: MENTOR'S ASSIGNED CLASSES SELECTOR TABS -->
+  <div class="p-4 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-3">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#FCFCFB] pb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-base">🎓</span>
+        <span class="text-xs font-black uppercase tracking-wider text-[#0B4A39]">Select Class Section to Schedule & Manage</span>
+      </div>
+      <span class="text-[11px] font-semibold text-[#5A6066]">Switching classes updates the examination roster and viva slot matrix</span>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      @for (cls of schedulerService.mentorClasses(); track cls.id) {
+        <button
+          (click)="selectClass(cls.id)"
+          class="px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-2.5"
+          [ngClass]="schedulerService.selectedClassId() === cls.id
+            ? 'bg-[#0B4A39] text-white shadow-md'
+            : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5] hover:text-[#0B4A39] border border-[#ECEEEE]'">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black"
+            [ngClass]="schedulerService.selectedClassId() === cls.id ? 'bg-[#21DB93] text-[#0B4A39]' : 'bg-[#F4F6F5] text-[#0B4A39]'">
+            {{ cls.subjectCode }}
+          </span>
+          <span>{{ cls.name }}</span>
+          <span class="text-[10px] opacity-75">({{ cls.enrolledCount }} Students)</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- 4 HIGH-TECH CLASS KPI CARDS -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Scheduled Sessions -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm relative overflow-hidden group hover:border-[#0B4A39] transition-all">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-[#5A6066] uppercase tracking-wider">Scheduled Exam Sessions</span>
+        <span class="w-8 h-8 rounded-xl bg-[#E6F4F0] text-[#0B4A39] flex items-center justify-center font-bold text-sm">📅</span>
+      </div>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="text-2xl md:text-3xl font-black text-[#0B4A39]">{{ schedulerService.classKpis().totalScheduledSessions }}</span>
+        <span class="text-xs font-bold text-[#0B4A39]">For {{ schedulerService.currentClass().subjectCode }}</span>
+      </div>
+      <p class="text-[11px] text-[#5A6066] mt-1 font-medium">1-on-1 Vivas & Midterms</p>
+    </div>
+
+    <!-- Enrolled Students in this Section -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm relative overflow-hidden group hover:border-[#0B4A39] transition-all">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-[#5A6066] uppercase tracking-wider">Class Section Roster</span>
+        <span class="w-8 h-8 rounded-xl bg-[#E6F4F0] text-[#0B4A39] flex items-center justify-center font-bold text-sm">👥</span>
+      </div>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="text-2xl md:text-3xl font-black text-[#0B4A39]">{{ schedulerService.classKpis().totalClassStudents }}</span>
+        <span class="text-xs font-bold text-[#21DB93] font-mono">Enrolled Candidates</span>
+      </div>
+      <p class="text-[11px] text-[#5A6066] mt-1 font-medium">Join Code: <strong class="font-mono text-[#0B4A39]">{{ schedulerService.currentClass().joinCode }}</strong></p>
+    </div>
+
+    <!-- Viva Evaluation Progress -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm relative overflow-hidden group hover:border-[#0B4A39] transition-all">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-[#5A6066] uppercase tracking-wider">VIVA Evaluation Progress</span>
+        <span class="w-8 h-8 rounded-xl bg-[#E6F4F0] text-[#0B4A39] flex items-center justify-center font-bold text-sm">🗣️</span>
+      </div>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="text-2xl md:text-3xl font-black text-[#0B4A39]">{{ schedulerService.classKpis().vivasCompleted }} / {{ schedulerService.currentClassStudentSlots().length }}</span>
+        <span class="text-xs font-bold text-[#0B4A39]">{{ schedulerService.classKpis().completionRatePercent }}% Done</span>
+      </div>
+      <div class="w-full bg-[#F4F6F5] rounded-full h-1.5 mt-2 overflow-hidden">
+        <div class="bg-[#0B4A39] h-1.5 rounded-full" [style.width.%]="schedulerService.classKpis().completionRatePercent"></div>
+      </div>
+    </div>
+
+    <!-- Next Live Session Telemetry -->
+    <div class="p-5 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm relative overflow-hidden group hover:border-[#0B4A39] transition-all">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-[#5A6066] uppercase tracking-wider">Active Viva Room</span>
+        <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">📡</span>
+      </div>
+      <div class="mt-3">
+        <span class="text-xs font-black text-emerald-800 uppercase block">● LIVE WEB-RTC CHANNEL</span>
+        <p class="text-xs font-bold text-[#0B4A39] truncate mt-0.5">DL-ALPHA-801 • Today 09:00 - 12:00</p>
+      </div>
+      <p class="text-[11px] text-[#5A6066] mt-1 font-medium">AI Co-Pilot Enabled & Synced</p>
+    </div>
+  </div>
+
+  <!-- CONTROL TOOLBAR: FEATURE TABS & SEARCH -->
+  <div class="p-4 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          (click)="selectTab('SESSIONS')"
+          class="px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-2"
+          [ngClass]="schedulerService.activeTab() === 'SESSIONS'
+            ? 'bg-[#0B4A39] text-white shadow-sm'
+            : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5] hover:text-[#0B4A39] border border-[#ECEEEE]'">
+          <span>📅 Class Examination Sessions</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] bg-white/20 text-white font-mono">
+            {{ schedulerService.filteredSessions().length }}
+          </span>
+        </button>
+
+        <button
+          (click)="selectTab('STUDENT_SLOTS')"
+          class="px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-2"
+          [ngClass]="schedulerService.activeTab() === 'STUDENT_SLOTS'
+            ? 'bg-[#0B4A39] text-white shadow-sm'
+            : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5] hover:text-[#0B4A39] border border-[#ECEEEE]'">
+          <span>🗣️ 1-on-1 Student VIVA Roster (15-Min Slots)</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] bg-white/20 text-white font-mono">
+            {{ schedulerService.currentClassStudentSlots().length }}
+          </span>
+        </button>
+
+        <button
+          (click)="selectTab('HALL_PASSES')"
+          class="px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-2"
+          [ngClass]="schedulerService.activeTab() === 'HALL_PASSES'
+            ? 'bg-[#0B4A39] text-white shadow-sm'
+            : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5] hover:text-[#0B4A39] border border-[#ECEEEE]'">
+          <span>🎫 Class Digital Entry Passes</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] bg-white/20 text-white font-mono">
+            {{ schedulerService.currentClass().enrolledCount }}
+          </span>
+        </button>
+      </div>
+
+      <!-- Quick Search -->
+      <div class="relative w-full sm:w-72">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#5A6066]">🔍</span>
+        <input
+          type="text"
+          [ngModel]="schedulerService.searchQuery()"
+          (ngModelChange)="schedulerService.searchQuery.set($event)"
+          placeholder="Search student, topic, session..."
+          class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 1: CLASS EXAMINATION SESSIONS -->
+  @if (schedulerService.activeTab() === 'SESSIONS') {
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-black text-[#0B4A39] flex items-center gap-2">
+            <span>📅 Scheduled Assessments for {{ schedulerService.currentClass().name }}</span>
+            <span class="text-xs font-bold text-[#5A6066]">({{ schedulerService.filteredSessions().length }} Sessions)</span>
+          </h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @for (sess of schedulerService.filteredSessions(); track sess.sessionId) {
+          <div class="p-6 rounded-2xl bg-white border border-[#ECEEEE] shadow-sm space-y-4 hover:border-[#0B4A39] transition-all flex flex-col justify-between">
+            <div class="space-y-3">
+              <!-- Top Badges -->
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-[#0B4A39] text-[#21DB93]">
+                    {{ sess.courseCode }} • {{ sess.section }}
+                  </span>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold"
+                    [ngClass]="{
+                      'bg-purple-100 text-purple-800': sess.examType === 'ORAL_VIVA_1ON1',
+                      'bg-blue-100 text-blue-800': sess.examType === 'THEORY_MIDTERM',
+                      'bg-emerald-100 text-emerald-800': sess.examType === 'LAB_PRACTICAL'
+                    }">
+                    {{ sess.examType.replace('_', ' ') }}
+                  </span>
+                </div>
+
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase"
+                  [ngClass]="sess.status === 'LIVE_TODAY' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 animate-pulse' : 'bg-slate-100 text-slate-700'">
+                  ● {{ sess.status }}
+                </span>
+              </div>
+
+              <!-- Title & Focus -->
+              <div>
+                <h3 class="text-base font-black text-[#0B4A39] leading-snug">{{ sess.title }}</h3>
+                <p class="text-xs text-[#0B4A39] font-semibold mt-1">🎯 Syllabus Focus: {{ sess.syllabusUnitFocus }}</p>
+              </div>
+
+              <!-- Timing & Venue -->
+              <div class="p-3 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-[10px] text-[#5A6066] block font-bold">Schedule Window</span>
+                  <span class="font-black text-[#0B4A39]">{{ sess.date }} • {{ sess.overallStartTime }} - {{ sess.overallEndTime }}</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-[#5A6066] block font-bold">Delivery Venue</span>
+                  <span class="font-bold text-[#0B4A39] truncate block">{{ sess.venueOrChannel }}</span>
+                </div>
+              </div>
+
+              <!-- Target Course Outcomes -->
+              <div class="space-y-1 text-xs">
+                <span class="text-[10px] font-bold text-[#5A6066] uppercase block">Target OBE Outcomes:</span>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (co of sess.targetCourseOutcomes; track co) {
+                    <span class="px-2 py-0.5 rounded bg-[#E6F4F0] text-[#0B4A39] text-[10px] font-bold border border-[#21DB93]/30">
+                      {{ co }}
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <!-- Evaluation Progress Bar (if 1-on-1 viva) -->
+              @if (sess.studentSlots.length > 0) {
+                <div class="p-3 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-1.5 text-xs">
+                  <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-[#5A6066]">Student Viva Roster:</span>
+                    <span class="text-[#0B4A39]">{{ sess.evaluatedCount }} / {{ sess.studentSlots.length }} Evaluated</span>
+                  </div>
+
+                  <div class="w-full bg-[#F4F6F5] rounded-full h-2 overflow-hidden">
+                    <div
+                      class="bg-[#0B4A39] h-2 rounded-full"
+                      [style.width.%]="(sess.evaluatedCount / sess.studentSlots.length) * 100">
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="pt-4 border-t border-[#FCFCFB] flex flex-wrap items-center justify-between gap-2">
+              <button
+                (click)="selectTab('STUDENT_SLOTS')"
+                class="text-xs font-bold text-[#0B4A39] hover:text-[#08382B] hover:underline flex items-center gap-1 cursor-pointer">
+                <span>View 1-on-1 Student Roster ({{ sess.studentSlots.length }})</span>
+                <span>→</span>
+              </button>
+
+              <div class="flex items-center gap-2">
+                <a
+                  routerLink="/mentor/proctoring"
+                  class="px-3 py-1.5 rounded-lg bg-[#E6F4F0] hover:bg-[#0B4A39] text-[#0B4A39] hover:text-white font-black text-xs transition-all cursor-pointer border border-[#21DB93]/30 flex items-center gap-1">
+                  <span>⚡ Launch AI Co-Pilot</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- VIEW 2: 1-ON-1 STUDENT VIVA ROSTER (15-MIN SLOTS) -->
+  @if (schedulerService.activeTab() === 'STUDENT_SLOTS') {
+    <div class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-lg font-black text-[#0B4A39] flex items-center gap-2">
+            <span>🗣️ 1-on-1 Oral VIVA Interview Roster</span>
+            <span class="text-xs font-bold text-[#5A6066]">({{ schedulerService.currentClassStudentSlots().length }} Partitioned 15-Minute Slots)</span>
+          </h2>
+          <p class="text-xs text-[#5A6066]">Students are sequentially allocated individual 15-minute examination windows with specialized Bloom's cognitive taxonomy topics.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        @for (st of schedulerService.currentClassStudentSlots(); track st.slotId) {
+          <div class="p-5 rounded-2xl bg-white border shadow-sm space-y-4 transition-all hover:shadow-md flex flex-col justify-between"
+            [ngClass]="{
+              'border-[#21DB93] bg-[#ECFDF5]/20': st.status === 'EVALUATED',
+              'border-purple-400 bg-purple-50/20': st.status === 'VIVA_IN_PROGRESS',
+              'border-[#ECEEEE]': st.status === 'SCHEDULED'
+            }">
+
+            <div class="space-y-3">
+              <!-- Slot Header -->
+              <div class="flex items-start justify-between gap-2 border-b border-[#FCFCFB] pb-2.5">
+                <div class="flex items-center gap-2.5">
+                  <img [src]="st.studentAvatar" [alt]="st.studentName" class="w-10 h-10 rounded-xl object-cover border border-[#ECEEEE]" />
+                  <div>
+                    <h4 class="text-sm font-black text-[#0B4A39]">{{ st.studentName }}</h4>
+                    <span class="font-mono text-[11px] font-bold text-[#0B4A39] block">{{ st.rollNumber }}</span>
+                  </div>
+                </div>
+
+                <!-- Status Badge -->
+                @if (st.status === 'EVALUATED') {
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    ✓ {{ st.awardedScore }}/{{ st.maxScore }}
+                  </span>
+                } @else if (st.status === 'VIVA_IN_PROGRESS') {
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-purple-100 text-purple-800 border border-purple-300 animate-pulse">
+                    ● Live Now
+                  </span>
+                } @else {
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                    Scheduled
+                  </span>
+                }
+              </div>
+
+              <!-- Time Slot -->
+              <div class="p-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] flex items-center justify-between text-xs">
+                <span class="text-[#5A6066] font-bold">Time Window:</span>
+                <span class="font-mono font-black text-[#0B4A39]">{{ st.timeSlot }} (15m)</span>
+              </div>
+
+              <!-- Assigned Syllabus Topic & Bloom Level -->
+              <div class="space-y-1.5 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-bold text-[#5A6066] uppercase">Bloom's Level:</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase"
+                    [ngClass]="{
+                      'bg-purple-100 text-purple-800': st.bloomLevel === 'EVALUATE' || st.bloomLevel === 'CREATE',
+                      'bg-blue-100 text-blue-800': st.bloomLevel === 'ANALYZE' || st.bloomLevel === 'APPLY',
+                      'bg-slate-100 text-slate-800': st.bloomLevel === 'UNDERSTAND' || st.bloomLevel === 'REMEMBER'
+                    }">
+                    {{ st.bloomLevel }}
+                  </span>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE]">
+                  <span class="text-[10px] font-bold text-[#5A6066] uppercase block">Assigned Question Topic:</span>
+                  <p class="font-bold text-[#0B4A39] text-[11px] leading-snug mt-0.5">{{ st.assignedTopic }}</p>
+                </div>
+              </div>
+
+              <!-- Evaluated Feedback Summary if available -->
+              @if (st.rubricFeedbackSummary) {
+                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[10px] space-y-1">
+                  <span class="font-bold uppercase tracking-wider block text-emerald-950">Evaluation Note:</span>
+                  <p class="leading-relaxed">{{ st.rubricFeedbackSummary }}</p>
+                </div>
+              }
+            </div>
+
+            <!-- Card Actions -->
+            <div class="pt-3 border-t border-[#FCFCFB] flex items-center justify-between gap-2">
+              @if (st.status === 'EVALUATED') {
+                <button
+                  (click)="openEvaluationModal(schedulerService.filteredSessions()[0], st)"
+                  class="text-[11px] font-bold text-[#0B4A39] hover:underline cursor-pointer">
+                  ✏️ Edit Score
+                </button>
+                <span class="text-[10px] text-[#5A6066]">Ledger Synced</span>
+              } @else {
+                <button
+                  (click)="openEvaluationModal(schedulerService.filteredSessions()[0], st)"
+                  class="px-2.5 py-1.5 rounded-lg bg-[#F8FAF9] hover:bg-[#F4F6F5] text-[#0B4A39] font-bold text-[11px] cursor-pointer">
+                  📝 Record Mark
+                </button>
+
+                <button
+                  (click)="launchCoPilotForSlot(st)"
+                  class="px-3 py-1.5 rounded-lg bg-[#0B4A39] hover:bg-[#08382B] text-white font-black text-[11px] shadow-sm cursor-pointer flex items-center gap-1">
+                  <span>⚡ AI Viva</span>
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- VIEW 3: CLASS DIGITAL ENTRY PASSES -->
+  @if (schedulerService.activeTab() === 'HALL_PASSES') {
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-black text-[#0B4A39] flex items-center gap-2">
+            <span>🎫 Student Digital Passes for {{ schedulerService.currentClass().subjectCode }}</span>
+          </h2>
+          <p class="text-xs text-[#5A6066]">Individual examination entry passes with cryptographic QR codes distributed to students enrolled in this section.</p>
+        </div>
+      </div>
+
+      <div class="p-8 text-center rounded-2xl bg-white border border-[#ECEEEE] space-y-3">
+        <span class="text-4xl">🎫</span>
+        <h3 class="text-base font-black text-[#0B4A39]">Class Passes Synchronized</h3>
+        <p class="text-xs text-[#5A6066] max-w-md mx-auto">
+          All {{ schedulerService.currentClass().enrolledCount }} enrolled students in {{ schedulerService.currentClass().name }} have received their digital QR passes with individualized reporting time windows.
+        </p>
+        <button
+          (click)="selectTab('STUDENT_SLOTS')"
+          class="px-4 py-2 rounded-xl bg-[#0B4A39] text-white text-xs font-bold cursor-pointer">
+          View Student Slots Matrix
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL 1: SCHEDULE CLASS EXAM / VIVA SESSION -->
+  @if (showCreateModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-white/40 overflow-hidden transform transition-all max-h-[90vh] flex flex-col">
+
+        <!-- Header -->
+        <div class="px-6 py-4 bg-[#0B4A39] text-white flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📅</span>
+            <div>
+              <h3 class="text-sm font-black uppercase tracking-wider">Schedule Class Exam / VIVA Session</h3>
+              <p class="text-[10px] text-[#21DB93]">{{ schedulerService.currentClass().name }} ({{ schedulerService.currentClass().subjectCode }})</p>
+            </div>
+          </div>
+
+          <button
+            (click)="showCreateModal.set(false)"
+            class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Form -->
+        <form (ngSubmit)="submitCreateSession()" class="p-6 md:p-8 overflow-y-auto space-y-4 text-xs">
+          <div class="space-y-1">
+            <label class="font-bold text-[#0B4A39]">Assessment Session Title *</label>
+            <input
+              type="text"
+              [(ngModel)]="newSessionForm.title"
+              name="title"
+              required
+              placeholder="e.g. Oral VIVA Round 2: LoRA Fine-Tuning & Quantization"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">Assessment Type *</label>
+              <select
+                [(ngModel)]="newSessionForm.examType"
+                name="examType"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]">
+                <option value="ORAL_VIVA_1ON1">1-on-1 Oral VIVA (15-Min Slots)</option>
+                <option value="THEORY_MIDTERM">Class Midterm Theory Exam</option>
+                <option value="LAB_PRACTICAL">Lab Coding Practical Exam</option>
+                <option value="QUIZ_CHECKPOINT">Formative Quiz Checkpoint</option>
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">Delivery Mode *</label>
+              <select
+                [(ngModel)]="newSessionForm.mode"
+                name="mode"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]">
+                <option value="VIRTUAL_WEBRTC">Virtual AI WebRTC Channel</option>
+                <option value="PHYSICAL_ROOM">Physical Examination Hall / Cabin</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-[#0B4A39]">Venue or WebRTC Channel *</label>
+            <input
+              type="text"
+              [(ngModel)]="newSessionForm.venueOrChannel"
+              name="venueOrChannel"
+              required
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">Date *</label>
+              <input
+                type="date"
+                [(ngModel)]="newSessionForm.date"
+                name="date"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+              />
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">Start Time *</label>
+              <input
+                type="time"
+                [(ngModel)]="newSessionForm.overallStartTime"
+                name="overallStartTime"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+              />
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">End Time *</label>
+              <input
+                type="time"
+                [(ngModel)]="newSessionForm.overallEndTime"
+                name="overallEndTime"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-[#0B4A39]">Syllabus Unit Focus & Question Topics *</label>
+            <input
+              type="text"
+              [(ngModel)]="newSessionForm.syllabusUnitFocus"
+              name="syllabusUnitFocus"
+              required
+              placeholder="e.g. Unit 3: LoRA Factorization & FlashAttention Kernel Tiling"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-[#0B4A39]">Target Course Outcomes (Comma Separated) *</label>
+            <input
+              type="text"
+              [(ngModel)]="newSessionForm.targetCourseOutcomes"
+              name="targetCourseOutcomes"
+              required
+              placeholder="e.g. CO2, CO3, CO4"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+            />
+          </div>
+
+          <div class="flex items-center gap-2 p-3 rounded-xl bg-[#E6F4F0] border border-[#21DB93]/30">
+            <input
+              type="checkbox"
+              [(ngModel)]="newSessionForm.generate1on1Slots"
+              name="generate1on1Slots"
+              id="generate1on1Slots"
+              class="w-4 h-4 rounded text-[#0B4A39]"
+            />
+            <label for="generate1on1Slots" class="font-bold text-[#0B4A39] cursor-pointer">
+              ⚡ Automatically partition enrolled student roster into 15-minute sequential viva slots
+            </label>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#ECEEEE]">
+            <button
+              type="button"
+              (click)="showCreateModal.set(false)"
+              class="px-4 py-2.5 rounded-xl bg-[#F8FAF9] hover:bg-[#F4F6F5] text-xs font-bold text-[#5A6066] cursor-pointer">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-5 py-2.5 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-black shadow-md cursor-pointer border border-[#21DB93]/30">
+              📅 Confirm & Schedule for Class
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  }
+
+  <!-- MODAL 2: EVALUATE / RECORD STUDENT VIVA SCORE -->
+  @if (showEvaluationModal()) {
+    @if (selectedSlotForEval(); as evalData) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-white/40 overflow-hidden transform transition-all max-h-[90vh] flex flex-col">
+
+          <div class="px-6 py-4 bg-[#0B4A39] text-white flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base">📝</span>
+              <div>
+                <h3 class="text-sm font-black uppercase tracking-wider">Record Oral VIVA Score</h3>
+                <p class="text-[10px] text-[#21DB93]">{{ evalData.slot.studentName }} ({{ evalData.slot.rollNumber }})</p>
+              </div>
+            </div>
+
+            <button
+              (click)="closeEvaluationModal()"
+              class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+              ✕
+            </button>
+          </div>
+
+          <form (ngSubmit)="saveEvaluation()" class="p-6 md:p-8 overflow-y-auto space-y-4 text-xs">
+            <div class="p-3 rounded-2xl bg-[#F8FAF9] border border-[#ECEEEE] space-y-1">
+              <span class="text-[10px] font-bold text-[#5A6066] uppercase block">Assigned Viva Topic</span>
+              <p class="font-bold text-[#0B4A39]">{{ evalData.slot.assignedTopic }}</p>
+              <span class="text-[10px] text-[#0B4A39] font-bold">Bloom's Level: {{ evalData.slot.bloomLevel }}</span>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39] flex items-center justify-between">
+                <span>Awarded Viva Score (Out of 25) *</span>
+                <span class="font-mono font-black text-sm text-[#0B4A39]">{{ evalForm.awardedScore }} / 25</span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="25"
+                step="0.5"
+                [(ngModel)]="evalForm.awardedScore"
+                name="awardedScore"
+                class="w-full accent-[#0B4A39]"
+              />
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-[#0B4A39]">Rubric Feedback & Examiner Remarks *</label>
+              <textarea
+                [(ngModel)]="evalForm.rubricFeedback"
+                name="rubricFeedback"
+                rows="3"
+                required
+                placeholder="Enter feedback on concept clarity, code implementation, and mathematical derivation..."
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] font-semibold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"></textarea>
+            </div>
+
+            <div class="pt-3 border-t border-[#ECEEEE] flex items-center justify-end gap-2">
+              <button
+                type="button"
+                (click)="closeEvaluationModal()"
+                class="px-4 py-2 rounded-xl bg-[#F8FAF9] text-xs font-bold text-[#5A6066]">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-5 py-2 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-black shadow-md">
+                ✓ Save Evaluation & Sync Gradebook
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    }
+  }
+
+</div>

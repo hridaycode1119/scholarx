@@ -1,0 +1,488 @@
+/* ==========================================================================
+   ScholarX — Enterprise Academic Theme
+   Extracted Color Palette: Deep Pine (#0B4A39), Deep Teal (#0B4A39), Neon Mint (#21DB93)
+   ========================================================================== */
+
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *, .theme-dark, .theme-dark *));
+@source "./**/*.{html,ts}";
+
+:root {
+  /* ScholarX Modern Academic ("Deep Forest & Porcelain") Design System */
+  --primary: #0B4A39;
+  --primary-dark: #08382B;
+  --primary-light: #21DB93;
+  --primary-accent: #0B4A39;
+  --primary-accent-glow: rgba(33, 219, 147, 0.25);
+
+  --background: #FCFCFB;
+  --surface: #FFFFFF;
+  --surface-soft: #F4F6F5;
+
+  --accent: #21DB93;
+  --gold-accent: #B45309;
+
+  --text-primary: #14171C;
+  --text-secondary: #5A6066;
+  --text-muted: #8C959B;
+
+  --border: #ECEEEE;
+  --shadow: rgba(11, 74, 57, 0.05);
+
+  /* Surfaces & Canvas */
+  --sx-canvas: #FCFCFB;
+  --sx-surface: #FFFFFF;
+  --sx-surface-subtle: #F4F6F5;
+  --sx-border: #ECEEEE;
+  --sx-border-hover: rgba(11, 74, 57, 0.35);
+
+  /* Brand / Hero Header */
+  --sx-hero-navy: #0B4A39;
+  --sx-hero-navy-dark: #08382B;
+  --sx-hero-badge-bg: rgba(255, 255, 255, 0.18);
+
+  /* Primary Action */
+  --sx-primary-blue: #0B4A39;
+  --sx-primary-blue-hover: #08382B;
+  --sx-primary-blue-active: #06281F;
+
+  /* Accent & Live Status */
+  --sx-electric-blue: #21DB93;
+  --sx-sky-glow: rgba(33, 219, 147, 0.25);
+
+  /* Navigation & Chips */
+  --sx-nav-active-pill: #E6F4F0;
+  --sx-nav-text: #5A6066;
+  --sx-nav-text-active: #0B4A39;
+  --sx-chip-bg: #E6F4F0;
+  --sx-chip-text: #0B4A39;
+
+  /* Font Families */
+  --font-serif: 'Libre Caslon Text', 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Text Hierarchy */
+  --sx-text-primary: #0A192F;
+  --sx-text-secondary: #475569;
+  --sx-text-muted: #94A3B8;
+  --sx-text-inverted: #FFFFFF;
+
+  /* Semantics */
+  --sx-success: #10b981;
+  --sx-warning: #f59e0b;
+  --sx-danger: #ef4444;
+
+  /* Border Radii */
+  --sx-radius-sm: 8px;
+  --sx-radius-md: 14px;
+  --sx-radius-lg: 20px;
+  --sx-radius-full: 9999px;
+
+  /* Elevation */
+  --sx-shadow-card: 0 4px 20px -2px rgba(10, 25, 47, 0.06), 0 2px 6px -1px rgba(10, 25, 47, 0.04);
+  --sx-shadow-hover: 0 16px 36px -6px rgba(10, 25, 47, 0.12);
+
+  /* ========================================================================
+     SCHOLARX HOMEPAGE HARMONIZED DESIGN SYSTEM: "Archival Jade & Pure Porcelain"
+     Matches homepage colors: Canvas #fcfcfb, Pine #0b4a39, Mint #21db93, Ink #14171c
+     ======================================================================== */
+  --st-canvas: #fcfcfb;
+  --st-surface: #ffffff;
+  --st-surface-muted: #f8faf9;
+  --st-surface-highlight: #eceeee;
+  --st-border: #e9ecea;
+  --st-border-strong: #d1d8d5;
+  --st-text-primary: #14171c;
+  --st-text-secondary: #5a6066;
+  --st-text-muted: #8c959b;
+  --st-accent: #0b4a39;
+  --st-accent-hover: #08382b;
+  --st-accent-fg: #ffffff;
+  --st-accent-soft: rgba(11, 74, 57, 0.08);
+  --st-accent-border: rgba(11, 74, 57, 0.22);
+  --st-mint: #21db93;
+  --st-mint-soft: rgba(33, 219, 147, 0.14);
+  --st-gold: #b45309;
+  --st-gold-soft: rgba(180, 83, 9, 0.08);
+  --st-gold-border: rgba(180, 83, 9, 0.25);
+  --st-tag-bg: #f4f6f5;
+  --st-tag-text: #14171c;
+  --st-shadow: 0 4px 20px -2px rgba(11, 74, 57, 0.06), 0 2px 6px -1px rgba(11, 74, 57, 0.03);
+}
+
+/* ==========================================================================
+   THEME 1: HOMEPAGE PORCELAIN & PINE (Default Clean Academic Light)
+   ========================================================================== */
+html.theme-light, body.theme-light, :root:not(.theme-dark):not(.theme-contrast) {
+  --st-canvas: #fcfcfb;
+  --st-surface: #ffffff;
+  --st-surface-muted: #f8faf9;
+  --st-surface-highlight: #eceeee;
+  --st-border: #e9ecea;
+  --st-border-strong: #d1d8d5;
+  --st-text-primary: #14171c;
+  --st-text-secondary: #5a6066;
+  --st-text-muted: #8c959b;
+  --st-accent: #0b4a39;
+  --st-accent-hover: #08382b;
+  --st-accent-fg: #ffffff;
+  --st-accent-soft: rgba(11, 74, 57, 0.08);
+  --st-accent-border: rgba(11, 74, 57, 0.22);
+  --st-mint: #21db93;
+  --st-mint-soft: rgba(33, 219, 147, 0.14);
+  --st-gold: #b45309;
+  --st-gold-soft: rgba(180, 83, 9, 0.08);
+  --st-gold-border: rgba(180, 83, 9, 0.25);
+  --st-tag-bg: #f4f6f5;
+  --st-tag-text: #14171c;
+  --st-shadow: 0 4px 20px -2px rgba(11, 74, 57, 0.06), 0 2px 6px -1px rgba(11, 74, 57, 0.03);
+}
+
+/* ==========================================================================
+   THEME 2 & 3: UNIFIED MODERN ACADEMIC PALETTE (Always Porcelain & Pine)
+   ========================================================================== */
+html.theme-dark, body.theme-dark, html.theme-slate, body.theme-slate, html.theme-contrast, body.theme-contrast {
+  --st-canvas: #fcfcfb;
+  --st-surface: #ffffff;
+  --st-surface-muted: #f8faf9;
+  --st-surface-highlight: #eceeee;
+  --st-border: #e9ecea;
+  --st-border-strong: #d1d8d5;
+  --st-text-primary: #14171c;
+  --st-text-secondary: #5a6066;
+  --st-text-muted: #8c959b;
+  --st-accent: #0b4a39;
+  --st-accent-hover: #08382b;
+  --st-accent-fg: #ffffff;
+  --st-accent-soft: rgba(11, 74, 57, 0.08);
+  --st-accent-border: rgba(11, 74, 57, 0.22);
+  --st-mint: #21db93;
+  --st-mint-soft: rgba(33, 219, 147, 0.14);
+  --st-gold: #b45309;
+  --st-gold-soft: rgba(180, 83, 9, 0.08);
+  --st-gold-border: rgba(180, 83, 9, 0.25);
+  --st-tag-bg: #f4f6f5;
+  --st-tag-text: #14171c;
+  --st-shadow: 0 4px 20px -2px rgba(11, 74, 57, 0.06), 0 2px 6px -1px rgba(11, 74, 57, 0.03);
+}
+
+/* ==========================================================================
+   STUDENT PORTAL UTILITY CLASSES (Driven by Active Theme)
+   ========================================================================== */
+.st-portal-canvas {
+  background-color: #fcfcfb !important;
+  color: #14171c !important;
+  transition: background-color 0.25s ease, color 0.25s ease;
+
+  /* Global 5-Color Harmony: Pure Porcelain (#FCFCFB), Pure White (#FFFFFF), Deep Pine (#0B4A39), Mint (#21DB93), Ink (#14171C) */
+  .bg-\[\#0f1419\], 
+  .bg-\[\#0f172a\],
+  .bg-\[\#12171c\],
+  .bg-slate-900,
+  .bg-slate-950,
+  [class*="bg-[#0f172a]"],
+  [class*="bg-[#091311]"] {
+    background-color: #ffffff !important;
+    border-color: #eceeee !important;
+    color: #14171c !important;
+  }
+
+  .border-\[\#eceeee\],
+  .border-\[\#222B38\],
+  .border-slate-800,
+  .border-slate-700 {
+    border-color: #eceeee !important;
+  }
+
+  /* High-Contrast Readable Typography */
+  h1, h2, h3, h4, h5, h6 {
+    color: #14171c !important;
+  }
+
+  .text-slate-900,
+  .text-slate-800,
+  .text-slate-700 {
+    color: #14171c !important;
+  }
+
+  .text-slate-500,
+  .text-slate-400 {
+    color: #5a6066 !important;
+  }
+
+  /* Primary CTA buttons: Deep Pine (#0B4A39) */
+  .bg-indigo-600 {
+    background-color: #0b4a39 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(11, 74, 57, 0.2) !important;
+    &:hover {
+      background-color: #08382b !important;
+    }
+  }
+
+  .text-indigo-600,
+  .text-indigo-500,
+  .text-indigo-400 {
+    color: #0b4a39 !important;
+  }
+
+  .text-indigo-300 {
+    color: #14171c !important;
+  }
+
+  .bg-indigo-50 {
+    background-color: #f4f6f5 !important;
+    color: #0b4a39 !important;
+    border-color: #e9ecea !important;
+  }
+
+  .bg-indigo-500\/10,
+  .bg-indigo-500\/20,
+  .bg-indigo-500\/30 {
+    background-color: rgba(11, 74, 57, 0.08) !important;
+    color: #0b4a39 !important;
+  }
+
+  .border-indigo-500,
+  .border-indigo-500\/20,
+  .border-indigo-500\/30,
+  .border-indigo-500\/40,
+  .border-indigo-200 {
+    border-color: rgba(11, 74, 57, 0.22) !important;
+  }
+
+  .via-indigo-950 {
+    --tw-gradient-via: #0b4a39 !important;
+  }
+
+  .to-indigo-950 {
+    --tw-gradient-to: #0b4a39 !important;
+  }
+
+  .ring-indigo-500\/20 {
+    --tw-ring-color: rgba(33, 219, 147, 0.25) !important;
+  }
+}
+
+.st-card {
+  background-color: var(--st-surface);
+  border: 1px solid var(--st-border);
+  box-shadow: var(--st-shadow);
+  color: var(--st-text-primary);
+  transition: all 0.2s ease;
+}
+
+.st-card-subtle {
+  background-color: var(--st-surface-muted);
+  border: 1px solid var(--st-border);
+  color: var(--st-text-primary);
+}
+
+.st-input {
+  background-color: var(--st-surface-muted);
+  border: 1px solid var(--st-border);
+  color: var(--st-text-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.st-input:focus {
+  border-color: var(--st-accent);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--st-accent-soft);
+}
+
+.st-btn-accent {
+  background-color: var(--st-accent);
+  color: var(--st-accent-fg);
+  font-weight: 700;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.st-btn-accent:hover {
+  background-color: var(--st-accent-hover);
+}
+
+.st-btn-accent:active {
+  transform: scale(0.99);
+}
+
+.st-btn-outline {
+  background-color: var(--st-surface-muted);
+  border: 1px solid var(--st-border);
+  color: var(--st-text-primary);
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.st-btn-outline:hover {
+  background-color: var(--st-surface-highlight);
+  border-color: var(--st-border-strong);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--sx-canvas);
+  color: var(--sx-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif, .font-academic-serif {
+  font-family: var(--font-serif) !important;
+}
+
+.font-sans, .font-academic-sans {
+  font-family: var(--font-sans) !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   PRISTINE JADE GLASSHOUSE — PRODUCTION GLASS TOKENS & UTILITIES
+   Harmonized with homepage palette: #fcfcfb canvas, #0b4a39 pine, #21db93 mint
+   ========================================================================== */
+.glass-pristine {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(233, 236, 234, 0.95);
+  border-radius: 24px;
+  box-shadow: 
+    0 18px 40px -15px rgba(11, 74, 57, 0.06),
+    0 2px 8px -2px rgba(11, 74, 57, 0.02),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-pristine:hover {
+  box-shadow: 
+    0 24px 50px -12px rgba(11, 74, 57, 0.11),
+    0 4px 12px -2px rgba(11, 74, 57, 0.04),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 1);
+  border-color: rgba(33, 219, 147, 0.5);
+}
+
+.btn-jade-primary {
+  background: linear-gradient(135deg, #0b4a39 0%, #07382b 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 18px -4px rgba(11, 74, 57, 0.35),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+.btn-jade-primary:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #0e5c46 0%, #0b4a39 100%);
+  box-shadow: 
+    0 12px 24px -4px rgba(11, 74, 57, 0.45),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+}
+.btn-jade-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px -2px rgba(11, 74, 57, 0.3);
+}
+
+/* ==========================================================================
+   FIXED SIDEBAR & GENTLE MICRO-ANIMATIONS
+   ========================================================================== */
+@keyframes sidebar-ambient-breathe {
+  0%, 100% {
+    box-shadow: 
+      0 18px 40px -15px rgba(6, 78, 59, 0.06),
+      0 2px 8px -2px rgba(6, 78, 59, 0.02),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 1);
+    border-color: rgba(255, 255, 255, 0.95);
+  }
+  50% {
+    box-shadow: 
+      0 22px 48px -12px rgba(16, 185, 129, 0.12),
+      0 4px 14px -2px rgba(6, 78, 59, 0.04),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 1);
+    border-color: rgba(167, 243, 208, 0.75);
+  }
+}
+
+.anim-sidebar-glass {
+  animation: sidebar-ambient-breathe 6s ease-in-out infinite;
+}
+
+@keyframes logo-gentle-sway {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-2.5px) rotate(1.5deg); }
+}
+.anim-logo-sway {
+  animation: logo-gentle-sway 4.5s ease-in-out infinite;
+}
+
+@keyframes beacon-pulse-soft {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.8)); }
+}
+.anim-beacon-pulse {
+  animation: beacon-pulse-soft 2.5s ease-in-out infinite;
+}
+
+@keyframes avatar-breathe-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18); }
+}
+.anim-avatar-ring {
+  animation: avatar-breathe-ring 3.5s ease-in-out infinite;
+}
+
+/* Nav Link Hover Micro-Spring */
+.nav-link-item {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav-link-item:hover {
+  transform: translateX(3px);
+}
+.nav-link-item:hover .nav-icon {
+  transform: scale(1.15) rotate(4deg);
+}
+.nav-icon {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Primitive Design Tokens for Modern Collapsible Sidebar ────── */
+:root {
+  --primitive-radius-item: 0.625rem;
+  --primitive-radius-surface: 1rem;
+  --primitive-radius-control-sm: 0.625rem;
+  --primitive-surface-hover: rgba(11, 74, 57, 0.05);
+  --primitive-surface-selected: rgba(11, 74, 57, 0.08);
+  --primitive-text-secondary: #5A6066;
+  --primitive-ring: rgba(11, 74, 57, 0.35);
+  --primitive-shadow-raised: 0 1px 2px rgba(11, 74, 57, 0.05), 0 8px 24px -12px rgba(11, 74, 57, 0.1);
+}
+
+/* ── Sidebar nav custom slim scrollbar ─────── */
+.sidebar-nav {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 9999px;
+  transition: background-color 0.45s ease;
+}
+.sidebar-nav:hover {
+  scrollbar-color: rgba(11, 74, 57, 0.15) transparent;
+}
+.sidebar-nav:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(11, 74, 57, 0.15);
+}
+
+
+

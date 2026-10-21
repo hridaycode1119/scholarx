@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(33, 219, 147, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(33, 219, 147, 0.5);
+  }
+}
+
+.ai-pulse {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}

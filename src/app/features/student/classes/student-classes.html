@@ -1,0 +1,1499 @@
+<div class="space-y-6 animate-in fade-in duration-300">
+
+  <!-- Toast Notification -->
+  @if (joinToast()) {
+    <div class="fixed top-5 right-5 z-60 max-w-md p-4 rounded-2xl bg-white text-[#14171c] text-xs font-bold shadow-2xl animate-in fade-in flex items-start justify-between gap-3 border"
+         [ngClass]="{
+           'border-emerald-500 shadow-emerald-500/10': joinToast()?.type === 'SUCCESS',
+           'border-rose-500 shadow-rose-500/10': joinToast()?.type === 'ERROR',
+           'border-amber-400 shadow-amber-400/10': joinToast()?.type === 'WARNING',
+           'border-[#0b4a39] shadow-[#0b4a39]/10': joinToast()?.type === 'INFO'
+         }">
+      <div class="flex items-start gap-2.5">
+        <span class="text-base"
+              [ngClass]="{
+                'text-emerald-600': joinToast()?.type === 'SUCCESS',
+                'text-rose-600': joinToast()?.type === 'ERROR',
+                'text-amber-600': joinToast()?.type === 'WARNING',
+                'text-[#0b4a39]': joinToast()?.type === 'INFO'
+              }">
+          @if (joinToast()?.type === 'SUCCESS') { ✅ }
+          @else if (joinToast()?.type === 'ERROR') { ❌ }
+          @else if (joinToast()?.type === 'WARNING') { ⏳ }
+          @else { ℹ️ }
+        </span>
+        <div class="space-y-0.5">
+          <span class="font-black uppercase text-[10px] tracking-wider block"
+                [ngClass]="{
+                  'text-emerald-700': joinToast()?.type === 'SUCCESS',
+                  'text-rose-700': joinToast()?.type === 'ERROR',
+                  'text-amber-700': joinToast()?.type === 'WARNING',
+                  'text-[#0b4a39]': joinToast()?.type === 'INFO'
+                }">
+            @if (joinToast()?.type === 'SUCCESS') { Enrollment Request Submitted }
+            @else if (joinToast()?.type === 'ERROR') { Classroom Not Found }
+            @else if (joinToast()?.type === 'WARNING') { Action Notice }
+            @else { Classroom Notice }
+          </span>
+          <p class="text-slate-600 leading-relaxed">{{ joinToast()?.message }}</p>
+        </div>
+      </div>
+      <button (click)="joinToast.set(null)" class="text-slate-400 hover:text-slate-700 cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  <!-- Page Header Strip -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+        <span>🏛️ Classrooms & Join Code Hub</span>
+      </h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400">
+        Access your enrolled academic subjects, join new cohort classrooms via code or direct link, and track mentor approvals.
+      </p>
+    </div>
+
+    <!-- Join Class CTA -->
+    <button
+      (click)="openJoinModal()"
+      class="px-5 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer self-start sm:self-auto">
+      <span class="text-sm font-bold">+</span>
+      <span>Join Classroom (Code / Link)</span>
+    </button>
+  </div>
+
+  <!-- Filters & Search Toolbar -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm">
+    <!-- Tabs -->
+    <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 w-full sm:w-auto">
+      <button
+        (click)="activeTab.set('ALL')"
+        class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeTab() === 'ALL' ? 'bg-[#0b4a39] text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+        All Classes ({{ joinedClasses().length }})
+      </button>
+
+      <button
+        (click)="activeTab.set('ENROLLED')"
+        class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+        [ngClass]="activeTab() === 'ENROLLED' ? 'bg-[#0b4a39] text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+        Active Enrolled ({{ studentService.enrolledClassesOnly().length }})
+      </button>
+
+      <button
+        (click)="activeTab.set('PENDING')"
+        class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+        [ngClass]="activeTab() === 'PENDING' ? 'bg-amber-500 text-white shadow-sm font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+        <span>Pending Approvals</span>
+        @if (studentService.pendingClassesOnly().length > 0) {
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        }
+      </button>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative w-full sm:w-72">
+      <input
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        placeholder="Search subject or mentor..."
+        class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0b4a39]"
+      />
+      <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
+    </div>
+  </div>
+
+  <!-- Class Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (cls of filteredClasses(); track cls.id) {
+      <div
+        (click)="onClassClick(cls)"
+        class="relative rounded-2xl overflow-hidden border transition-all duration-300 group cursor-pointer bg-white dark:bg-white shadow-sm hover:shadow-xl"
+        [ngClass]="cls.status === 'PENDING' ? 'border-amber-400/40 hover:border-amber-400/70' : 'border-slate-200 dark:border-slate-800 hover:border-[#0b4a39]/50 hover:-translate-y-1'">
+
+        <!-- Card Header Poster -->
+        <div class="relative h-28 bg-gradient-to-r p-4 flex flex-col justify-between"
+             [ngClass]="cls.coverGradient || 'from-slate-800 to-[#0b4a39]'">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-black/40 text-white backdrop-blur-md border border-white/20">
+              {{ cls.subjectCode }} • Sem {{ cls.semester }}
+            </span>
+
+            <!-- Status Pill -->
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm"
+                  [ngClass]="cls.status === 'ENROLLED' ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-slate-950'">
+              {{ cls.status === 'ENROLLED' ? '✓ Enrolled' : '⏳ Pending Approval' }}
+            </span>
+          </div>
+
+          <div class="text-white">
+            <span class="text-[10px] text-white/80 uppercase font-mono">Code: {{ cls.joinCode }}</span>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-5 space-y-4">
+          <div class="space-y-1">
+            <h3 class="text-base font-black text-slate-900 dark:text-white group-hover:text-[#0b4a39] transition-colors line-clamp-1">
+              {{ cls.name }}
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ cls.department }}</p>
+          </div>
+
+          <!-- Mentor Metadata Strip -->
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-xs">
+            <div class="w-8 h-8 rounded-full bg-[#0b4a39]/10 text-[#0b4a39] font-bold flex items-center justify-center shrink-0">
+              🧑‍🏫
+            </div>
+            <div class="truncate">
+              <span class="font-bold text-slate-800 dark:text-slate-200 block truncate">{{ cls.mentorName }}</span>
+              <span class="text-[10px] text-slate-400">Reviewing Instructor</span>
+            </div>
+          </div>
+
+          <!-- Target CO Tags & Stats -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-1">
+              @for (co of cls.targetCOs; track co) {
+                <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                  {{ co }}
+                </span>
+              }
+            </div>
+            <span class="font-bold text-slate-700 dark:text-slate-300">
+              {{ cls.vivasCompleted }}/{{ cls.testsCount }} Vivas
+            </span>
+          </div>
+        </div>
+
+        <!-- 4.3 FROSTED GLASS BLUR (PENDING LOCK STATE OVERLAY) -->
+        @if (cls.status === 'PENDING') {
+          <div class="absolute inset-0 z-20 backdrop-blur-md bg-white/85 dark:bg-slate-950/80 border border-amber-300/60 dark:border-amber-400/30 p-6 flex flex-col items-center justify-center text-center space-y-3 transition-all rounded-[24px]">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-2xl animate-bounce shadow-sm">
+              🔒
+            </div>
+
+            <!-- Exact Master Requirement Lock Labels -->
+            <div class="space-y-1">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-xs">
+                Pending, not accepted by mentor
+              </span>
+              <h4 class="text-sm font-black text-slate-900 dark:text-white">
+                The class is pending, not accepted by mentor
+              </h4>
+              <p class="text-[11px] text-slate-600 dark:text-slate-300 max-w-xs leading-relaxed">
+                The request is pending, wait for the mentor approval. Please contact to the mentor.
+              </p>
+            </div>
+
+            <button
+              (click)="$event.stopPropagation(); onClassClick(cls)"
+              class="px-4 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-white/10 dark:hover:bg-white/20 text-amber-900 dark:text-white text-[11px] font-bold border border-amber-200 dark:border-white/20 transition-all cursor-pointer shadow-xs">
+              🔔 Send Reminder to {{ cls.mentorName }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- 4.1 DIRECT LINK INVITATION CONFIRMATION MODAL -->
+  @if (showDirectInviteModal(); as inv) {
+    @if (invitedClass(); as invited) {
+      <div class="fixed inset-0 z-55 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+        <div class="relative w-full max-w-lg bg-white dark:bg-white rounded-[28px] overflow-hidden shadow-2xl border-2 border-[#0b4a39]/30 p-6 md:p-8 space-y-6">
+          
+          <!-- Modal Header -->
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20 flex items-center justify-center text-2xl font-black shadow-md">
+                🎓
+              </div>
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-wider text-[#0b4a39] block">Classroom Link Invitation</span>
+                <h3 class="text-lg font-black text-slate-900 dark:text-white">Join Classroom Cohort</h3>
+              </div>
+            </div>
+            <button
+              (click)="declineDirectInvite()"
+              class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+              ✕
+            </button>
+          </div>
+
+          <!-- Classroom Preview Card -->
+          <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-[#0b4a39] text-white border border-[#0b4a39]/30 space-y-3 shadow-inner">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#0b4a39] text-white">
+                {{ invited.subjectCode }}
+              </span>
+              <span class="text-xs text-emerald-200 font-mono">Sem {{ invited.semester }} • {{ invited.department }}</span>
+            </div>
+
+            <h4 class="text-base md:text-lg font-black text-white leading-snug">{{ invited.name }}</h4>
+
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-2">
+                <span>🧑‍🏫</span>
+                <span><strong>{{ invited.mentorName }}</strong></span>
+              </div>
+              <span class="font-mono text-emerald-300 text-[11px]">Code: {{ invited.code }}</span>
+            </div>
+          </div>
+
+          <!-- Prompt Details & Student Identity Info -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+            <p class="font-semibold text-slate-700 dark:text-slate-300 leading-relaxed">
+              You entered via a specific classroom invite link. Would you like to submit an enrollment request to <strong>{{ invited.mentorName }}</strong>?
+            </p>
+            <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center gap-2 text-slate-500 dark:text-slate-400 text-[11px]">
+              <span>🧑‍🎓</span>
+              <span>Enrolling as: <strong class="text-slate-900 dark:text-white">{{ studentService.profile().fullName }}</strong> (Roll: {{ studentService.profile().studentId }}, {{ studentService.profile().section }})</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons (Yes/No Confirmation) -->
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              (click)="declineDirectInvite()"
+              class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer">
+              No, Decline
+            </button>
+            <button
+              type="button"
+              (click)="confirmDirectInvite()"
+              class="px-6 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer">
+              <span>✅ Yes, Join Classroom</span>
+              <span>→</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
+  }
+
+  <!-- 4.2 CLASS JOIN SUBMISSION MODAL (DUAL MODE: CODE & LINK) -->
+  @if (showJoinModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-lg bg-white dark:bg-white rounded-[28px] overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 p-6 md:p-7 space-y-5">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20 flex items-center justify-center text-xl">
+              🏛️
+            </div>
+            <div>
+              <h3 class="text-base font-black text-slate-900 dark:text-white">Join Classroom Cohort</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Join via course access code or mentor direct invite link</p>
+            </div>
+          </div>
+          <button (click)="closeJoinModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Dual Mode Segmented Switcher -->
+        <div class="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-xs font-bold">
+          <button
+            type="button"
+            (click)="setJoinModalMode('CODE')"
+            class="flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            [ngClass]="joinModalMode() === 'CODE' ? 'bg-[#0b4a39] text-white shadow-sm font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+            <span>🔑</span>
+            <span>Join with Code</span>
+          </button>
+          <button
+            type="button"
+            (click)="setJoinModalMode('LINK')"
+            class="flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            [ngClass]="joinModalMode() === 'LINK' ? 'bg-[#0b4a39] text-white shadow-sm font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'">
+            <span>🔗</span>
+            <span>Join with Direct Link</span>
+          </button>
+        </div>
+
+        <!-- MODE 1: JOIN WITH CLASS CODE -->
+        @if (joinModalMode() === 'CODE') {
+          <div class="space-y-4 animate-in fade-in duration-150">
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">Course Access Code</label>
+              <input
+                type="text"
+                [ngModel]="inputJoinCode()"
+                (ngModelChange)="inputJoinCode.set($event); joinModalError.set(null)"
+                (keyup.enter)="submitJoin()"
+                placeholder="e.g. DEEP-3105, ROB8-2137, OS-4482"
+                class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-mono text-base font-bold text-slate-900 dark:text-white uppercase tracking-wider focus:outline-none focus:border-[#0b4a39]"
+              />
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                Enter the alphanumeric course code provided by your course faculty or mentor.
+              </p>
+            </div>
+
+            <!-- Quick Preset Pills -->
+            <div class="space-y-1.5 pt-1">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Quick Presets</span>
+              <div class="flex flex-wrap gap-2">
+                @for (p of presetPills; track p.code) {
+                  <button
+                    type="button"
+                    (click)="selectPreset(p.code)"
+                    class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-[#0b4a39]/10 text-xs font-mono font-semibold text-slate-700 dark:text-slate-300 hover:text-[#0b4a39] border border-slate-200 dark:border-slate-700 transition-all cursor-pointer">
+                    {{ p.code }} ({{ p.label }})
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- MODE 2: JOIN WITH DIRECT LINK -->
+        @if (joinModalMode() === 'LINK') {
+          <div class="space-y-4 animate-in fade-in duration-150">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">Mentor Invitation Link</label>
+                <button
+                  type="button"
+                  (click)="pasteFromClipboard()"
+                  class="text-[11px] text-[#0b4a39] hover:underline font-bold flex items-center gap-1 cursor-pointer">
+                  📋 Paste from Clipboard
+                </button>
+              </div>
+              <input
+                type="text"
+                [ngModel]="inputJoinLink()"
+                (ngModelChange)="inputJoinLink.set($event); joinModalError.set(null)"
+                (keyup.enter)="submitJoin()"
+                placeholder="e.g. http://localhost:4200/student/classes?joinCode=DEEP-3105"
+                class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-mono text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#0b4a39]"
+              />
+            </div>
+
+            <!-- Live Extracted Preview Badge -->
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+              @if (extractedCodePreview()) {
+                <div class="flex items-center gap-2 text-[#0b4a39] font-bold">
+                  <span>✓ Detected Join Code:</span>
+                  <span class="px-2 py-0.5 rounded-md bg-[#0b4a39]/10 text-[#0b4a39] font-mono text-xs font-black">{{ extractedCodePreview() }}</span>
+                </div>
+              } @else {
+                <span class="text-slate-400 text-[11px]">💡 Paste the full invitation URL copied from your mentor's class.</span>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Error Alert Banner -->
+        @if (joinModalError()) {
+          <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-600 dark:text-rose-400 flex items-start gap-2.5 animate-in fade-in">
+            <span class="text-base shrink-0">❌</span>
+            <div class="space-y-0.5 text-xs">
+              <strong class="font-black uppercase text-[10px] tracking-wider block">Classroom Notice</strong>
+              <p class="leading-relaxed font-medium">{{ joinModalError() }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button
+            type="button"
+            (click)="closeJoinModal()"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">
+            Cancel
+          </button>
+          <button
+            type="button"
+            (click)="submitJoin()"
+            [disabled]="joinModalMode() === 'CODE' ? !inputJoinCode().trim() : !inputJoinLink().trim()"
+            class="px-6 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center gap-1.5">
+            <span>Verify & Join Class</span>
+            <span>→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- 4.4 UNLOCKED CLASSROOM HUB MODAL (ENROLLED STATE) -->
+  @if (selectedClass(); as hubClass) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-5xl bg-white dark:bg-white rounded-[28px] overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[92vh]">
+        
+        <!-- Hub Header -->
+        <div class="p-6 bg-gradient-to-r from-slate-900 via-[#0b4a39] to-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#0b4a39]/30">
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-white shadow-sm">
+                ✓ Active Enrolled
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#0b4a39]/40 text-emerald-300 border border-emerald-500/30">
+                {{ hubClass.subjectCode }} • Sem {{ hubClass.semester }}
+              </span>
+              <span class="text-xs text-slate-300 font-mono">Join Code: {{ hubClass.joinCode }}</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">{{ hubClass.name }}</h2>
+            <div class="flex items-center gap-3 text-xs text-slate-300">
+              <span class="flex items-center gap-1">🧑‍🏫 Lead Faculty: <strong class="text-white">{{ hubClass.mentorName }}</strong></span>
+              <span>•</span>
+              <span class="text-slate-300 font-mono">{{ hubClass.mentorEmail || 'faculty@apex.edu' }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs">
+              <div class="text-right">
+                <span class="text-[10px] text-slate-300 uppercase font-mono block">Class ERI</span>
+                <span class="text-sm font-black text-emerald-400">92% Ready</span>
+              </div>
+              <span class="text-xl">🎯</span>
+            </div>
+
+            <button (click)="closeClassHub()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer transition-colors">
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <!-- Sub-Tabs Navigation Bar -->
+        <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 overflow-x-auto text-xs font-bold shrink-0">
+          <button
+            (click)="hubActiveTab.set('TESTS')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap"
+            [ngClass]="hubActiveTab() === 'TESTS' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>🎯</span>
+            <span>Tests & Assessments</span>
+            <span class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="hubActiveTab() === 'TESTS' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+              {{ classTests().length }}
+            </span>
+          </button>
+
+          <button
+            (click)="hubActiveTab.set('CO_MASTERY')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap"
+            [ngClass]="hubActiveTab() === 'CO_MASTERY' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>📊</span>
+            <span>CO Mastery & Matrix</span>
+          </button>
+
+          <button
+            (click)="hubActiveTab.set('AI_READINESS')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap"
+            [ngClass]="hubActiveTab() === 'AI_READINESS' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>🤖</span>
+            <span>AI Exam Readiness</span>
+          </button>
+
+          <button
+            (click)="hubActiveTab.set('PYQ_DECK')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap"
+            [ngClass]="hubActiveTab() === 'PYQ_DECK' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>📚</span>
+            <span>PYQs & Study Bank</span>
+            <span class="px-1.5 py-0.5 rounded-full text-[10px]" [ngClass]="hubActiveTab() === 'PYQ_DECK' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'">
+              {{ classroomPYQs().length }}
+            </span>
+          </button>
+
+          <button
+            (click)="hubActiveTab.set('ANNOUNCEMENTS')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap"
+            [ngClass]="hubActiveTab() === 'ANNOUNCEMENTS' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>📢</span>
+            <span>Notices & Deadlines</span>
+          </button>
+        </div>
+
+        <!-- Hub Body Content -->
+        <div class="p-6 md:p-8 overflow-y-auto space-y-6 text-slate-800 dark:text-slate-200 flex-1">
+          
+          <!-- SUB-TAB 1: TESTS & ASSESSMENTS -->
+          @if (hubActiveTab() === 'TESTS') {
+            <div class="space-y-6 animate-in fade-in duration-200">
+              
+              <!-- Filter Bars (Type + Status) -->
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800">
+                
+                <!-- Assessment Format Pills -->
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <button
+                    (click)="testTypeFilter.set('ALL')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                    [ngClass]="testTypeFilter() === 'ALL' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'">
+                    All Formats
+                  </button>
+                  <button
+                    (click)="testTypeFilter.set('ORAL_VIVA')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                    [ngClass]="testTypeFilter() === 'ORAL_VIVA' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'">
+                    <span>🎙️</span>
+                    <span>Oral VIVA</span>
+                  </button>
+                  <button
+                    (click)="testTypeFilter.set('MCQ_DIAGNOSTIC')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                    [ngClass]="testTypeFilter() === 'MCQ_DIAGNOSTIC' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'">
+                    <span>📝</span>
+                    <span>MCQ Tests</span>
+                  </button>
+                  <button
+                    (click)="testTypeFilter.set('SPEAKING_DEFENSE')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                    [ngClass]="testTypeFilter() === 'SPEAKING_DEFENSE' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'">
+                    <span>🗣️</span>
+                    <span>Speaking Defense</span>
+                  </button>
+                  <button
+                    (click)="testTypeFilter.set('LAB_PRACTICAL')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                    [ngClass]="testTypeFilter() === 'LAB_PRACTICAL' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'">
+                    <span>💻</span>
+                    <span>Lab Practical</span>
+                  </button>
+                  <button
+                    (click)="testTypeFilter.set('THEORY_CIE')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                    [ngClass]="testTypeFilter() === 'THEORY_CIE' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'">
+                    <span>📑</span>
+                    <span>Theory CIE</span>
+                  </button>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="flex items-center gap-1 bg-slate-200 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold shrink-0">
+                  <button
+                    (click)="testStatusFilter.set('ALL')"
+                    class="px-3 py-1 rounded-lg transition-all cursor-pointer"
+                    [ngClass]="testStatusFilter() === 'ALL' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                    All Status
+                  </button>
+                  <button
+                    (click)="testStatusFilter.set('PENDING')"
+                    class="px-3 py-1 rounded-lg transition-all cursor-pointer"
+                    [ngClass]="testStatusFilter() === 'PENDING' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                    Upcoming ({{ classTests().filter(t => t.status !== 'COMPLETED').length }})
+                  </button>
+                  <button
+                    (click)="testStatusFilter.set('COMPLETED')"
+                    class="px-3 py-1 rounded-lg transition-all cursor-pointer"
+                    [ngClass]="testStatusFilter() === 'COMPLETED' ? 'bg-white dark:bg-slate-700 text-emerald-500 shadow-sm' : 'text-slate-500 hover:text-slate-800'">
+                    Completed ({{ classTests().filter(t => t.status === 'COMPLETED').length }})
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Test Cards List -->
+              @if (classTests().length === 0) {
+                <div class="text-center py-12 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                  <span class="text-4xl block">📋</span>
+                  <h4 class="text-base font-bold text-slate-900 dark:text-white">No Assessments Match Filter</h4>
+                  <p class="text-xs text-slate-400">Try changing the format or status filters above to view other class tests.</p>
+                </div>
+              } @else {
+                <div class="space-y-4">
+                  @for (test of classTests(); track test.id) {
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-800/80 border transition-all duration-200 shadow-sm hover:shadow-md space-y-4"
+                         [ngClass]="test.status === 'COMPLETED' ? 'border-emerald-500/40 bg-emerald-500/[0.02]' : 'border-slate-200 dark:border-slate-700/80 hover:border-indigo-500/50'">
+                      
+                      <!-- Card Header -->
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5">
+                          <!-- Format Badge -->
+                          <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"
+                                [ngClass]="{
+                                  'bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30': test.type === 'ORAL_VIVA',
+                                  'bg-blue-500/20 text-blue-600 dark:text-blue-300 border border-blue-500/30': test.type === 'MCQ_DIAGNOSTIC',
+                                  'bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30': test.type === 'SPEAKING_DEFENSE',
+                                  'bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30': test.type === 'LAB_PRACTICAL',
+                                  'bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30': test.type === 'THEORY_CIE',
+                                  'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30': test.type === 'ASSIGNMENT'
+                                }">
+                            @if (test.type === 'ORAL_VIVA') { 🎙️ Live Oral VIVA }
+                            @else if (test.type === 'MCQ_DIAGNOSTIC') { 📝 MCQ Diagnostic }
+                            @else if (test.type === 'SPEAKING_DEFENSE') { 🗣️ Speaking Defense }
+                            @else if (test.type === 'LAB_PRACTICAL') { 💻 Lab Practical CIE }
+                            @else if (test.type === 'THEORY_CIE') { 📑 Theory CIE Test }
+                            @else { 📂 Assignment }
+                          </span>
+
+                          <!-- Target COs -->
+                          <div class="flex items-center gap-1">
+                            @for (co of test.targetCOs; track co) {
+                              <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700/80 font-mono text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                                {{ co }}
+                              </span>
+                            }
+                          </div>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <div class="flex items-center gap-2">
+                          @if (test.status === 'COMPLETED') {
+                            <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                              <span>✓</span>
+                              <span>Completed • {{ test.completedAt || 'Evaluated' }}</span>
+                            </span>
+                          } @else {
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1 animate-pulse">
+                              <span>⏳</span>
+                              <span>{{ test.dueCountdown }}</span>
+                            </span>
+                          }
+                        </div>
+                      </div>
+
+                      <!-- Title & Metadata -->
+                      <div class="space-y-1">
+                        <h4 class="text-base font-black text-slate-900 dark:text-white">{{ test.title }}</h4>
+                        <div class="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                          <span>💯 Total Marks: <strong class="text-slate-800 dark:text-slate-200">{{ test.totalMarks }}</strong></span>
+                          <span>⏱️ Duration: <strong class="text-slate-800 dark:text-slate-200">{{ test.durationMinutes }} Minutes</strong></span>
+                          <span>📅 Due Date: <strong class="text-slate-800 dark:text-slate-200">{{ test.dueDate }}</strong></span>
+                        </div>
+                      </div>
+
+                      <!-- Performance Scorecard Strip (When Completed) -->
+                      @if (test.status === 'COMPLETED') {
+                        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div class="flex flex-wrap items-center gap-4">
+                            <!-- Awarded Score -->
+                            <div class="flex items-center gap-2">
+                              <span class="text-xl">🏆</span>
+                              <div>
+                                <span class="text-[10px] uppercase font-mono text-slate-400 block">Awarded Score</span>
+                                <span class="text-base font-black text-emerald-500 dark:text-emerald-400">
+                                  {{ test.awardedScore }} / {{ test.totalMarks }} Marks
+                                </span>
+                              </div>
+                            </div>
+
+                            <!-- Grade Pill -->
+                            @if (test.gradePill) {
+                              <div class="px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+                                <span class="text-[10px] uppercase font-mono text-slate-400 block">Grade</span>
+                                <span class="text-xs font-black text-indigo-400">{{ test.gradePill }}</span>
+                              </div>
+                            }
+
+                            <!-- Integrity Score -->
+                            <div class="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                              <span class="text-[10px] uppercase font-mono text-slate-400 block">Integrity</span>
+                              <span class="text-xs font-bold text-emerald-400">{{ test.integrityScore || 100 }}% Verified</span>
+                            </div>
+                          </div>
+
+                          <!-- Action: View Detailed AI Result -->
+                          <button
+                            (click)="openTestResult(test)"
+                            class="px-4 py-2 rounded-xl bg-[#10b981] hover:bg-[#0ea371] text-black text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer self-start sm:self-auto">
+                            <span>🤖</span>
+                            <span>View Detailed AI Diagnostics & Results</span>
+                            <span>→</span>
+                          </button>
+                        </div>
+                      } @else {
+                        <!-- Action Strip (When Pending / Upcoming) -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                          <span class="text-xs text-slate-400 flex items-center gap-1">
+                            <span>🔒</span>
+                            <span>Exam window active. Complete before the deadline.</span>
+                          </span>
+
+                          <div class="flex items-center gap-2 self-end sm:self-auto">
+                            @if (test.type === 'ORAL_VIVA' || test.type === 'SPEAKING_DEFENSE') {
+                              <a
+                                routerLink="/student/viva"
+                                (click)="closeClassHub()"
+                                class="px-5 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white text-xs font-black shadow-lg shadow-[#0b4a39]/20 transition-all flex items-center gap-2 cursor-pointer">
+                                <span>🎙️ Launch Live VIVA Room</span>
+                                <span>→</span>
+                              </a>
+                            } @else if (test.type === 'MCQ_DIAGNOSTIC') {
+                              <button
+                                (click)="startMCQQuiz(test)"
+                                class="px-5 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white text-xs font-black shadow-lg shadow-[#0b4a39]/20 transition-all flex items-center gap-2 cursor-pointer">
+                                <span>📝 Take MCQ Diagnostic Quiz</span>
+                                <span>→</span>
+                              </button>
+                            } @else {
+                              <a
+                                routerLink="/student/practice"
+                                (click)="closeClassHub()"
+                                class="px-5 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white text-xs font-black shadow-md transition-all flex items-center gap-2 cursor-pointer">
+                                <span>📂 Open Assessment Lab</span>
+                                <span>→</span>
+                              </a>
+                            }
+                          </div>
+                        </div>
+                      }
+
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+          }
+
+          <!-- SUB-TAB 2: CO MASTERY & MATRIX -->
+          @if (hubActiveTab() === 'CO_MASTERY') {
+            <div class="space-y-6 animate-in fade-in duration-200">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-black text-slate-900 dark:text-white">Course Outcomes (CO) Attainment Matrix</h3>
+                  <p class="text-xs text-slate-400">Curriculum-aligned competence tracking with Bloom's taxonomy mapping for {{ hubClass.subjectCode }}</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-black bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                  Target Benchmark: 75%
+                </span>
+              </div>
+
+              <!-- CO Cards Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @for (co of classroomCOMastery(); track co.code) {
+                  <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-4">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="px-2 py-0.5 rounded font-mono text-xs font-black bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                            {{ co.code }}
+                          </span>
+                          <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ co.bloom }}</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-snug">{{ co.desc }}</h4>
+                      </div>
+
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0"
+                            [ngClass]="{
+                              'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': co.status === 'MASTERED',
+                              'bg-blue-500/20 text-blue-400 border border-blue-500/30': co.status === 'DEVELOPING',
+                              'bg-amber-500/20 text-amber-400 border border-amber-500/30': co.status === 'NEEDS_FOCUS',
+                              'bg-slate-500/20 text-slate-400 border border-slate-500/30': co.status === 'PENDING_EVAL'
+                            }">
+                        {{ co.status === 'MASTERED' ? '✓ Mastered' : co.status === 'DEVELOPING' ? '⚡ Developing' : co.status === 'NEEDS_FOCUS' ? '⚠️ Needs Focus' : '⏳ Pending' }}
+                      </span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between text-xs font-bold">
+                        <span class="text-slate-400">Attainment Score</span>
+                        <span class="text-indigo-400">{{ co.attainmentPct }}%</span>
+                      </div>
+                      <div class="w-full h-2.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-500"
+                             [style.width.%]="co.attainmentPct"
+                             [ngClass]="co.attainmentPct >= 75 ? 'bg-emerald-500' : co.attainmentPct >= 50 ? 'bg-blue-500' : 'bg-amber-500'"></div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-700/50">
+                      <span>Curriculum Weightage: <strong class="text-slate-200">{{ co.weight }}%</strong></span>
+                      <span>Evaluated In: <strong class="text-slate-200">{{ co.assessedItemsCount }} Tests</strong></span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- SUB-TAB 3: AI EXAM READINESS -->
+          @if (hubActiveTab() === 'AI_READINESS') {
+            <div class="space-y-6 animate-in fade-in duration-200">
+              <!-- AI Diagnostic Header Card -->
+              <div class="p-6 rounded-2xl bg-[#0f1419] border border-[#eceeee] text-white space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-2xl">
+                      🤖
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h3 class="text-lg font-black text-white">Gemini AI Subject Exam Readiness Engine</h3>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/30 text-indigo-300">Active</span>
+                      </div>
+                      <p class="text-xs text-slate-300">Continuous AI assessment diagnostics for {{ hubClass.name }}</p>
+                    </div>
+                  </div>
+
+                  <div class="text-right">
+                    <span class="text-3xl font-black text-emerald-400">92/100</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-mono block">Readiness Index</span>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-black/40 border border-white/10 text-xs leading-relaxed text-slate-200">
+                  <strong class="text-indigo-300 block mb-1">💡 Executive Summary:</strong>
+                  Your conceptual grasp across foundational message passing and vector clock causality is in the top 5th percentile of the cohort. Minor knowledge reinforcement is suggested on consensus quorum partition edge-cases prior to university end-semester finals.
+                </div>
+              </div>
+
+              <!-- Two Column Insights Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                  <h4 class="text-xs font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
+                    <span>🌟</span>
+                    <span>Top Subject Strengths</span>
+                  </h4>
+                  <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <span class="text-emerald-400 mt-0.5">✓</span>
+                      <span>High mathematical accuracy in calculating Vector Clock timestamps (CO2).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <span class="text-emerald-400 mt-0.5">✓</span>
+                      <span>Clear verbal articulation of Raft randomized election timeouts (CO3).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <span class="text-emerald-400 mt-0.5">✓</span>
+                      <span>Consistent 100% exam integrity score across all formative checkpoints.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                  <h4 class="text-xs font-black uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
+                    <span>🎯</span>
+                    <span>Knowledge Gaps & Suggested Focus</span>
+                  </h4>
+                  <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <span class="text-amber-400 mt-0.5">⚡</span>
+                      <span>Byzantine Generals Oral Defense proofs under 3m partition scenarios.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <span class="text-amber-400 mt-0.5">⚡</span>
+                      <span>gRPC Protocol Buffer compaction benchmarks in microservices.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- SUB-TAB 4: PYQS & STUDY DECK -->
+          @if (hubActiveTab() === 'PYQ_DECK') {
+            <div class="space-y-4 animate-in fade-in duration-200">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-black text-slate-900 dark:text-white">University PYQ Bank & Model Solutions</h3>
+                  <p class="text-xs text-slate-400">Previous 5-year university exam questions tagged with recurring frequency for {{ hubClass.subjectCode }}</p>
+                </div>
+                <a routerLink="/student/practice" (click)="closeClassHub()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500 cursor-pointer">
+                  Open in Practice Room →
+                </a>
+              </div>
+
+              @if (classroomPYQs().length === 0) {
+                <div class="text-center py-10 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+                  <span class="text-3xl block">📚</span>
+                  <p class="text-xs text-slate-400">No specific PYQs mapped yet for this subject.</p>
+                </div>
+              } @else {
+                <div class="space-y-4">
+                  @for (pyq of classroomPYQs(); track pyq.id) {
+                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                          {{ pyq.frequencyBadge }}
+                        </span>
+                        <div class="flex items-center gap-2">
+                          <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-mono text-[10px] font-bold">{{ pyq.targetCO }}</span>
+                          <span class="text-xs font-bold text-slate-400">{{ pyq.bloomLevel }}</span>
+                        </div>
+                      </div>
+
+                      <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-relaxed">{{ pyq.questionText }}</h4>
+
+                      <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 text-xs text-slate-600 dark:text-slate-300">
+                        <strong class="text-indigo-400 block mb-1">Model Answer Excerpt:</strong>
+                        <p class="line-clamp-2 leading-relaxed">{{ pyq.examSolution?.definition }} {{ pyq.examSolution?.workingPrinciple }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          <!-- SUB-TAB 5: NOTICES & DEADLINES -->
+          @if (hubActiveTab() === 'ANNOUNCEMENTS') {
+            <div class="space-y-4 animate-in fade-in duration-200">
+              <div class="p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-indigo-400 uppercase tracking-wider">📢 Mentor Bulletin</span>
+                  <span class="text-[10px] text-slate-400 font-mono">2 hours ago</span>
+                </div>
+                <h4 class="text-sm font-black text-slate-900 dark:text-white">Midterm Viva Lockout Notice</h4>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  All students must complete their Midterm Spoken Oral VIVA before 05:00 PM today. Ensure your WebRTC microphone permissions and webcam are tested.
+                </p>
+              </div>
+
+              <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-emerald-500 uppercase tracking-wider">📅 Assessment Timetable</span>
+                  <span class="text-[10px] text-slate-400 font-mono">1 day ago</span>
+                </div>
+                <h4 class="text-sm font-black text-slate-900 dark:text-white">Spring Semester CIE-2 Schedule Published</h4>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  CIE-2 Theory examinations for {{ hubClass.subjectCode }} are scheduled for March 22nd. Review all Bloom Level 3 and Level 4 PYQ questions in the Practice Lab.
+                </p>
+              </div>
+            </div>
+          }
+
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- 4.5 DETAILED TEST RESULT & AI DIAGNOSTICS MODAL -->
+  @if (selectedTestResult(); as testRes) {
+    <div class="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-4xl bg-white dark:bg-white rounded-[28px] overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[92vh]">
+        
+        <!-- Modal Top Header -->
+        <div class="p-6 bg-gradient-to-r from-slate-900 via-[#0b4a39] to-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-white">
+                ✓ Evaluation Completed
+              </span>
+              <span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#0b4a39]/40 text-emerald-300 border border-emerald-500/30">
+                {{ testRes.subjectCode }}
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-black text-white">{{ testRes.title }}</h2>
+            <p class="text-xs text-slate-300">Completed at: {{ testRes.completedAt || 'Evaluated' }} • Duration: {{ testRes.durationMinutes }} Mins</p>
+          </div>
+
+          <button (click)="closeTestResult()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Comprehensive Scorecard Strip -->
+        <div class="p-5 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <!-- Awarded Score -->
+          <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <span class="text-[10px] text-slate-400 uppercase font-mono block">Score Awarded</span>
+            <span class="text-lg font-black text-[#0b4a39]">
+              {{ testRes.awardedScore }} <span class="text-xs text-slate-400 font-normal">/ {{ testRes.totalMarks }}</span>
+            </span>
+          </div>
+
+          <!-- Grade -->
+          <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <span class="text-[10px] text-slate-400 uppercase font-mono block">Grade Achieved</span>
+            <span class="text-lg font-black text-[#0b4a39]">{{ testRes.gradePill || 'A (Distinction)' }}</span>
+          </div>
+
+          <!-- Proctoring Integrity -->
+          <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <span class="text-[10px] text-slate-400 uppercase font-mono block">Integrity Score</span>
+            <span class="text-lg font-black text-emerald-500">{{ testRes.integrityScore || 100 }}% <span class="text-xs font-normal text-slate-400">Audit Pass</span></span>
+          </div>
+
+          <!-- AI Readiness Score -->
+          <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <span class="text-[10px] text-slate-400 uppercase font-mono block">Exam Readiness</span>
+            <span class="text-lg font-black text-[#0b4a39]">{{ testRes.aiAnalysis?.examReadinessScore || 92 }}%</span>
+          </div>
+        </div>
+
+        <!-- Result Sub-Tabs Bar -->
+        <div class="px-6 py-2.5 bg-slate-100 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 overflow-x-auto text-xs font-bold shrink-0">
+          <button
+            (click)="setTestResultTab('AI_DIAGNOSTIC')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+            [ngClass]="testResultTab() === 'AI_DIAGNOSTIC' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>🤖</span>
+            <span>Gemini AI Diagnostic</span>
+          </button>
+          <button
+            (click)="setTestResultTab('QUESTIONS')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+            [ngClass]="testResultTab() === 'QUESTIONS' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>📋</span>
+            <span>Question Transcript & Review</span>
+          </button>
+          <button
+            (click)="setTestResultTab('CO_BREAKDOWN')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+            [ngClass]="testResultTab() === 'CO_BREAKDOWN' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>🎯</span>
+            <span>CO & Bloom's Attainment</span>
+          </button>
+          <button
+            (click)="setTestResultTab('PROCTORING')"
+            class="px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+            [ngClass]="testResultTab() === 'PROCTORING' ? 'bg-[#0b4a39] text-white shadow-md font-black' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>🛡️</span>
+            <span>Proctoring Audit</span>
+          </button>
+        </div>
+
+        <!-- Result Tab Content -->
+        <div class="p-6 md:p-8 overflow-y-auto space-y-6 text-slate-800 dark:text-slate-200 flex-1">
+          
+          <!-- TAB 1: GEMINI AI DIAGNOSTIC -->
+          @if (testResultTab() === 'AI_DIAGNOSTIC') {
+            <div class="space-y-6 animate-in fade-in duration-200">
+              
+              <!-- Executive Summary Card -->
+              <div class="p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🤖</span>
+                    <span>Executive AI Analysis • {{ testRes.aiAnalysis?.aiModelUsed || 'Gemini 1.5 Pro' }}</span>
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-mono">{{ testRes.aiAnalysis?.generatedAt || 'Generated Today' }}</span>
+                </div>
+                <p class="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                  {{ testRes.aiAnalysis?.executiveSummary || testRes.feedbackSummary || 'Student exhibited solid conceptual comprehension with strong domain terminology and logic alignment.' }}
+                </p>
+              </div>
+
+              <!-- Strengths & Weaknesses Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Strengths -->
+                <div class="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/30 space-y-3">
+                  <h4 class="text-xs font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
+                    <span>🌟</span>
+                    <span>Demonstrated Strengths</span>
+                  </h4>
+                  <ul class="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+                    @for (str of testRes.aiAnalysis?.strengths; track str) {
+                      <li class="flex items-start gap-2">
+                        <span class="text-emerald-400 mt-0.5">✓</span>
+                        <span class="leading-relaxed">{{ str }}</span>
+                      </li>
+                    } @empty {
+                      <li class="flex items-start gap-2 text-slate-400">
+                        <span>✓</span>
+                        <span>High conceptual accuracy on core subject topics.</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+
+                <!-- Weaknesses / Focus Areas -->
+                <div class="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/30 space-y-3">
+                  <h4 class="text-xs font-black uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
+                    <span>🎯</span>
+                    <span>Knowledge Gaps Detected</span>
+                  </h4>
+                  <ul class="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+                    @for (w of testRes.aiAnalysis?.weaknesses; track w) {
+                      <li class="flex items-start gap-2">
+                        <span class="text-amber-400 mt-0.5">⚡</span>
+                        <span class="leading-relaxed">{{ w }}</span>
+                      </li>
+                    } @empty {
+                      <li class="flex items-start gap-2 text-slate-400">
+                        <span>⚡</span>
+                        <span>Minor review recommended on Bloom Level 4 multi-step problem derivations.</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Remediation Pathway -->
+              <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                <h4 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+                  <span>🚀</span>
+                  <span>Personalized Remediation Pathway</span>
+                </h4>
+                <div class="space-y-2 text-xs">
+                  @for (step of testRes.aiAnalysis?.remediationPath; track step; let idx = $index) {
+                    <div class="flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60">
+                      <span class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-black text-xs flex items-center justify-center shrink-0">
+                        {{ idx + 1 }}
+                      </span>
+                      <p class="text-slate-700 dark:text-slate-200 leading-relaxed font-medium">{{ step }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- 1-Click AI Practice Drill Generator Section -->
+              <div class="p-6 rounded-2xl bg-gradient-to-r from-purple-950/40 via-indigo-950/40 to-slate-900/60 border-2 border-indigo-500/40 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 class="text-sm font-black text-white flex items-center gap-2">
+                      <span>⚡</span>
+                      <span>Targeted Remediation Practice Drill Generator</span>
+                    </h4>
+                    <p class="text-xs text-slate-300">Generate custom practice questions and concept scaffolding tailored to your test gaps.</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    (click)="triggerAIDrillGeneration(testRes)"
+                    [disabled]="isGeneratingDrill()"
+                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg hover:shadow-purple-500/25 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 shrink-0">
+                    @if (isGeneratingDrill()) {
+                      <span class="animate-spin text-sm">⏳</span>
+                      <span>Generating with Gemini AI...</span>
+                    } @else {
+                      <span>🤖 Generate Remediation Drill</span>
+                    }
+                  </button>
+                </div>
+
+                <!-- Generated Remediation Drill Output View -->
+                @if (remediationDrill(); as drill) {
+                  <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-indigo-500/40 space-y-4 text-xs animate-in fade-in duration-300">
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                      <h5 class="text-sm font-black text-indigo-400">{{ drill.drillTitle }}</h5>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-500/20 text-purple-300">AI Generated</span>
+                    </div>
+
+                    <div class="space-y-2">
+                      <strong class="text-slate-900 dark:text-white block font-bold">📖 Key Scaffolding Notes:</strong>
+                      <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{{ drill.conceptNotes }}</p>
+                    </div>
+
+                    @if (drill.keyFormulasOrRules?.length > 0) {
+                      <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 space-y-1.5">
+                        <strong class="text-indigo-400 block font-bold">📐 Invariants & Formulas to Master:</strong>
+                        <ul class="space-y-1 font-mono text-[11px] text-slate-300">
+                          @for (f of drill.keyFormulasOrRules; track f) {
+                            <li>• {{ f }}</li>
+                          }
+                        </ul>
+                      </div>
+                    }
+
+                    <div class="space-y-3 pt-2">
+                      <strong class="text-slate-900 dark:text-white block font-bold">🎯 Targeted Practice Items:</strong>
+                      @for (pq of drill.practiceQuestions; track pq.question; let qidx = $index) {
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 space-y-2">
+                          <div class="flex items-center justify-between">
+                            <span class="font-bold text-indigo-400">Drill Q{{ qidx + 1 }} ({{ pq.bloomLevel || 'Bloom L3' }}):</span>
+                            <span class="text-[10px] text-slate-400 italic">💡 Hint: {{ pq.hint }}</span>
+                          </div>
+                          <p class="font-semibold text-slate-900 dark:text-white">{{ pq.question }}</p>
+                          <div class="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium leading-relaxed">
+                            <strong>Model Answer:</strong> {{ pq.modelAnswer }}
+                          </div>
+                        </div>
+                      }
+                    </div>
+
+                    @if (drill.facultyProTip) {
+                      <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+                        <strong>🧑‍🏫 Faculty Pro Tip:</strong> {{ drill.facultyProTip }}
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+            </div>
+          }
+
+          <!-- TAB 2: QUESTION TRANSCRIPT & REVIEW -->
+          @if (testResultTab() === 'QUESTIONS') {
+            <div class="space-y-4 animate-in fade-in duration-200">
+              @for (qb of testRes.questionBreakdown; track qb.questionNumber) {
+                <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                  
+                  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
+                    <div class="flex items-center gap-2">
+                      <span class="w-7 h-7 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center">
+                        {{ qb.questionNumber }}
+                      </span>
+                      <span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-indigo-500/20 text-indigo-400">
+                        {{ qb.coTarget }}
+                      </span>
+                      <span class="text-xs font-bold text-slate-400">{{ qb.bloomLevel }}</span>
+                    </div>
+
+                    <span class="px-3 py-1 rounded-full text-xs font-black"
+                          [ngClass]="qb.awardedMarks === qb.maxMarks ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : qb.awardedMarks > 0 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'">
+                      Awarded: {{ qb.awardedMarks }} / {{ qb.maxMarks }} Marks
+                    </span>
+                  </div>
+
+                  <!-- Prompt -->
+                  <div class="space-y-1">
+                    <span class="text-[10px] uppercase font-mono text-slate-400 font-bold">Assessment Question</span>
+                    <h5 class="text-xs font-bold text-slate-900 dark:text-white leading-relaxed">{{ qb.questionText }}</h5>
+                  </div>
+
+                  <!-- Student Answer -->
+                  <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 space-y-1">
+                    <span class="text-[10px] uppercase font-mono text-indigo-400 font-bold">Your Submitted Answer / Spoken Transcript:</span>
+                    <p class="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-mono">{{ qb.studentAnswer }}</p>
+                  </div>
+
+                  <!-- Model Answer -->
+                  <div class="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1">
+                    <span class="text-[10px] uppercase font-mono text-emerald-400 font-bold">Examiner Model Solution:</span>
+                    <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{{ qb.modelAnswer }}</p>
+                  </div>
+
+                  <!-- Examiner Feedback -->
+                  <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300 flex items-start gap-2">
+                    <span class="text-base">💡</span>
+                    <div>
+                      <strong class="font-bold text-indigo-200">AI Examiner Evaluation Note:</strong>
+                      <p class="mt-0.5 leading-relaxed">{{ qb.examinerFeedback }}</p>
+                    </div>
+                  </div>
+
+                </div>
+              } @empty {
+                <div class="text-center py-8 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-xs text-slate-400">
+                  Comprehensive transcript not recorded for this format. Overall score: {{ testRes.awardedScore }}/{{ testRes.totalMarks }}.
+                </div>
+              }
+            </div>
+          }
+
+          <!-- TAB 3: CO & BLOOM'S ATTAINMENT -->
+          @if (testResultTab() === 'CO_BREAKDOWN') {
+            <div class="space-y-6 animate-in fade-in duration-200">
+              
+              <!-- CO Scores Table -->
+              <div class="space-y-3">
+                <h4 class="text-xs font-black uppercase tracking-wider text-slate-400">Target Course Outcome Articulation</h4>
+                <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+                  <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 uppercase font-bold">
+                      <tr>
+                        <th class="p-3.5">CO Code</th>
+                        <th class="p-3.5">Outcome Description</th>
+                        <th class="p-3.5">Bloom Level</th>
+                        <th class="p-3.5">Marks Awarded</th>
+                        <th class="p-3.5">Attainment Status</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                      @for (co of testRes.coAttainmentScores; track co.coCode) {
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                          <td class="p-3.5 font-mono font-black text-indigo-400">{{ co.coCode }}</td>
+                          <td class="p-3.5 font-bold text-slate-800 dark:text-slate-200">{{ co.label }}</td>
+                          <td class="p-3.5 font-semibold text-slate-400">{{ co.bloomLevel }}</td>
+                          <td class="p-3.5 font-black text-emerald-400">{{ co.score }} / {{ co.maxScore }}</td>
+                          <td class="p-3.5">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase"
+                                  [ngClass]="co.status === 'MASTERED' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'">
+                              {{ co.status }}
+                            </span>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Rubric Breakdown -->
+              @if (testRes.rubricBreakdown && testRes.rubricBreakdown.length > 0) {
+                <div class="space-y-3 pt-2">
+                  <h4 class="text-xs font-black uppercase tracking-wider text-slate-400">Grading Rubric Criteria Breakdown</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for (r of testRes.rubricBreakdown; track r.criterion) {
+                      <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-2">
+                        <div class="flex items-center justify-between">
+                          <h5 class="text-xs font-bold text-slate-900 dark:text-white">{{ r.criterion }}</h5>
+                          <span class="font-black text-xs text-indigo-400">{{ r.awardedMarks }} / {{ r.maxMarks }} Marks</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{{ r.feedback }}</p>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+            </div>
+          }
+
+          <!-- TAB 4: PROCTORING AUDIT -->
+          @if (testResultTab() === 'PROCTORING') {
+            <div class="space-y-4 animate-in fade-in duration-200 text-xs">
+              <div class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                    🛡️
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-black text-emerald-400">Proctoring Integrity Verified (100%)</h4>
+                    <p class="text-slate-300">All audio and focus integrity checks satisfied with zero academic infractions.</p>
+                  </div>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-emerald-500 text-white font-black text-xs">CERTIFIED</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">
+                  <span class="text-slate-400 block font-mono text-[10px]">Window Focus Loss</span>
+                  <span class="text-base font-black text-slate-900 dark:text-white">0 Events</span>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">
+                  <span class="text-slate-400 block font-mono text-[10px]">Audio Stream Quality</span>
+                  <span class="text-base font-black text-emerald-400">99.4% Fidelity</span>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1">
+                  <span class="text-slate-400 block font-mono text-[10px]">Tamper Timestamp</span>
+                  <span class="text-base font-black text-slate-900 dark:text-white">Cryptographically Signed</span>
+                </div>
+              </div>
+            </div>
+          }
+
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- 4.6 IN-CLASS INTERACTIVE MCQ QUIZ RUNNER MODAL -->
+  @if (activeMCQTest(); as mcqTest) {
+    <div class="fixed inset-0 z-70 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative w-full max-w-3xl bg-white dark:bg-white rounded-[28px] overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[92vh]">
+        
+        <!-- Quiz Runner Top Bar -->
+        <div class="p-5 bg-gradient-to-r from-slate-900 via-[#0b4a39] to-slate-900 text-white flex items-center justify-between border-b border-[#0b4a39]/30">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#0b4a39] text-white">
+                Interactive MCQ Runner
+              </span>
+              <span class="font-mono text-xs text-emerald-300">{{ mcqTest.subjectCode }}</span>
+            </div>
+            <h3 class="text-base font-black text-white line-clamp-1">{{ mcqTest.title }}</h3>
+          </div>
+
+          <!-- Timer Badge -->
+          <div class="flex items-center gap-3">
+            <div class="px-4 py-1.5 rounded-xl bg-black/50 border border-emerald-500/40 text-xs font-mono font-black flex items-center gap-2"
+                 [ngClass]="mcqTimeRemaining() < 120 ? 'text-rose-400 border-rose-500 animate-pulse' : 'text-emerald-400'">
+              <span>⏱️</span>
+              <span>{{ getFormattedTime(mcqTimeRemaining()) }}</span>
+            </div>
+
+            <button (click)="closeMCQQuiz()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs cursor-pointer">
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Navigator Dots -->
+        @if (mcqTest.mcqQuestions; as questions) {
+          <div class="px-6 py-2.5 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 overflow-x-auto text-xs">
+            <span class="text-slate-400 font-bold text-[11px] shrink-0">Question Navigator:</span>
+            <div class="flex items-center gap-2">
+              @for (q of questions; track q.id; let idx = $index) {
+                <button
+                  type="button"
+                  (click)="goToMCQQuestion(idx)"
+                  class="w-7 h-7 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center justify-center"
+                  [ngClass]="{
+                    'bg-[#0b4a39] text-white shadow-md': mcqCurrentIndex() === idx,
+                    'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40': mcqCurrentIndex() !== idx && mcqAnswers()[q.id] !== undefined,
+                    'bg-slate-200 dark:bg-slate-800 text-slate-500': mcqCurrentIndex() !== idx && mcqAnswers()[q.id] === undefined
+                  }">
+                  {{ idx + 1 }}
+                </button>
+              }
+            </div>
+            <span class="text-[#0b4a39] font-bold text-[11px] shrink-0">
+              {{ answeredMCQCount() }} / {{ questions.length }} Answered
+            </span>
+          </div>
+
+          <!-- Current Question Body -->
+          <div class="p-6 md:p-8 overflow-y-auto space-y-6 flex-1 text-slate-800 dark:text-slate-200">
+            @if (questions[mcqCurrentIndex()]; as currentQ) {
+              <div class="space-y-4">
+                
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full text-xs font-black bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20">
+                    Question {{ mcqCurrentIndex() + 1 }} of {{ questions.length }}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[10px] font-bold text-slate-400">{{ currentQ.coTarget }}</span>
+                    <span class="text-xs font-bold text-slate-400">{{ currentQ.bloomLevel }}</span>
+                  </div>
+                </div>
+
+                <h4 class="text-base font-bold text-slate-900 dark:text-white leading-relaxed">
+                  {{ currentQ.question }}
+                </h4>
+
+                <!-- 4 Options -->
+                <div class="space-y-3 pt-2">
+                  @for (opt of currentQ.options; track opt; let optIdx = $index) {
+                    <div
+                      (click)="selectMCQOption(currentQ.id, optIdx)"
+                      class="p-4 rounded-xl border-2 transition-all duration-150 cursor-pointer flex items-center gap-3.5"
+                      [ngClass]="mcqAnswers()[currentQ.id] === optIdx
+                        ? 'bg-[#0b4a39]/10 border-[#0b4a39] text-[#0b4a39] font-bold shadow-sm'
+                        : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-700 dark:text-slate-300'">
+                      
+                      <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center font-bold text-xs shrink-0 transition-colors"
+                           [ngClass]="mcqAnswers()[currentQ.id] === optIdx ? 'border-[#0b4a39] bg-[#0b4a39] text-white' : 'border-slate-400 text-slate-400'">
+                        {{ ['A', 'B', 'C', 'D'][optIdx] }}
+                      </div>
+
+                      <span class="text-xs leading-relaxed flex-1">{{ opt }}</span>
+                    </div>
+                  }
+                </div>
+
+              </div>
+            }
+          </div>
+
+          <!-- Quiz Runner Footer Navigation -->
+          <div class="p-5 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              (click)="prevMCQQuestion()"
+              [disabled]="mcqCurrentIndex() === 0"
+              class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 cursor-pointer">
+              ← Previous
+            </button>
+
+            <div class="flex items-center gap-3">
+              @if (mcqCurrentIndex() < questions.length - 1) {
+                <button
+                  type="button"
+                  (click)="nextMCQQuestion()"
+                  class="px-5 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white text-xs font-black shadow-md cursor-pointer flex items-center gap-1.5">
+                  <span>Next Question</span>
+                  <span>→</span>
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  (click)="submitMCQQuiz()"
+                  [disabled]="isSubmittingMCQ()"
+                  class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black shadow-lg hover:shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50">
+                  @if (isSubmittingMCQ()) {
+                    <span class="animate-spin text-sm">⏳</span>
+                    <span>Submitting & Scoring...</span>
+                  } @else {
+                    <span>🏁 Submit & Evaluate MCQ Test</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>

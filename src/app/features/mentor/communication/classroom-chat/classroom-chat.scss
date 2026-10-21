@@ -1,0 +1,18 @@
+// Classroom chat styles
+#chat-scroll-container {
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #F8FAF9;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ECEEEE;
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #0B4A39;
+  }
+}

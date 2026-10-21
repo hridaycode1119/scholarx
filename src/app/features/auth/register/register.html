@@ -1,0 +1,811 @@
+<div class="scholarx-auth-root min-h-screen w-full flex flex-col justify-between p-4 sm:p-6 md:p-8 relative overflow-hidden" [class.dark]="isDarkMode()">
+
+  <!-- Ambient Decorative Background Glows matching landing page -->
+  <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-secondary-container/40 blur-3xl pointer-events-none -z-10 animate-pulse"></div>
+  <div class="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none -z-10"></div>
+  <div class="absolute top-1/3 right-10 w-72 h-72 rounded-full bg-tertiary-fixed/30 blur-3xl pointer-events-none -z-10"></div>
+
+  <!-- 1. TOP BRAND HEADER -->
+  <header class="w-full max-w-5xl mx-auto flex items-center justify-between py-4">
+    <!-- Brand Logo -->
+    <a routerLink="/" class="flex items-center gap-2.5 group cursor-pointer text-decoration-none">
+      <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs">
+        <span class="material-symbols-outlined text-primary text-[24px]">school</span>
+      </div>
+      <span class="font-headline text-2xl font-bold tracking-tight text-on-surface">
+        Scholar<span class="text-primary">X</span>
+      </span>
+    </a>
+
+    <!-- Right Top Actions: Dark Mode & Sign In -->
+    <div class="flex items-center gap-3">
+      <!-- Dark Mode Button -->
+      <button
+        type="button"
+        (click)="toggleDarkMode()"
+        aria-label="Toggle Theme"
+        class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition-colors text-on-surface-variant hover:text-on-surface cursor-pointer border-0">
+        @if (isDarkMode()) {
+          <span class="material-symbols-outlined text-[20px] text-amber-400">light_mode</span>
+        } @else {
+          <span class="material-symbols-outlined text-[20px]">dark_mode</span>
+        }
+      </button>
+
+      <!-- Sign In Button -->
+      <a
+        routerLink="/login"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-outline-variant/30 text-on-surface hover:bg-surface-container font-label-md text-sm font-semibold transition-colors cursor-pointer text-decoration-none shadow-xs">
+        <span>Already have an account?</span>
+        <span class="text-primary font-bold">Sign In</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- STEP 1: CHOOSE PROFILE ROLE (STUDENT, FACULTY, INSTITUTION)               -->
+  <!-- ========================================================================= -->
+  @if (currentStep() === 'SELECT_ROLE') {
+    <main class="w-full max-w-5xl mx-auto my-6 z-10 flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Eyebrow & Title -->
+      <div class="text-center space-y-3 max-w-2xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary-container text-on-secondary-container shadow-xs">
+          <span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+          <span class="text-xs uppercase font-bold tracking-wider font-headline">Choose Your Account Type</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-on-surface font-headline leading-tight">
+          How would you like to join <span class="text-primary">ScholarX</span>?
+        </h1>
+
+        <p class="text-sm sm:text-base text-on-surface-variant">
+          Select your academic role to unlock tailored AI viva practice, proctoring tools, or university accreditation management.
+        </p>
+      </div>
+
+      <!-- 3 INTERACTIVE ROLE CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- CARD 1: STUDENT PROFILE -->
+        <div
+          (click)="selectRole('STUDENT')"
+          class="group relative bg-surface-container-lowest rounded-3xl p-7 shadow-lg hover:shadow-2xl border-2 border-outline-variant/20 hover:border-primary transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-1">
+          <div>
+            <!-- Badge & Icon -->
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-14 h-14 rounded-2xl bg-secondary-container text-primary flex items-center justify-center transition-transform group-hover:scale-110 shadow-xs">
+                <span class="material-symbols-outlined text-[32px]">school</span>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-surface-container text-primary font-bold text-xs uppercase tracking-wider">
+                Student
+              </span>
+            </div>
+
+            <h3 class="text-xl font-bold text-on-surface mb-2 font-headline group-hover:text-primary transition-colors">
+              Student Profile
+            </h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed mb-6">
+              For undergraduate, postgraduate, and engineering students preparing for university oral vivas and exams.
+            </p>
+
+            <!-- Feature bullets -->
+            <ul class="flex flex-col gap-2.5 p-0 list-none m-0 text-xs text-on-surface-variant mb-6">
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>AI Viva Practice &amp; Instant Feedback</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>Previous Year Question (PYQ) Bank</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>Bloom's Taxonomy Competency Radar</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>Verified Academic Credentials</span>
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            class="w-full py-3 px-4 rounded-full bg-secondary-container text-on-secondary-container group-hover:bg-primary group-hover:text-on-primary font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer border-0 shadow-xs">
+            <span>Continue as Student</span>
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </button>
+        </div>
+
+        <!-- CARD 2: FACULTY AND MENTOR -->
+        <div
+          (click)="selectRole('MENTOR')"
+          class="group relative bg-surface-container-lowest rounded-3xl p-7 shadow-lg hover:shadow-2xl border-2 border-outline-variant/20 hover:border-primary transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-1">
+          <div>
+            <!-- Badge & Icon -->
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-14 h-14 rounded-2xl bg-secondary-container text-primary flex items-center justify-center transition-transform group-hover:scale-110 shadow-xs">
+                <span class="material-symbols-outlined text-[32px]">co_present</span>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-surface-container text-primary font-bold text-xs uppercase tracking-wider">
+                Faculty
+              </span>
+            </div>
+
+            <h3 class="text-xl font-bold text-on-surface mb-2 font-headline group-hover:text-primary transition-colors">
+              Faculty &amp; Mentor
+            </h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed mb-6">
+              For professors, lab instructors, and viva examiners managing student cohorts and automated grading.
+            </p>
+
+            <!-- Feature bullets -->
+            <ul class="flex flex-col gap-2.5 p-0 list-none m-0 text-xs text-on-surface-variant mb-6">
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>AI Viva Copilot with Real-time Scoring</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>Live Biometric Proctoring Console</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>Automated Question Paper Generator</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>CO-PO Attainment Calculation Engine</span>
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            class="w-full py-3 px-4 rounded-full bg-secondary-container text-on-secondary-container group-hover:bg-primary group-hover:text-on-primary font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer border-0 shadow-xs">
+            <span>Continue as Faculty</span>
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </button>
+        </div>
+
+        <!-- CARD 3: INSTITUTIONAL -->
+        <div
+          (click)="selectRole('INSTITUTION')"
+          class="group relative bg-surface-container-lowest rounded-3xl p-7 shadow-lg hover:shadow-2xl border-2 border-outline-variant/20 hover:border-primary transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-1">
+          <div>
+            <!-- Badge & Icon -->
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-14 h-14 rounded-2xl bg-secondary-container text-primary flex items-center justify-center transition-transform group-hover:scale-110 shadow-xs">
+                <span class="material-symbols-outlined text-[32px]">account_balance</span>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-surface-container text-primary font-bold text-xs uppercase tracking-wider">
+                Institutional
+              </span>
+            </div>
+
+            <h3 class="text-xl font-bold text-on-surface mb-2 font-headline group-hover:text-primary transition-colors">
+              Institutional Partner
+            </h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed mb-6">
+              For Deans, Principals, and Examination Controllers (COE) seeking university-wide compliance and scale.
+            </p>
+
+            <!-- Feature bullets -->
+            <ul class="flex flex-col gap-2.5 p-0 list-none m-0 text-xs text-on-surface-variant mb-6">
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>NBA Tier-I/II SAR &amp; NAAC A++ Ready</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>Multi-Campus Institutional Aggregation</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>Granular Roles &amp; Role-based Permissions</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                <span>LMS Integrations (Canvas / Moodle)</span>
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            class="w-full py-3 px-4 rounded-full bg-secondary-container text-on-secondary-container group-hover:bg-primary group-hover:text-on-primary font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer border-0 shadow-xs">
+            <span>Continue as Institution</span>
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Security / Accreditation Trust Footnote -->
+      <div class="flex flex-wrap items-center justify-center gap-4 text-xs text-on-surface-variant text-center pt-2">
+        <span class="inline-flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-primary text-[16px]">lock</span>
+          256-Bit Encrypted
+        </span>
+        <span>·</span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-primary text-[16px]">verified_user</span>
+          FERPA &amp; GDPR Compliant
+        </span>
+        <span>·</span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-primary text-[16px]">verified</span>
+          NBA &amp; NAAC Framework Aligned
+        </span>
+      </div>
+
+    </main>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- STEP 2: FILLING PORTION (APPEARS ON CLICKING A ROLE)                      -->
+  <!-- ========================================================================= -->
+  @if (currentStep() === 'FILL_FORM') {
+    <main class="w-full max-w-3xl mx-auto my-6 z-10 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+
+      <!-- Breadcrumb Nav to go back -->
+      <div class="flex items-center justify-between">
+        <button
+          type="button"
+          (click)="backToRoleSelection()"
+          class="inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary transition-colors cursor-pointer border-0 bg-transparent">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span>Change Role / Back to Selection</span>
+        </button>
+
+        <span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold uppercase tracking-wider">
+          @if (selectedType() === 'STUDENT') { Student Profile }
+          @else if (selectedType() === 'MENTOR') { Faculty &amp; Mentor }
+          @else { Institutional Partner }
+        </span>
+      </div>
+
+      <!-- Card Title & Header -->
+      <div class="text-center space-y-1">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-on-surface font-headline">
+          @if (selectedType() === 'STUDENT') {
+            Complete Your Student Registration
+          } @else if (selectedType() === 'MENTOR') {
+            Complete Your Faculty Registration
+          } @else {
+            Institutional Onboarding &amp; Setup
+          }
+        </h1>
+        <p class="text-xs sm:text-sm text-on-surface-variant max-w-lg mx-auto">
+          @if (selectedType() === 'STUDENT') {
+            Fill in your academic enrollment details to set up your AI viva studio.
+          } @else if (selectedType() === 'MENTOR') {
+            Fill in your faculty credentials to configure your examiner console.
+          } @else {
+            Provide institutional details to request administrative accreditation deployment.
+          }
+        </p>
+      </div>
+
+      <!-- Main Form Card -->
+      <div class="bg-surface-container-lowest rounded-3xl p-6 sm:p-10 shadow-xl border border-outline-variant/20 flex flex-col gap-6 backdrop-blur-xl">
+
+        <!-- Error Message -->
+        @if (errorMessage()) {
+          <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900/60 flex items-start gap-3 text-xs text-rose-900 dark:text-rose-200 animate-in fade-in">
+            <span class="material-symbols-outlined text-rose-600 text-[20px] flex-shrink-0">error</span>
+            <span class="font-medium leading-relaxed">{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <!-- A. STUDENT FORM FILLING -->
+        @if (selectedType() === 'STUDENT') {
+          <form (ngSubmit)="onSubmitStudent()" class="flex flex-col gap-4">
+            
+            <!-- Quick Fill Helper Banner -->
+            <div class="p-3.5 rounded-2xl bg-secondary-container/40 border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-on-surface">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">school</span>
+                <span>Enter university information for course &amp; viva mapping.</span>
+              </div>
+              <button
+                type="button"
+                (click)="quickFillStudent()"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-outline-variant/40 hover:bg-surface-container font-semibold text-primary cursor-pointer text-xs flex-shrink-0">
+                <span class="material-symbols-outlined text-[14px]">bolt</span>
+                <span>Fill Sample Student</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Full Name -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Student Full Name *</label>
+                <input
+                  type="text"
+                  name="studentFullName"
+                  [(ngModel)]="studentForm.fullName"
+                  placeholder="Aarav Sharma"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <!-- University Email -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">University / College Email *</label>
+                <input
+                  type="email"
+                  name="studentEmail"
+                  [(ngModel)]="studentForm.email"
+                  placeholder="aarav.sharma@apex.edu"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Roll Number -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">University Roll Number / UID *</label>
+                <input
+                  type="text"
+                  name="studentRoll"
+                  [(ngModel)]="studentForm.rollNumber"
+                  placeholder="21CS1049"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <!-- College Name -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">College / Institute Name *</label>
+                <input
+                  type="text"
+                  name="studentCollege"
+                  [(ngModel)]="studentForm.collegeName"
+                  placeholder="Apex Institute of Technology"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Degree Program -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Degree &amp; Program</label>
+                <input
+                  type="text"
+                  name="studentDegree"
+                  [(ngModel)]="studentForm.degreeProgram"
+                  placeholder="B.Tech Computer Science & AI"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <!-- Year / Semester -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Year &amp; Semester</label>
+                <input
+                  type="text"
+                  name="studentYear"
+                  [(ngModel)]="studentForm.yearSemester"
+                  placeholder="Year 3 / Sem 6"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <!-- Passwords -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Password (min 6 characters) *</label>
+                <div class="relative">
+                  <input
+                    [type]="showPassword() ? 'text' : 'password'"
+                    name="studentPass"
+                    [(ngModel)]="studentForm.password"
+                    placeholder="••••••••"
+                    required
+                    class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+                  <button
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface cursor-pointer border-0 bg-transparent">
+                    <span class="material-symbols-outlined text-[18px]">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Confirm Password *</label>
+                <input
+                  [type]="showPassword() ? 'text' : 'password'"
+                  name="studentConfirmPass"
+                  [(ngModel)]="studentForm.confirmPassword"
+                  placeholder="••••••••"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4 flex items-center justify-between border-t border-outline-variant/15 mt-2">
+              <span class="text-xs text-on-surface-variant">
+                Directly takes you to your dashboard after verification.
+              </span>
+              <button
+                type="submit"
+                [disabled]="isSubmitting()"
+                class="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-on-primary font-semibold text-sm shadow-md hover:bg-primary-container transition-all cursor-pointer border-0 disabled:opacity-50">
+                <span>{{ isSubmitting() ? 'Creating Profile...' : 'Complete Student Registration' }}</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+        }
+
+        <!-- B. FACULTY FORM FILLING -->
+        @if (selectedType() === 'MENTOR') {
+          <form (ngSubmit)="onSubmitMentor()" class="flex flex-col gap-4">
+            
+            <!-- Quick Fill Helper Banner -->
+            <div class="p-3.5 rounded-2xl bg-secondary-container/40 border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-on-surface">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">co_present</span>
+                <span>Sets up oral viva examination console and student cohort grading.</span>
+              </div>
+              <button
+                type="button"
+                (click)="quickFillMentor()"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-outline-variant/40 hover:bg-surface-container font-semibold text-primary cursor-pointer text-xs flex-shrink-0">
+                <span class="material-symbols-outlined text-[14px]">bolt</span>
+                <span>Fill Sample Faculty</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+              <!-- Academic Title -->
+              <div class="sm:col-span-3">
+                <label class="block text-xs font-semibold text-on-surface mb-1">Title</label>
+                <select
+                  name="academicTitle"
+                  [(ngModel)]="mentorForm.academicTitle"
+                  class="w-full px-3 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface">
+                  <option value="Prof.">Prof.</option>
+                  <option value="Dr.">Dr.</option>
+                  <option value="Assoc. Prof.">Assoc. Prof.</option>
+                  <option value="Asst. Prof.">Asst. Prof.</option>
+                  <option value="Mr.">Mr.</option>
+                  <option value="Ms.">Ms.</option>
+                </select>
+              </div>
+
+              <!-- Full Name -->
+              <div class="sm:col-span-9">
+                <label class="block text-xs font-semibold text-on-surface mb-1">Faculty Full Name *</label>
+                <input
+                  type="text"
+                  name="mentorFullName"
+                  [(ngModel)]="mentorForm.fullName"
+                  placeholder="Dr. Priya Sharma"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Faculty Email -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Institutional Faculty Email *</label>
+                <input
+                  type="email"
+                  name="mentorEmail"
+                  [(ngModel)]="mentorForm.email"
+                  placeholder="priya.sharma@apex.edu"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <!-- Faculty ID -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Faculty Employee Code / ID *</label>
+                <input
+                  type="text"
+                  name="facultyId"
+                  [(ngModel)]="mentorForm.facultyId"
+                  placeholder="FAC-CS-2041"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- College -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">College / Institute Name</label>
+                <input
+                  type="text"
+                  name="mentorCollege"
+                  [(ngModel)]="mentorForm.collegeName"
+                  placeholder="Apex Institute of Technology"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <!-- Department -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Department</label>
+                <input
+                  type="text"
+                  name="mentorDept"
+                  [(ngModel)]="mentorForm.department"
+                  placeholder="Computer Science & Engineering"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Designation -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Designation</label>
+                <input
+                  type="text"
+                  name="mentorDesignation"
+                  [(ngModel)]="mentorForm.designation"
+                  placeholder="Professor & Viva Mentor"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <!-- Specialization -->
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Teaching Specialization</label>
+                <input
+                  type="text"
+                  name="mentorSpecialization"
+                  [(ngModel)]="mentorForm.teachingSpecialization"
+                  placeholder="AI, Networks, Systems"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <!-- Passwords -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Password (min 6 characters) *</label>
+                <div class="relative">
+                  <input
+                    [type]="showPassword() ? 'text' : 'password'"
+                    name="mentorPass"
+                    [(ngModel)]="mentorForm.password"
+                    placeholder="••••••••"
+                    required
+                    class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+                  <button
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface cursor-pointer border-0 bg-transparent">
+                    <span class="material-symbols-outlined text-[18px]">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Confirm Password *</label>
+                <input
+                  [type]="showPassword() ? 'text' : 'password'"
+                  name="mentorConfirmPass"
+                  [(ngModel)]="mentorForm.confirmPassword"
+                  placeholder="••••••••"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4 flex items-center justify-between border-t border-outline-variant/15 mt-2">
+              <span class="text-xs text-on-surface-variant">
+                A greetings notification will confirm your account status.
+              </span>
+              <button
+                type="submit"
+                [disabled]="isSubmitting()"
+                class="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-on-primary font-semibold text-sm shadow-md hover:bg-primary-container transition-all cursor-pointer border-0 disabled:opacity-50">
+                <span>{{ isSubmitting() ? 'Setting Up...' : 'Complete Faculty Registration' }}</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+        }
+
+        <!-- C. INSTITUTIONAL FORM FILLING -->
+        @if (selectedType() === 'INSTITUTION') {
+          <form (ngSubmit)="onSubmitInstitution()" class="flex flex-col gap-4">
+            
+            <!-- Quick Fill Helper Banner -->
+            <div class="p-3.5 rounded-2xl bg-secondary-container/40 border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-on-surface">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">account_balance</span>
+                <span>Request university-wide deployment for autonomous colleges &amp; universities.</span>
+              </div>
+              <button
+                type="button"
+                (click)="quickFillInstitution()"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface border border-outline-variant/40 hover:bg-surface-container font-semibold text-primary cursor-pointer text-xs flex-shrink-0">
+                <span class="material-symbols-outlined text-[14px]">bolt</span>
+                <span>Fill Sample Institution</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">University / College Name *</label>
+                <input
+                  type="text"
+                  name="institutionName"
+                  [(ngModel)]="institutionForm.institutionName"
+                  placeholder="Apex Technological University"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Accreditation Focus</label>
+                <input
+                  type="text"
+                  name="accreditationFocus"
+                  [(ngModel)]="institutionForm.accreditationFocus"
+                  placeholder="NBA Tier-I, NAAC A++, ABET"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Dean / COE Contact Name *</label>
+                <input
+                  type="text"
+                  name="contactPerson"
+                  [(ngModel)]="institutionForm.contactPerson"
+                  placeholder="Dr. Arjun Mehta"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Role / Designation</label>
+                <select
+                  name="instDesignation"
+                  [(ngModel)]="institutionForm.designation"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface">
+                  <option value="Dean of Academic Affairs">Dean of Academic Affairs</option>
+                  <option value="Controller of Examination (COE)">Controller of Examination (COE)</option>
+                  <option value="Principal / Director">Principal / Director</option>
+                  <option value="Head of IQAC / Accreditation">Head of IQAC / Accreditation</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Official Institutional Email *</label>
+                <input
+                  type="email"
+                  name="instEmail"
+                  [(ngModel)]="institutionForm.officialEmail"
+                  placeholder="dean.academics@apextech.edu"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-on-surface mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  name="instPhone"
+                  [(ngModel)]="institutionForm.phone"
+                  placeholder="+91 98765 43210"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-on-surface mb-1">Total Campus Enrollment</label>
+              <input
+                type="text"
+                name="studentCount"
+                [(ngModel)]="institutionForm.studentCount"
+                placeholder="5,000 - 15,000 Students across campuses"
+                class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/30 bg-surface focus:outline-none focus:ring-2 focus:ring-primary text-sm text-on-surface" />
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4 flex items-center justify-between border-t border-outline-variant/15 mt-2">
+              <span class="text-xs text-on-surface-variant">
+                Our institutional advisory will contact you within 24 hours.
+              </span>
+              <button
+                type="submit"
+                [disabled]="isSubmitting()"
+                class="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-on-primary font-semibold text-sm shadow-md hover:bg-primary-container transition-all cursor-pointer border-0 disabled:opacity-50">
+                <span>{{ isSubmitting() ? 'Submitting...' : 'Submit Institutional Request' }}</span>
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+              </button>
+            </div>
+          </form>
+        }
+
+      </div>
+
+    </main>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- STEP 3: CELEBRATION GREETINGS & NOTIFICATION ANIMATION                    -->
+  <!-- ========================================================================= -->
+  @if (currentStep() === 'CELEBRATION' && celebration(); as c) {
+    <main class="w-full max-w-xl mx-auto my-auto z-20 flex flex-col items-center text-center animate-in zoom-in-95 fade-in duration-300">
+      
+      <div class="bg-surface-container-lowest rounded-3xl p-8 sm:p-12 shadow-2xl border-2 border-primary/30 flex flex-col items-center gap-6 relative overflow-hidden backdrop-blur-2xl w-full">
+        
+        <!-- Glowing celebration aura -->
+        <div class="absolute -top-20 -right-20 w-52 h-52 rounded-full bg-primary/20 blur-2xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -left-20 w-52 h-52 rounded-full bg-secondary-container/40 blur-2xl pointer-events-none"></div>
+
+        <!-- Animated Icon Ring -->
+        <div class="relative">
+          <div class="w-20 h-20 rounded-full bg-secondary-container flex items-center justify-center text-primary shadow-lg animate-bounce">
+            <span class="material-symbols-outlined text-[42px]">{{ c.icon }}</span>
+          </div>
+          <span class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+            <span class="material-symbols-outlined text-[16px]">check</span>
+          </span>
+        </div>
+
+        <!-- Greetings Title & Subtitle -->
+        <div class="space-y-2">
+          <span class="px-3.5 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold uppercase tracking-wider">
+            {{ c.badgeText }}
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface font-headline leading-tight">
+            {{ c.title }}
+          </h2>
+          <p class="text-sm text-on-surface-variant max-w-md mx-auto">
+            {{ c.subtitle }}
+          </p>
+        </div>
+
+        <!-- Small Notification Box requested by user -->
+        @if (c.notificationMessage) {
+          <div class="w-full p-4 rounded-2xl bg-secondary-container/40 border border-primary/30 flex items-start gap-3 text-left">
+            <span class="relative flex h-3 w-3 mt-1 shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <div class="text-xs text-on-surface leading-relaxed">
+              <span class="font-bold block text-primary mb-0.5">Notification</span>
+              <span>{{ c.notificationMessage }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- Direct Navigate Button -->
+        @if (c.redirectUrl) {
+          <div class="w-full pt-2">
+            <a
+              [routerLink]="c.redirectUrl"
+              class="w-full py-3.5 px-6 rounded-full bg-primary text-on-primary font-bold text-sm shadow-md hover:bg-primary-container transition-all inline-flex items-center justify-center gap-2 cursor-pointer text-decoration-none">
+              <span>Enter Workspace Now</span>
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+          </div>
+        }
+
+      </div>
+
+    </main>
+  }
+
+  <!-- 3. FOOTER -->
+  <footer class="w-full max-w-5xl mx-auto py-4 text-center text-xs text-on-surface-variant border-t border-outline-variant/15">
+    <p class="m-0">© 2026 ScholarX Academic Technologies Inc. Empowering verifiable, outcome-driven academic assessment.</p>
+  </footer>
+
+</div>

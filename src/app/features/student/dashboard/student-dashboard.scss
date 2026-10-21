@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+@keyframes pulseRedBanner {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+  }
+}
+
+.active-exam-banner {
+  animation: pulseRedBanner 2s infinite;
+}

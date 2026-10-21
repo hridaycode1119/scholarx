@@ -1,0 +1,625 @@
+<div class="scholarx-login-page font-sans bg-[#fbfcfc] min-h-screen flex flex-col lg:flex-row text-[#14171c] selection:bg-[#0b4a39] selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- 1. LEFT SHOWCASE STAGE (Daylight Campus & Brand Narrative)                -->
+  <!-- ========================================================================= -->
+  <div class="relative lg:w-[50%] xl:w-[52%] min-h-[480px] lg:min-h-screen bg-[#f7f4f0] flex flex-col justify-between p-8 sm:p-12 lg:p-16 overflow-hidden border-b lg:border-b-0 lg:border-r border-[#eceeee]">
+    
+    <!-- Campus Architectural Backdrop Photo -->
+    <div class="absolute inset-0 pointer-events-none select-none">
+      <img
+        src="/assets/login-campus.jpg"
+        alt="University Campus Architecture"
+        class="w-full h-full object-cover object-center opacity-35" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#f7f4f0] via-[#f7f4f0]/70 to-[#f7f4f0]/95"></div>
+    </div>
+
+    <!-- Top: Brand Header & Crest -->
+    <div class="relative z-10 flex items-center justify-between">
+      <a routerLink="/" class="flex items-center gap-3 no-underline group">
+        <div class="w-10 h-10 rounded-xl bg-[#0b4a39] flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105">
+          <span class="material-symbols-outlined text-[24px]">school</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-0.5 leading-none">
+            <span class="font-sans text-[22px] font-bold tracking-tight text-[#14171c]">Scholar<span class="text-[#0b4a39]">X</span></span>
+          </div>
+          <span class="text-[9.5px] font-medium tracking-wider text-[#5c6168] mt-1">AI-Powered Academic Evaluation Platform</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Middle: Eyebrow, Serif Headline, Description & 4 Feature Badges -->
+    <div class="relative z-10 my-auto py-8">
+      
+      <p class="text-[9.5px] sm:text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3a4048] mb-3">
+        LEARN • ASSESS • EVOLVE
+      </p>
+
+      <h1 class="font-serif text-[36px] sm:text-[42px] lg:text-[46px] leading-[1.08] tracking-[-0.015em] text-[#0b0d10] mb-3">
+        Empowering<br>
+        Education with<br>
+        <em class="font-bold not-italic text-[#0b4a39]">Intelligence.</em>
+      </h1>
+
+      <!-- Deep Pine Accent Bar -->
+      <div class="w-14 h-1 rounded-full bg-[#0b4a39] mb-4"></div>
+
+      <p class="font-sans text-[12.5px] leading-[20px] text-[#2c3138] max-w-lg mb-8">
+        ScholarX integrates AI-driven assessments, secure proctoring, and outcome-based analytics to create a smarter, fairer, and more transparent academic ecosystem.
+      </p>
+
+      <!-- 4 Circular Feature Badges in a Horizontal Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+        
+        <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div class="w-12 h-12 rounded-full bg-white border border-[#eceeee] flex items-center justify-center text-[#0b4a39] shadow-sm mb-2 transition-transform hover:scale-105">
+            <span class="material-symbols-outlined text-[22px]">mic</span>
+          </div>
+          <span class="font-sans text-[11px] font-medium leading-[14px] text-[#191826]">
+            AI Viva<br>Evaluation
+          </span>
+        </div>
+
+        <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div class="w-12 h-12 rounded-full bg-white border border-[#eceeee] flex items-center justify-center text-[#0b4a39] shadow-sm mb-2 transition-transform hover:scale-105">
+            <span class="material-symbols-outlined text-[22px]">shield</span>
+          </div>
+          <span class="font-sans text-[11px] font-medium leading-[14px] text-[#191826]">
+            Secure<br>Proctoring
+          </span>
+        </div>
+
+        <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div class="w-12 h-12 rounded-full bg-white border border-[#eceeee] flex items-center justify-center text-[#0b4a39] shadow-sm mb-2 transition-transform hover:scale-105">
+            <span class="material-symbols-outlined text-[22px]">signal_cellular_alt</span>
+          </div>
+          <span class="font-sans text-[11px] font-medium leading-[14px] text-[#191826]">
+            CO-PO<br>Analytics
+          </span>
+        </div>
+
+        <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+          <div class="w-12 h-12 rounded-full bg-white border border-[#eceeee] flex items-center justify-center text-[#0b4a39] shadow-sm mb-2 transition-transform hover:scale-105">
+            <span class="material-symbols-outlined text-[22px]">account_balance</span>
+          </div>
+          <span class="font-sans text-[11px] font-medium leading-[14px] text-[#191826]">
+            Institutional<br>Governance
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Institutional Compliance Stamp -->
+    <div class="relative z-10 flex items-center gap-2 text-[10.5px] text-[#5c6168]">
+      <span class="w-2 h-2 rounded-full bg-[#10b981]"></span>
+      <span>Enterprise Multi-Campus Identity Federation (SAML 2.0 / OAuth2)</span>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. RIGHT AUTHENTICATION STAGE (Elevated Card & Controls)                  -->
+  <!-- ========================================================================= -->
+  <div class="relative lg:w-[50%] xl:w-[48%] flex flex-col justify-between p-6 sm:p-10 lg:p-14 min-h-screen bg-white">
+    
+    <!-- Top Bar: Back to Home -->
+    <div class="flex items-center justify-end mb-6">
+      <a
+        routerLink="/"
+        class="inline-flex items-center gap-1.5 font-sans text-xs font-medium text-[#4a4f57] hover:text-[#0b4a39] transition-colors py-1 px-2.5 rounded-lg hover:bg-[#f7f4f0]">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to Home</span>
+      </a>
+    </div>
+
+    <!-- Main Centered Form Container -->
+    <div class="my-auto max-w-[430px] w-full mx-auto">
+      
+      <!-- Elevated Login / Registration Card -->
+      <div class="bg-white rounded-2xl border border-[#eef1f3] shadow-[0_8px_30px_rgba(20,30,25,0.06)] p-6 sm:p-8">
+        
+        <!-- =================================================================== -->
+        <!-- STATE 1: CELEBRATION VIEW                                           -->
+        <!-- =================================================================== -->
+        @if (celebration(); as cel) {
+          <div class="text-center py-4 animate-in fade-in duration-300">
+            <div class="w-14 h-14 rounded-full bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <span class="material-symbols-outlined text-[32px]">{{ cel.icon }}</span>
+            </div>
+            <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#e6f4f0] text-[#0b4a39] mb-2">
+              {{ cel.badgeText }}
+            </span>
+            <h2 class="font-serif text-[22px] font-bold text-[#0b0d10] mb-2">{{ cel.title }}</h2>
+            <p class="font-sans text-xs text-[#5c6168] mb-5 max-w-xs mx-auto leading-relaxed">{{ cel.subtitle }}</p>
+
+            @if (cel.notificationMessage) {
+              <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs text-left mb-5 flex items-start gap-2">
+                <span class="material-symbols-outlined text-[16px] text-amber-600 shrink-0 mt-0.5">notifications_active</span>
+                <span>{{ cel.notificationMessage }}</span>
+              </div>
+            }
+
+            <div class="flex flex-col gap-2.5">
+              @if (cel.redirectUrl) {
+                <a
+                  [routerLink]="cel.redirectUrl"
+                  class="w-full py-2.5 rounded-lg bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold tracking-wide shadow-sm flex items-center justify-center gap-2 transition-all">
+                  <span>Enter Portal Now</span>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              }
+              <button
+                type="button"
+                (click)="setAuthMode('SIGN_IN')"
+                class="text-xs font-semibold text-[#5c6168] hover:text-[#0b0d10] cursor-pointer py-1">
+                Back to Sign In
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- =================================================================== -->
+        <!-- STATE 2: SIGN IN VIEW                                               -->
+        <!-- =================================================================== -->
+        @else if (authMode() === 'SIGN_IN') {
+          
+          <!-- Header -->
+          <div class="mb-5">
+            <h2 class="font-serif text-[26px] font-bold text-[#0b0d10] tracking-tight">Welcome Back</h2>
+            <p class="font-sans text-[12px] text-[#5c6168] mt-1">Login to your ScholarX account to continue.</p>
+          </div>
+
+          <!-- Role Selection Tabs (Student / Faculty / Admin) -->
+          <div class="grid grid-cols-3 gap-1.5 p-1 bg-[#f7f4f0] rounded-xl mb-5 border border-[#eceeee]">
+            <button
+              type="button"
+              (click)="selectLoginRole('STUDENT')"
+              class="flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg font-sans text-[11px] font-semibold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedLoginRole() === 'STUDENT'"
+              [class.text-white]="selectedLoginRole() === 'STUDENT'"
+              [class.shadow-sm]="selectedLoginRole() === 'STUDENT'"
+              [class.text-[#4a4f57]]="selectedLoginRole() !== 'STUDENT'"
+              [class.hover:text-[#14171c]]="selectedLoginRole() !== 'STUDENT'">
+              <span class="material-symbols-outlined text-[15px]">person</span>
+              <span>Student</span>
+            </button>
+
+            <button
+              type="button"
+              (click)="selectLoginRole('MENTOR')"
+              class="flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg font-sans text-[11px] font-semibold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedLoginRole() === 'MENTOR'"
+              [class.text-white]="selectedLoginRole() === 'MENTOR'"
+              [class.shadow-sm]="selectedLoginRole() === 'MENTOR'"
+              [class.text-[#4a4f57]]="selectedLoginRole() !== 'MENTOR'"
+              [class.hover:text-[#14171c]]="selectedLoginRole() !== 'MENTOR'">
+              <span class="material-symbols-outlined text-[15px]">school</span>
+              <span>Faculty</span>
+            </button>
+
+            <button
+              type="button"
+              (click)="selectLoginRole('ADMIN')"
+              class="flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg font-sans text-[11px] font-semibold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedLoginRole() === 'ADMIN'"
+              [class.text-white]="selectedLoginRole() === 'ADMIN'"
+              [class.shadow-sm]="selectedLoginRole() === 'ADMIN'"
+              [class.text-[#4a4f57]]="selectedLoginRole() !== 'ADMIN'"
+              [class.hover:text-[#14171c]]="selectedLoginRole() !== 'ADMIN'">
+              <span class="material-symbols-outlined text-[15px]">apartment</span>
+              <span>Admin</span>
+            </button>
+          </div>
+
+          <!-- Error Alert Banner -->
+          @if (errorMessage()) {
+            <div class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px]">error</span>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <!-- Sign In Form -->
+          <form (ngSubmit)="onSubmitLogin()" class="space-y-4">
+            
+            <!-- Email / University ID -->
+            <div>
+              <label class="block text-[11px] font-semibold text-[#14171c] mb-1.5">Email or University ID</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8] text-[18px]">mail</span>
+                <input
+                  type="text"
+                  [value]="loginId()"
+                  (input)="loginId.set($any($event.target).value)"
+                  placeholder="Enter your email or university ID"
+                  required
+                  autocomplete="username"
+                  class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] focus:ring-1 focus:ring-[#0b4a39] transition-all bg-white text-[#14171c]" />
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-[11px] font-semibold text-[#14171c]">Password</label>
+                <button
+                  type="button"
+                  (click)="openForgotPassword()"
+                  class="text-[11px] font-semibold text-[#1f6e4c] hover:underline cursor-pointer bg-transparent border-0 p-0">
+                  Forgot Password?
+                </button>
+              </div>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8] text-[18px]">lock</span>
+                <input
+                  [type]="showPassword() ? 'text' : 'password'"
+                  [value]="password()"
+                  (input)="password.set($any($event.target).value)"
+                  placeholder="Enter your password"
+                  required
+                  autocomplete="current-password"
+                  class="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] focus:ring-1 focus:ring-[#0b4a39] transition-all bg-white text-[#14171c]" />
+                <button
+                  type="button"
+                  (click)="togglePasswordVisibility()"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#475569] p-1 cursor-pointer">
+                  <span class="material-symbols-outlined text-[18px]">
+                    {{ showPassword() ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              [disabled]="isSubmitting()"
+              class="w-full py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold tracking-wide shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer mt-2 active:scale-95">
+              @if (isSubmitting()) {
+                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>Authenticating...</span>
+              } @else {
+                <span>Sign In</span>
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              }
+            </button>
+          </form>
+
+          <!-- Divider -->
+          <div class="relative my-4 text-center">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-[#e2e8f0]"></div></div>
+            <span class="relative bg-white px-3 text-[10px] uppercase font-bold text-[#94a3b8]">OR</span>
+          </div>
+
+          <!-- Google Login Button -->
+          <button
+            type="button"
+            (click)="loginWithGoogle()"
+            class="w-full py-2.5 rounded-xl border border-[#cbd5e1] hover:bg-[#f8fafc] text-[#14171c] font-sans text-xs font-medium flex items-center justify-center gap-2.5 transition-all cursor-pointer">
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.87c2.27-2.09 3.675-5.17 3.675-9.15z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3.05c-1.08.72-2.45 1.16-4.06 1.16-3.13 0-5.78-2.11-6.73-4.96H1.27v3.15C3.26 21.36 7.35 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.27 14.24A7.18 7.18 0 0 1 4.89 12c0-.78.14-1.53.38-2.24V6.61H1.27A11.97 11.97 0 0 0 0 12c0 1.92.45 3.74 1.27 5.39l4-3.15z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.27 6.61l4 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <!-- Switch to Registration -->
+          <div class="mt-5 text-center text-xs text-[#5c6168]">
+            Don't have an account?
+            <button
+              type="button"
+              (click)="setAuthMode('SIGN_UP')"
+              class="font-semibold text-[#0b4a39] hover:underline ml-1 cursor-pointer bg-transparent border-0 p-0">
+              Contact your institution
+            </button>
+          </div>
+
+        }
+
+        <!-- =================================================================== -->
+        <!-- STATE 3: SIGN UP / REGISTRATION VIEW                                -->
+        <!-- =================================================================== -->
+        @else {
+          
+          <div class="mb-5">
+            <h2 class="font-serif text-[26px] font-bold text-[#0b0d10] tracking-tight">Create Account</h2>
+            <p class="font-sans text-[12px] text-[#5c6168] mt-1">Join ScholarX to access AI-driven academic assessments.</p>
+          </div>
+
+          <!-- 3 Role Tabs for Registration -->
+          <div class="grid grid-cols-3 gap-1.5 p-1 bg-[#f7f4f0] rounded-xl mb-5 border border-[#eceeee]">
+            <button
+              type="button"
+              (click)="selectRegisterRole('STUDENT')"
+              class="flex items-center justify-center gap-1 py-2 px-1 rounded-lg font-sans text-[11px] font-semibold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedRegisterRole() === 'STUDENT'"
+              [class.text-white]="selectedRegisterRole() === 'STUDENT'"
+              [class.shadow-sm]="selectedRegisterRole() === 'STUDENT'"
+              [class.text-[#4a4f57]]="selectedRegisterRole() !== 'STUDENT'">
+              <span>Student</span>
+            </button>
+            <button
+              type="button"
+              (click)="selectRegisterRole('MENTOR')"
+              class="flex items-center justify-center gap-1 py-2 px-1 rounded-lg font-sans text-[11px] font-semibold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedRegisterRole() === 'MENTOR'"
+              [class.text-white]="selectedRegisterRole() === 'MENTOR'"
+              [class.shadow-sm]="selectedRegisterRole() === 'MENTOR'"
+              [class.text-[#4a4f57]]="selectedRegisterRole() !== 'MENTOR'">
+              <span>Faculty</span>
+            </button>
+            <button
+              type="button"
+              (click)="selectRegisterRole('INSTITUTION')"
+              class="flex items-center justify-center gap-1 py-2 px-1 rounded-lg font-sans text-[11px] font-semibold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedRegisterRole() === 'INSTITUTION'"
+              [class.text-white]="selectedRegisterRole() === 'INSTITUTION'"
+              [class.shadow-sm]="selectedRegisterRole() === 'INSTITUTION'"
+              [class.text-[#4a4f57]]="selectedRegisterRole() !== 'INSTITUTION'">
+              <span>Institution</span>
+            </button>
+          </div>
+
+          <!-- Error Alert Banner -->
+          @if (errorMessage()) {
+            <div class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px]">error</span>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <!-- STUDENT REGISTRATION FORM -->
+          @if (selectedRegisterRole() === 'STUDENT') {
+            <form (ngSubmit)="onSubmitStudentRegister()" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Full Legal Name</label>
+                <input
+                  type="text"
+                  [(ngModel)]="studentForm.fullName"
+                  name="stuName"
+                  placeholder="e.g. Sahil Verma"
+                  required
+                  class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    [(ngModel)]="studentForm.email"
+                    name="stuEmail"
+                    placeholder="student@univ.edu"
+                    required
+                    class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">University Roll No</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="studentForm.rollNumber"
+                    name="stuRoll"
+                    placeholder="2026-CS-042"
+                    required
+                    class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Password</label>
+                  <input
+                    type="password"
+                    [(ngModel)]="studentForm.password"
+                    name="stuPass"
+                    placeholder="••••••••"
+                    required
+                    class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Confirm Password</label>
+                  <input
+                    type="password"
+                    [(ngModel)]="studentForm.confirmPassword"
+                    name="stuConfPass"
+                    placeholder="••••••••"
+                    required
+                    class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+                </div>
+              </div>
+              <button
+                type="submit"
+                [disabled]="isSubmitting()"
+                class="w-full py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold tracking-wide shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer mt-2">
+                @if (isSubmitting()) {
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>Registering...</span>
+                } @else {
+                  <span>Create Student Account</span>
+                }
+              </button>
+            </form>
+          }
+
+          <!-- MENTOR REGISTRATION FORM -->
+          @else if (selectedRegisterRole() === 'MENTOR') {
+            <form (ngSubmit)="onSubmitMentorRegister()" class="space-y-3">
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Title</label>
+                  <select [(ngModel)]="mentorForm.academicTitle" name="mTitle" class="w-full px-2 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white">
+                    <option>Prof.</option>
+                    <option>Dr.</option>
+                    <option>Assoc. Prof.</option>
+                  </select>
+                </div>
+                <div class="col-span-2">
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Full Legal Name</label>
+                  <input type="text" [(ngModel)]="mentorForm.fullName" name="mName" placeholder="Dr. Elena Vance" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Official Email</label>
+                  <input type="email" [(ngModel)]="mentorForm.email" name="mEmail" placeholder="faculty@univ.edu" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Faculty ID</label>
+                  <input type="text" [(ngModel)]="mentorForm.facultyId" name="mId" placeholder="FAC-2026-99" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Password</label>
+                  <input type="password" [(ngModel)]="mentorForm.password" name="mPass" placeholder="••••••••" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Confirm</label>
+                  <input type="password" [(ngModel)]="mentorForm.confirmPassword" name="mConfPass" placeholder="••••••••" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+                </div>
+              </div>
+              <button
+                type="submit"
+                [disabled]="isSubmitting()"
+                class="w-full py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold tracking-wide shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer mt-2">
+                @if (isSubmitting()) {
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>Registering...</span>
+                } @else {
+                  <span>Register Faculty Examiner</span>
+                }
+              </button>
+            </form>
+          }
+
+          <!-- INSTITUTION INQUIRY FORM -->
+          @else {
+            <form (ngSubmit)="onSubmitInstitutionInquiry()" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Institution Legal Entity</label>
+                <input type="text" [(ngModel)]="institutionForm.institutionName" name="instName" placeholder="e.g. Apex Autonomous University" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Liaison Contact</label>
+                  <input type="text" [(ngModel)]="institutionForm.contactPerson" name="instPerson" placeholder="Dean of Academics" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Official Domain Email</label>
+                  <input type="email" [(ngModel)]="institutionForm.officialEmail" name="instEmail" placeholder="dean@university.edu" required class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] bg-white" />
+                </div>
+              </div>
+              <button
+                type="submit"
+                [disabled]="isSubmitting()"
+                class="w-full py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold tracking-wide shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer mt-2">
+                @if (isSubmitting()) {
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>Submitting Onboarding...</span>
+                } @else {
+                  <span>Submit Institutional Onboarding</span>
+                }
+              </button>
+            </form>
+          }
+
+          <div class="mt-4 text-center text-xs text-[#5c6168]">
+            Already registered?
+            <button
+              type="button"
+              (click)="setAuthMode('SIGN_IN')"
+              class="font-semibold text-[#0b4a39] hover:underline ml-1 cursor-pointer bg-transparent border-0 p-0">
+              Sign In to your account
+            </button>
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Inspirational Quote (Exact Match to Reference Design) -->
+    <div class="text-center pt-6 text-[#5c6168]">
+      <blockquote class="font-serif italic text-sm text-[#2c3138] leading-relaxed">
+        “Technology should amplify human potential,<br class="hidden sm:inline"> not replace it”
+      </blockquote>
+      <div class="font-sans text-[11px] font-semibold text-[#0b4a39] mt-1 tracking-wider uppercase">
+        — ScholarX
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- FORGOT PASSWORD MODAL                                                     -->
+  <!-- ========================================================================= -->
+  @if (showForgotPasswordModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#eceeee] relative animate-in zoom-in-95 duration-200">
+        
+        <button
+          type="button"
+          (click)="closeForgotPassword()"
+          class="absolute top-4 right-4 text-[#5c6168] hover:text-[#14171c] p-1 rounded-lg hover:bg-[#f1f1f0] transition-colors cursor-pointer">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2 mb-2">
+          <span class="material-symbols-outlined text-[#0b4a39] text-[24px]">lock_reset</span>
+          <h3 class="font-serif text-[20px] font-bold text-[#0b0d10]">Reset Credentials</h3>
+        </div>
+        <p class="font-sans text-[11.5px] text-[#5a6066] mb-4">
+          Enter your institutional email. A secure verification link will be dispatched to reset your credentials.
+        </p>
+
+        @if (forgotSent()) {
+          <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs mb-4">
+            Reset token dispatched to <strong>{{ forgotEmail() }}</strong>. Follow the instructions to recover access.
+          </div>
+          <button
+            type="button"
+            (click)="closeForgotPassword()"
+            class="w-full py-2.5 rounded-xl bg-[#0b4a39] text-white text-xs font-semibold cursor-pointer">
+            Close
+          </button>
+        } @else {
+          <form (ngSubmit)="submitForgotPassword()" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-[#14171c] mb-1">Registered Email</label>
+              <input
+                type="email"
+                [value]="forgotEmail()"
+                (input)="forgotEmail.set($any($event.target).value)"
+                placeholder="you@apex.edu"
+                required
+                class="w-full px-3 py-2 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+            </div>
+            <button
+              type="submit"
+              class="w-full py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold shadow-sm transition-all cursor-pointer">
+              Send Password Recovery Email
+            </button>
+          </form>
+        }
+
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,118 @@
+<div class="max-w-4xl mx-auto space-y-6">
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div class="space-y-1.5">
+      <div class="flex items-center gap-2.5">
+        <span class="px-2.5 py-0.5 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-black">
+          NOTIFICATIONS & AUDIT FEED
+        </span>
+        @if (unreadCount() > 0) {
+          <span class="px-2.5 py-0.5 rounded-full bg-[#FEF2F2] text-[#EF4444] text-xs font-bold">
+            {{ unreadCount() }} Unread
+          </span>
+        }
+      </div>
+      <h1 class="text-2xl font-extrabold text-[#0B4A39]">
+        Mentor Notification Center
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        Live proctoring alerts, student enrollment applications, and accreditation sync events
+      </p>
+    </div>
+
+    <button
+      (click)="markAllAsRead()"
+      [disabled]="unreadCount() === 0"
+      class="px-4 py-2.5 rounded-xl bg-white border border-[#ECEEEE] hover:border-[#0B4A39] disabled:opacity-40 text-[#0B4A39] text-xs font-bold transition-all shadow-2xs cursor-pointer self-start sm:self-center">
+      ✓ Mark All as Read
+    </button>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="bg-white rounded-2xl p-3 border border-[#ECEEEE] shadow-sm flex flex-wrap items-center gap-2">
+    <button
+      (click)="activeFilter.set('ALL')"
+      class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+      [ngClass]="activeFilter() === 'ALL' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+      All
+    </button>
+    <button
+      (click)="activeFilter.set('PROCTORING')"
+      class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+      [ngClass]="activeFilter() === 'PROCTORING' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+      🚨 Proctoring
+    </button>
+    <button
+      (click)="activeFilter.set('ENROLLMENT')"
+      class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+      [ngClass]="activeFilter() === 'ENROLLMENT' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+      👥 Enrollment
+    </button>
+    <button
+      (click)="activeFilter.set('ASSESSMENT')"
+      class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+      [ngClass]="activeFilter() === 'ASSESSMENT' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+      📝 Assessments
+    </button>
+    <button
+      (click)="activeFilter.set('SYSTEM')"
+      class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+      [ngClass]="activeFilter() === 'SYSTEM' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] hover:bg-[#F4F6F5]'">
+      ⚙️ System
+    </button>
+  </div>
+
+  <!-- Notifications List -->
+  <div class="space-y-3">
+    @for (n of filteredNotifications(); track n.id) {
+      <div
+        class="bg-white rounded-2xl p-5 border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
+        [ngClass]="n.read ? 'border-[#ECEEEE] opacity-80' : 'border-[#0B4A39]/40 bg-[#F8FAF9] shadow-md'">
+
+        <div class="flex items-start gap-4">
+          <span class="w-10 h-10 rounded-2xl bg-[#E6F4F0] text-lg flex items-center justify-center shrink-0">
+            {{ getIcon(n.type) }}
+          </span>
+
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-bold text-[#0B4A39]">{{ n.title }}</h3>
+              @if (!n.read) {
+                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+              }
+            </div>
+            <p class="text-xs text-[#5A6066]">{{ n.message }}</p>
+            <span class="block text-[10px] text-[#8C959B] font-mono">{{ n.createdAt }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+          @if (!n.read) {
+            <button
+              (click)="markAsRead(n.id)"
+              class="px-3 py-1.5 rounded-lg bg-white border border-[#ECEEEE] text-[#5A6066] hover:text-[#0B4A39] text-xs font-bold transition-all cursor-pointer">
+              Mark Read
+            </button>
+          }
+          <a
+            [routerLink]="n.linkUrl"
+            (click)="markAsRead(n.id)"
+            class="px-4 py-1.5 rounded-lg bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-2xs">
+            Open →
+          </a>
+        </div>
+
+      </div>
+    }
+
+    @if (filteredNotifications().length === 0) {
+      <div class="p-12 text-center bg-white rounded-2xl border border-[#ECEEEE] space-y-2">
+        <span class="text-3xl">📭</span>
+        <h3 class="text-sm font-bold text-[#0B4A39]">No Notifications Found</h3>
+        <p class="text-xs text-[#5A6066]">All caught up for this category.</p>
+      </div>
+    }
+  </div>
+
+</div>

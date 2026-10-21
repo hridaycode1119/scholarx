@@ -1,0 +1,512 @@
+<div class="max-w-7xl mx-auto space-y-7 pb-16 animate-in fade-in duration-300">
+
+  <!-- Floating Toast Notification -->
+  @if (toastMessage()) {
+    <div class="fixed top-6 right-6 z-60 max-w-md p-4 rounded-2xl bg-emerald-900/95 text-emerald-100 border border-emerald-500/50 shadow-2xl shadow-emerald-950/40 text-xs font-semibold flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-3 duration-200">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="leading-relaxed">{{ toastMessage() }}</span>
+      </div>
+      <button (click)="toastMessage.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono px-1">✕</button>
+    </div>
+  }
+
+  <!-- Header Banner (Pristine Jade Style) -->
+  <div class="glass-pristine rounded-3xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+    <div class="space-y-2">
+      <div class="flex flex-wrap items-center gap-2.5">
+        <span class="px-3 py-1 rounded-full bg-emerald-100/80 text-emerald-800 border border-emerald-300/80 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+          24/7 ACADEMIC SUPPORT HELPDESK
+        </span>
+        <span class="text-xs text-slate-500 font-medium">• Institutional Response SLA: &lt; 15 mins</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
+        Help Center & Direct Admin Feedback
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+        Connect directly with campus customer care, run real-time hardware network diagnostics, or submit high-priority feedback directly to the institutional Admin Panel.
+      </p>
+    </div>
+
+    <!-- Quick Emergency Contact Pill -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+      <div class="p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-xs flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold">
+          📞
+        </div>
+        <div>
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Institutional Toll-Free</span>
+          <span class="text-xs font-black text-emerald-900 font-mono">+91 1800-420-VIVA</span>
+        </div>
+      </div>
+
+      <a
+        routerLink="/student/settings"
+        class="px-5 py-3 rounded-2xl bg-white hover:bg-emerald-50/70 border border-slate-200 text-xs font-bold text-slate-700 hover:text-emerald-800 transition-all shadow-xs flex items-center justify-center gap-2">
+        <span>⚙️</span>
+        <span>Hardware Calibration</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2-Column Grid Layout: Column 1 (Customer Support) & Column 2 (Admin Feedback) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
+
+    <!-- ========================================================================= -->
+    <!-- COLUMN 1: CUSTOMER SUPPORT & INSTITUTIONAL HELPDESK (5 COLS) -->
+    <!-- ========================================================================= -->
+    <div class="lg:col-span-5 space-y-6">
+
+      <!-- Customer Support Channels Card -->
+      <div class="glass-pristine rounded-3xl p-6 sm:p-7 space-y-5">
+        <div class="flex items-center justify-between border-b border-emerald-900/10 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-base">🎧</span>
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 font-outfit">
+              Customer Support Channels
+            </h2>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+            Agents Online
+          </span>
+        </div>
+
+        <div class="space-y-3.5 text-xs">
+          
+          <!-- Channel 1: Live Hotline -->
+          <div class="p-4 rounded-2xl bg-white/85 border border-emerald-100 hover:border-emerald-300 transition-all flex items-start gap-3.5 shadow-2xs">
+            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0 mt-0.5">
+              ☎️
+            </div>
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-slate-900">Student Defense Hotline</h3>
+                <span class="text-[10px] font-mono text-emerald-700 font-bold">24 / 7 Live</span>
+              </div>
+              <p class="text-slate-500 text-[11px] leading-relaxed">
+                Toll-free student helpline for active examination lockouts, session crashes, or proctor glitches.
+              </p>
+              <div class="pt-1 flex items-center gap-2">
+                <span class="font-mono font-bold text-emerald-800 text-xs">+91 1800 420 8482</span>
+                <span class="text-[10px] text-slate-400">• Free Calling</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Channel 2: Helpdesk Email -->
+          <div class="p-4 rounded-2xl bg-white/85 border border-emerald-100 hover:border-emerald-300 transition-all flex items-start gap-3.5 shadow-2xs">
+            <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center text-sm shrink-0 mt-0.5">
+              ✉️
+            </div>
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-slate-900">Institutional Registrar Email</h3>
+                <span class="text-[10px] text-slate-500 font-bold">&lt; 15 min SLA</span>
+              </div>
+              <p class="text-slate-500 text-[11px] leading-relaxed">
+                For grade appeals, rubric disputes, and formal examination rescheduling requests.
+              </p>
+              <div class="pt-1">
+                <a href="mailto:support@scholarx.apex.edu" class="font-mono font-bold text-teal-700 text-xs hover:underline">
+                  support&#64;scholarx.apex.edu
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Channel 3: Campus Lab Helpdesk -->
+          <div class="p-4 rounded-2xl bg-white/85 border border-emerald-100 hover:border-emerald-300 transition-all flex items-start gap-3.5 shadow-2xs">
+            <div class="w-9 h-9 rounded-xl bg-slate-700 text-white flex items-center justify-center text-sm shrink-0 mt-0.5">
+              🏢
+            </div>
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-slate-900">Physical Campus Lab Desk</h3>
+                <span class="text-[10px] text-slate-500">08:00 - 20:00 IST</span>
+              </div>
+              <p class="text-slate-500 text-[11px]">
+                Computing Center Room 402, Ramanujan Block, Apex Main Campus.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Quick Self-Service Diagnostic Card -->
+      <div class="glass-pristine rounded-3xl p-6 sm:p-7 space-y-4">
+        <div class="flex items-center justify-between border-b border-emerald-900/10 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📡</span>
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 font-outfit">
+              Proctor Signal & Ping Self-Test
+            </h2>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">EDGE-BANGALORE-01</span>
+        </div>
+
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Verify your connection latency to the proctoring media server before joining high-stakes oral vivas.
+        </p>
+
+        @if (pingResult(); as res) {
+          <div class="p-4 rounded-2xl bg-emerald-50/90 border border-emerald-300 text-xs space-y-2 animate-in fade-in">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-emerald-900">Signal Quality: {{ res.status }}</span>
+              <span class="font-mono font-black text-emerald-800 text-sm">{{ res.pingMs }} ms</span>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-emerald-700">
+              <span>Packet Loss: {{ res.packetLoss }}</span>
+              <span>WebRTC Relay: Active</span>
+            </div>
+          </div>
+        }
+
+        <button
+          type="button"
+          (click)="runPingTest()"
+          [disabled]="isTestingPing()"
+          class="w-full py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-xs font-bold text-slate-800 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs disabled:opacity-50">
+          @if (isTestingPing()) {
+            <span class="w-3.5 h-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></span>
+            <span>Measuring Edge Latency...</span>
+          } @else {
+            <span>⚡ Test Viva Server Latency</span>
+          }
+        </button>
+      </div>
+
+      <!-- Common FAQs Accordion -->
+      <div class="glass-pristine rounded-3xl p-6 sm:p-7 space-y-4">
+        <div class="flex items-center justify-between border-b border-emerald-900/10 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-base">💡</span>
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 font-outfit">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <span class="text-[10px] text-slate-400">Quick Solutions</span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          @for (faq of faqs; track faq.q; let idx = $index) {
+            <div class="rounded-2xl border border-emerald-100/90 bg-white/80 overflow-hidden transition-all">
+              <button
+                type="button"
+                (click)="toggleFaq(idx)"
+                class="w-full p-3.5 text-left font-bold text-slate-800 hover:text-emerald-800 flex items-center justify-between gap-3 cursor-pointer">
+                <span>{{ faq.q }}</span>
+                <span class="text-slate-400 text-sm transition-transform duration-200" [ngClass]="activeFaqIndex() === idx ? 'rotate-180 text-emerald-600' : ''">
+                  ▾
+                </span>
+              </button>
+              
+              @if (activeFaqIndex() === idx) {
+                <div class="px-3.5 pb-3.5 text-[11px] text-slate-600 leading-relaxed border-t border-slate-100 pt-2 animate-in fade-in">
+                  {{ faq.a }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- COLUMN 2: DIRECT FEEDBACK TO ADMIN PANEL (7 COLS) -->
+    <!-- ========================================================================= -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- Direct Feedback Submission Form -->
+      <div class="glass-pristine rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-900/10 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-base">📨</span>
+              <h2 class="text-sm font-black text-slate-900 uppercase tracking-wider font-outfit">
+                Submit Feedback to Administration
+              </h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Messages submitted here are dispatched immediately to the Central Campus Governance Admin Console.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 self-start sm:self-auto">
+            ADMIN DIRECT-ROUTED
+          </span>
+        </div>
+
+        <!-- Success Banner if ticket created -->
+        @if (submissionSuccessTicket(); as ticket) {
+          <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-xs space-y-2 animate-in fade-in">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-emerald-900 flex items-center gap-1.5">
+                <span>✅</span> Ticket #{{ ticket.ticketId }} Dispatched to Admin Console
+              </span>
+              <button (click)="submissionSuccessTicket.set(null)" class="text-emerald-700 font-bold hover:text-emerald-900 cursor-pointer">✕</button>
+            </div>
+            <p class="text-emerald-800 text-[11px] leading-relaxed">
+              Your message was received by campus administration. Track status in the "Submitted Tickets" ledger below.
+            </p>
+          </div>
+        }
+
+        <form (ngSubmit)="submitFeedback()" class="space-y-5">
+          
+          <!-- Category Selector -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700">
+              Select Feedback / Issue Category <span class="text-rose-500">*</span>
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              @for (cat of categories; track cat.value) {
+                <button
+                  type="button"
+                  (click)="feedbackForm.category = cat.value"
+                  class="p-2.5 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
+                  [ngClass]="feedbackForm.category === cat.value ? 'bg-emerald-800 text-white border-emerald-800 shadow-sm' : 'bg-white/80 hover:bg-slate-50 border-slate-200 text-slate-700'">
+                  <span>{{ cat.icon }}</span>
+                  <span class="truncate text-[11px]">{{ cat.label }}</span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Priority & Rating Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Urgency Priority Selector -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold text-slate-700">
+                Ticket Priority
+              </label>
+              <div class="grid grid-cols-4 gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200">
+                <button
+                  type="button"
+                  (click)="feedbackForm.priority = 'LOW'"
+                  class="py-1.5 rounded-lg text-[10px] font-black transition-all cursor-pointer text-center"
+                  [ngClass]="feedbackForm.priority === 'LOW' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'">
+                  LOW
+                </button>
+                <button
+                  type="button"
+                  (click)="feedbackForm.priority = 'MEDIUM'"
+                  class="py-1.5 rounded-lg text-[10px] font-black transition-all cursor-pointer text-center"
+                  [ngClass]="feedbackForm.priority === 'MEDIUM' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-800'">
+                  MED
+                </button>
+                <button
+                  type="button"
+                  (click)="feedbackForm.priority = 'HIGH'"
+                  class="py-1.5 rounded-lg text-[10px] font-black transition-all cursor-pointer text-center"
+                  [ngClass]="feedbackForm.priority === 'HIGH' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-800'">
+                  HIGH
+                </button>
+                <button
+                  type="button"
+                  (click)="feedbackForm.priority = 'URGENT'"
+                  class="py-1.5 rounded-lg text-[10px] font-black transition-all cursor-pointer text-center"
+                  [ngClass]="feedbackForm.priority === 'URGENT' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-800'">
+                  URGENT
+                </button>
+              </div>
+            </div>
+
+            <!-- Platform Experience Star Rating -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold text-slate-700">
+                Platform Experience Rating
+              </label>
+              <div class="flex items-center gap-1.5 p-2 rounded-xl bg-white/80 border border-slate-200">
+                @for (star of [1, 2, 3, 4, 5]; track star) {
+                  <button
+                    type="button"
+                    (click)="setRating(star)"
+                    class="text-lg transition-transform hover:scale-125 cursor-pointer focus:outline-none"
+                    [title]="star + ' Stars'">
+                    {{ star <= feedbackForm.rating ? '⭐' : '☆' }}
+                  </button>
+                }
+                <span class="text-[11px] font-bold text-slate-500 ml-2 font-mono">
+                  {{ feedbackForm.rating }} / 5 Stars
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Subject Line -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700">
+              Subject / Brief Summary <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="subject"
+              [(ngModel)]="feedbackForm.subject"
+              required
+              placeholder="e.g. Microphone gain dropped during CS401 oral viva defense"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-white/90 border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 text-xs font-bold text-slate-800 transition-all outline-none" />
+          </div>
+
+          <!-- Message Body -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-slate-700">
+                Detailed Feedback / Problem Description <span class="text-rose-500">*</span>
+              </label>
+              <span class="text-[10px] text-slate-400">Be as descriptive as possible</span>
+            </div>
+            <textarea
+              name="message"
+              rows="4"
+              [(ngModel)]="feedbackForm.message"
+              required
+              placeholder="Provide exact details, what happened, the subject code or proctor alert number, and any steps to reproduce..."
+              class="w-full p-3.5 rounded-xl bg-white/90 border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 text-xs text-slate-800 transition-all outline-none leading-relaxed"></textarea>
+          </div>
+
+          <!-- Student Attribution & Anonymous Checkbox -->
+          <div class="p-3.5 rounded-2xl bg-white/70 border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2.5">
+              <input
+                type="checkbox"
+                id="anonCheck"
+                name="isAnonymous"
+                [(ngModel)]="feedbackForm.isAnonymous"
+                class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer" />
+              <label for="anonCheck" class="font-bold text-slate-700 cursor-pointer">
+                Submit Anonymously (Hide Roll No & Name)
+              </label>
+            </div>
+
+            <div class="text-[11px] text-slate-500">
+              @if (feedbackForm.isAnonymous) {
+                <span class="text-amber-700 font-bold">Attribution: Anonymous Student</span>
+              } @else {
+                <span>From: <strong class="text-slate-800">{{ profile().fullName }}</strong> ({{ profile().studentId }})</span>
+              }
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex items-center justify-end pt-2">
+            <button
+              type="submit"
+              [disabled]="isSubmitting()"
+              class="w-full sm:w-auto px-8 py-3 rounded-xl btn-jade-primary text-xs font-black transition-all shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
+              @if (isSubmitting()) {
+                <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>Dispatching to Admin Console...</span>
+              } @else {
+                <span>🚀 Dispatch Feedback to Admin Panel →</span>
+              }
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Student's Personal Feedback & Ticket Ledger -->
+      <div class="glass-pristine rounded-3xl p-6 sm:p-8 space-y-5">
+        <div class="flex items-center justify-between border-b border-emerald-900/10 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-base">🗂️</span>
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 font-outfit">
+              My Submitted Feedback & Administration Responses
+            </h2>
+          </div>
+          <span class="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+            {{ studentTickets().length }} Total Tickets
+          </span>
+        </div>
+
+        @if (studentTickets().length === 0) {
+          <div class="text-center py-8 text-slate-400 space-y-2">
+            <span class="text-3xl block opacity-60">📭</span>
+            <p class="text-xs font-semibold">No feedback tickets logged yet</p>
+            <p class="text-[11px]">Use the form above to share your experiences or report discrepancies to campus admins.</p>
+          </div>
+        } @else {
+          <div class="space-y-3.5">
+            @for (ticket of studentTickets(); track ticket.id) {
+              <div class="p-4 rounded-2xl bg-white/85 border border-emerald-100/90 shadow-2xs space-y-3 hover:border-emerald-300 transition-all">
+                
+                <!-- Ticket Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-xs font-black text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-md">
+                      {{ ticket.ticketId }}
+                    </span>
+                    <h3 class="text-xs font-extrabold text-slate-900">{{ ticket.subject }}</h3>
+                  </div>
+
+                  <div class="flex items-center gap-2 self-start sm:self-auto">
+                    <!-- Priority Pill -->
+                    <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded"
+                          [ngClass]="{
+                            'bg-slate-100 text-slate-700': ticket.priority === 'LOW',
+                            'bg-emerald-100 text-emerald-800': ticket.priority === 'MEDIUM',
+                            'bg-amber-100 text-amber-800': ticket.priority === 'HIGH',
+                            'bg-rose-100 text-rose-800': ticket.priority === 'URGENT'
+                          }">
+                      {{ ticket.priority }}
+                    </span>
+
+                    <!-- Status Pill -->
+                    <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full"
+                          [ngClass]="{
+                            'bg-sky-100 text-sky-800 border border-sky-300': ticket.status === 'NEW',
+                            'bg-amber-100 text-amber-800 border border-amber-300': ticket.status === 'IN_REVIEW',
+                            'bg-emerald-100 text-emerald-800 border border-emerald-300': ticket.status === 'RESOLVED'
+                          }">
+                      {{ ticket.status === 'RESOLVED' ? '✓ RESOLVED' : ticket.status }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Ticket Message Preview -->
+                <p class="text-xs text-slate-600 leading-relaxed bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                  {{ ticket.message }}
+                </p>
+
+                <!-- Admin Response Note (if available) -->
+                @if (ticket.adminReply) {
+                  <div class="p-3.5 rounded-xl bg-emerald-50/90 border border-emerald-200/90 space-y-1 animate-in fade-in">
+                    <div class="flex items-center justify-between text-[10px] font-bold text-emerald-800">
+                      <span class="flex items-center gap-1.5">
+                        <span>🏛️</span>
+                        <span>Institutional Admin Response</span>
+                      </span>
+                      @if (ticket.resolvedAt) {
+                        <span class="text-emerald-600 font-mono">{{ ticket.resolvedAt | date:'mediumDate' }}</span>
+                      }
+                    </div>
+                    <p class="text-xs text-emerald-950 font-medium leading-relaxed">
+                      {{ ticket.adminReply }}
+                    </p>
+                  </div>
+                }
+
+                <!-- Ticket Footer Timestamp -->
+                <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                  <span>Category: {{ ticket.category }}</span>
+                  <span>Submitted: {{ ticket.createdAt | date:'short' }}</span>
+                </div>
+
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

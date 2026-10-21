@@ -1,0 +1,135 @@
+<div class="h-[calc(100vh-12rem)] flex flex-col md:flex-row rounded-2xl bg-white dark:bg-white border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden animate-in fade-in duration-300">
+
+  <!-- Left Sidebar: Channel Roster -->
+  <aside class="w-full md:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
+    <!-- Header -->
+    <div class="p-4 border-b border-slate-200 dark:border-slate-800">
+      <h2 class="text-sm font-black text-slate-900 dark:text-white flex items-center justify-between">
+        <span>💬 Classroom Channels</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20">
+          {{ channels().length }} Enrolled
+        </span>
+      </h2>
+      <p class="text-[11px] text-slate-500 mt-0.5">Direct chat with lead mentors & peers</p>
+    </div>
+
+    <!-- Channel List -->
+    <div class="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60">
+      @for (c of channels(); track c.id) {
+        <div
+          (click)="selectChannel(c.id)"
+          class="p-4 transition-all cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 space-y-1"
+          [ngClass]="selectedChannelId() === c.id ? 'bg-[#0b4a39]/10 border-l-4 border-[#0b4a39] text-[#0b4a39]' : ''">
+
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs truncate max-w-[170px]" [ngClass]="selectedChannelId() === c.id ? 'text-[#0b4a39]' : 'text-slate-900 dark:text-white'">{{ c.name }}</span>
+            <span class="text-[10px] font-mono text-slate-400">{{ c.lastMessageTime }}</span>
+          </div>
+
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+            {{ c.lastMessageSnippet }}
+          </p>
+
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-[10px] font-semibold text-[#0b4a39]">{{ c.mentorName }}</span>
+            @if (c.unreadCount && c.unreadCount > 0) {
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white">
+                {{ c.unreadCount }}
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- Right Area: Chat Stream & Composer -->
+  <main class="flex-1 flex flex-col min-w-0 bg-white dark:bg-white">
+
+    <!-- Active Channel Top Bar -->
+    @if (activeChannel(); as active) {
+      <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/40 dark:bg-slate-900/40">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#0b4a39]/10 text-[#0b4a39] font-black text-sm flex items-center justify-center">
+            {{ active.mentorAvatar }}
+          </div>
+          <div>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">{{ active.name }}</h3>
+            <span class="text-[11px] text-slate-500">Course Lead: {{ active.mentorName }}</span>
+          </div>
+        </div>
+
+        <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-[#0b4a39]/10 text-[#0b4a39] border border-[#0b4a39]/20 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#21db93] animate-pulse"></span>
+          Channel Active
+        </span>
+      </div>
+    }
+
+    <!-- Messages Scroll Area -->
+    <div #messagesContainer class="flex-1 p-6 overflow-y-auto space-y-4">
+      @for (msg of currentMessages(); track msg.id) {
+        <div class="flex flex-col space-y-1 max-w-2xl"
+             [ngClass]="msg.senderRole === 'STUDENT' ? 'ml-auto items-end' : 'mr-auto items-start'">
+
+          <!-- Sender Identity -->
+          <div class="flex items-center gap-2 text-[10px]">
+            <span class="font-bold text-slate-700 dark:text-slate-300">{{ msg.senderName }}</span>
+            <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase"
+                  [ngClass]="msg.isAiBot ? 'bg-sky-400 text-slate-950' : msg.senderRole === 'FACULTY' ? 'bg-[#0b4a39] text-white font-bold' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'">
+              {{ msg.isAiBot ? '✨ AI BOT' : msg.senderRole }}
+            </span>
+            <span class="font-mono text-slate-400">{{ msg.timestamp }}</span>
+          </div>
+
+          <!-- Message Card Bubble -->
+          <div class="p-3.5 rounded-2xl text-xs leading-relaxed shadow-sm whitespace-pre-wrap"
+               [ngClass]="msg.isAiBot ? 'bg-slate-900 text-slate-100 border border-sky-500/40' : msg.senderRole === 'STUDENT' ? 'bg-[#0b4a39] text-white border border-[#0b4a39] rounded-tr-sm shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-tl-sm border border-slate-200 dark:border-slate-700'">
+            {{ msg.text }}
+          </div>
+        </div>
+      }
+
+      @if (isAiThinking()) {
+        <div class="p-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-xs text-emerald-300 flex items-center gap-2 animate-pulse mr-auto">
+          <span>✨</span>
+          <span>ScholarX AI Tutor is formulating grounded syllabus answer...</span>
+        </div>
+      }
+    </div>
+
+    <!-- Quick Prompt Chips -->
+    <div class="px-4 py-2 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 overflow-x-auto text-xs">
+      <span class="text-[10px] font-bold text-slate-400 uppercase shrink-0">Quick Prompts:</span>
+      @for (chip of quickChips; track chip) {
+        <button
+          (click)="useChip(chip)"
+          class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 hover:bg-[#0b4a39]/10 hover:text-[#0b4a39] text-[11px] font-medium text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer whitespace-nowrap">
+          {{ chip }}
+        </button>
+      }
+    </div>
+
+    <!-- Message Composer -->
+    <form (ngSubmit)="sendMessage()" class="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3 bg-white dark:bg-white">
+      <input
+        type="text"
+        [ngModel]="messageText()"
+        (ngModelChange)="messageText.set($event)"
+        name="messageText"
+        placeholder="Type a message or '@ai <question>' to ask AI tutor..."
+        class="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0b4a39]"
+      />
+
+      <button
+        type="submit"
+        [disabled]="!messageText().trim()"
+        class="px-5 py-2.5 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-bold text-xs shadow-md transition-all disabled:opacity-40 cursor-pointer flex items-center gap-1.5">
+        <span>Send</span>
+        <span>→</span>
+      </button>
+    </form>
+
+  </main>
+
+</div>

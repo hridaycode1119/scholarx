@@ -1,0 +1,1448 @@
+<div class="scholarx-homepage-root font-sans text-[#14171c] bg-[#fcfcfb] min-h-screen overflow-x-clip selection:bg-[#0b4a39] selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- TOAST NOTIFICATION                                                        -->
+  <!-- ========================================================================= -->
+  @if (demoSuccessToast(); as toast) {
+    <div class="fixed top-6 right-6 z-[120] max-w-md p-4 rounded-xl bg-[#0b4a39] text-white shadow-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
+      <div class="flex items-center gap-2.5">
+        <svg width="20" height="20" class="text-[#21db93] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span class="text-xs font-medium leading-relaxed">{{ toast }}</span>
+      </div>
+      <button (click)="demoSuccessToast.set(null)" class="text-white/70 hover:text-white cursor-pointer p-1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- 1. REDESIGNED STICKY TOP NAVBAR (SHADCN NAVBAR-02 STYLE & 5-COLOR PALETTE)  -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 inset-x-0 z-50 w-full h-16 border-b border-[#eceeee] bg-[#fcfcfb]/95 backdrop-blur-md shadow-xs transition-all">
+    <div class="mx-auto flex h-full max-w-[1520px] items-center justify-between px-4 sm:px-6 lg:px-8">
+      
+      <!-- Brand Logo + Desktop NavMenu Group -->
+      <div class="flex items-center gap-8 lg:gap-12">
+        <!-- Logo -->
+        <a (click)="scrollToSection('hero')" class="flex items-center gap-2.5 cursor-pointer no-underline group">
+          <img src="/assets/homepage/logo-icon.png" alt="ScholarX Crest" class="w-8 h-8 object-contain transition-transform group-hover:scale-105" />
+          <img src="/assets/homepage/wordmark.png" alt="ScholarX" class="h-6 w-auto object-contain" />
+        </a>
+
+        <!-- Desktop Navigation Menu (shadcn NavMenu style) -->
+        <nav class="hidden md:flex items-center space-x-1">
+          <button
+            type="button"
+            (click)="scrollToSection('hero')"
+            class="group inline-flex h-9 w-max items-center justify-center rounded-md px-3.5 py-2 text-sm font-medium transition-colors hover:bg-[#f4f6f5] hover:text-[#0b4a39] focus:bg-[#f4f6f5] focus:outline-none cursor-pointer"
+            [ngClass]="activeSection() === 'hero' ? 'bg-[#e6f4f0] text-[#0b4a39] font-bold' : 'text-[#14171c]'">
+            Home
+          </button>
+          <button
+            type="button"
+            (click)="scrollToSection('strip')"
+            class="group inline-flex h-9 w-max items-center justify-center rounded-md px-3.5 py-2 text-sm font-medium transition-colors text-[#14171c] hover:bg-[#f4f6f5] hover:text-[#0b4a39] focus:bg-[#f4f6f5] focus:outline-none cursor-pointer">
+            Capabilities
+          </button>
+          <button
+            type="button"
+            (click)="scrollToSection('viva')"
+            class="group inline-flex h-9 w-max items-center justify-center rounded-md px-3.5 py-2 text-sm font-medium transition-colors text-[#14171c] hover:bg-[#f4f6f5] hover:text-[#0b4a39] focus:bg-[#f4f6f5] focus:outline-none cursor-pointer">
+            AI Oral Viva
+          </button>
+          <button
+            type="button"
+            (click)="scrollToSection('obe')"
+            class="group inline-flex h-9 w-max items-center justify-center rounded-md px-3.5 py-2 text-sm font-medium transition-colors text-[#14171c] hover:bg-[#f4f6f5] hover:text-[#0b4a39] focus:bg-[#f4f6f5] focus:outline-none cursor-pointer">
+            OBE & Accreditation
+          </button>
+          <button
+            type="button"
+            (click)="scrollToSection('ocr')"
+            class="group inline-flex h-9 w-max items-center justify-center rounded-md px-3.5 py-2 text-sm font-medium transition-colors text-[#14171c] hover:bg-[#f4f6f5] hover:text-[#0b4a39] focus:bg-[#f4f6f5] focus:outline-none cursor-pointer">
+            PYQ OCR Miner
+          </button>
+          <button
+            type="button"
+            (click)="scrollToSection('roles')"
+            class="group inline-flex h-9 w-max items-center justify-center rounded-md px-3.5 py-2 text-sm font-medium transition-colors text-[#14171c] hover:bg-[#f4f6f5] hover:text-[#0b4a39] focus:bg-[#f4f6f5] focus:outline-none cursor-pointer">
+            Portals
+          </button>
+        </nav>
+      </div>
+
+      <!-- Right Action Strip (shadcn Button style with Sign In, Demo/Sign Up, Sun Icon & Mobile Sheet) -->
+      <div class="flex items-center gap-3">
+        <!-- Sign In (Button variant="outline") -->
+        <a
+          routerLink="/login"
+          class="hidden sm:inline-flex h-9 items-center justify-center rounded-md border border-[#eceeee] bg-white px-4 py-2 text-sm font-medium text-[#14171c] transition-colors hover:bg-[#f4f6f5] hover:text-[#0b4a39] shadow-xs cursor-pointer">
+          Sign In
+        </a>
+
+        <!-- Sign Up / Request Demo (Button default variant) -->
+        <button
+          type="button"
+          (click)="openDemoModal()"
+          class="inline-flex h-9 items-center justify-center rounded-md bg-[#0b4a39] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#08382b] shadow-sm active:scale-95 cursor-pointer">
+          Request Demo
+        </button>
+
+        <!-- Theme / Sun Icon Button (Button size="icon" variant="outline") -->
+        <button
+          type="button"
+          (click)="scrollToSection('hero')"
+          title="Theme Mode"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-[#eceeee] bg-white text-[#5a6066] hover:text-[#0b4a39] hover:bg-[#f4f6f5] transition-colors shadow-xs cursor-pointer">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+
+        <!-- Mobile Sheet Menu Trigger -->
+        <div class="md:hidden">
+          <button
+            type="button"
+            (click)="toggleMobileMenu()"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-[#eceeee] bg-white text-[#14171c] hover:bg-[#f4f6f5] hover:text-[#0b4a39] shadow-xs cursor-pointer"
+            aria-label="Toggle Navigation Sheet">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Sheet Drawer (shadcn Sheet style) -->
+    @if (isMobileMenuOpen()) {
+      <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs md:hidden animate-in fade-in duration-200" (click)="toggleMobileMenu()"></div>
+      <div class="fixed inset-y-0 right-0 z-50 w-3/4 max-w-sm bg-white p-6 shadow-2xl border-l border-[#eceeee] flex flex-col justify-between md:hidden animate-in slide-in-from-right duration-300">
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-[#eceeee]">
+            <div class="flex items-center gap-2">
+              <img src="/assets/homepage/logo-icon.png" alt="ScholarX" class="w-7 h-7 object-contain" />
+              <img src="/assets/homepage/wordmark.png" alt="ScholarX" class="h-5 w-auto object-contain" />
+            </div>
+            <button (click)="toggleMobileMenu()" class="p-1.5 rounded-md hover:bg-[#f4f6f5] text-[#5a6066] cursor-pointer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <nav class="flex flex-col space-y-1">
+            <button (click)="scrollToSection('hero'); toggleMobileMenu()" class="text-left px-3 py-2 text-sm font-semibold text-[#14171c] hover:bg-[#f4f6f5] rounded-md transition-colors">Home</button>
+            <button (click)="scrollToSection('strip'); toggleMobileMenu()" class="text-left px-3 py-2 text-sm font-semibold text-[#14171c] hover:bg-[#f4f6f5] rounded-md transition-colors">Capabilities</button>
+            <button (click)="scrollToSection('viva'); toggleMobileMenu()" class="text-left px-3 py-2 text-sm font-semibold text-[#14171c] hover:bg-[#f4f6f5] rounded-md transition-colors">AI Oral Viva</button>
+            <button (click)="scrollToSection('obe'); toggleMobileMenu()" class="text-left px-3 py-2 text-sm font-semibold text-[#14171c] hover:bg-[#f4f6f5] rounded-md transition-colors">OBE & Accreditation</button>
+            <button (click)="scrollToSection('ocr'); toggleMobileMenu()" class="text-left px-3 py-2 text-sm font-semibold text-[#14171c] hover:bg-[#f4f6f5] rounded-md transition-colors">PYQ OCR Miner</button>
+            <button (click)="scrollToSection('roles'); toggleMobileMenu()" class="text-left px-3 py-2 text-sm font-semibold text-[#14171c] hover:bg-[#f4f6f5] rounded-md transition-colors">Portals</button>
+          </nav>
+        </div>
+
+        <div class="pt-6 border-t border-[#eceeee] flex flex-col gap-3">
+          <a routerLink="/login" (click)="toggleMobileMenu()" class="w-full text-center py-2.5 rounded-md border border-[#eceeee] bg-white text-sm font-semibold text-[#14171c] shadow-xs">
+            Sign In
+          </a>
+          <button (click)="openDemoModal(); toggleMobileMenu()" class="w-full text-center py-2.5 rounded-md bg-[#0b4a39] text-white text-sm font-semibold shadow-sm">
+            Request Demo
+          </button>
+        </div>
+      </div>
+    }
+  </header>
+
+  <main>
+    <!-- ========================================================================= -->
+    <!-- 2. HERO SECTION (Editorial Grand Stage)                                   -->
+    <!-- ========================================================================= -->
+    <section id="hero" class="relative overflow-hidden bg-[#fafaf9] border-b border-[#eceeee]/60">
+      
+      <!-- Full Hero Section Background Image with Gradient Opacity Mask -->
+      <div class="absolute inset-y-0 right-0 w-full lg:w-[70%] xl:w-[66%] 2xl:w-[62%] pointer-events-none select-none overflow-hidden z-0 opacity-30 lg:opacity-100 transition-opacity duration-300">
+        <img
+          src="/assets/homepage/hero.png"
+          alt="ScholarX Modern Academic Campus & Intelligent Evaluation Platform"
+          class="w-full h-full object-cover object-right hero-gradient-mask" />
+      </div>
+
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12 py-14 lg:py-24 relative z-10 flex flex-col justify-center min-h-[560px] lg:min-h-[640px]">
+        
+        <!-- Left Narrative Column -->
+        <div class="relative z-10 w-full lg:max-w-xl xl:max-w-[660px] 2xl:max-w-[700px] flex flex-col">
+          
+          <!-- Eyebrow -->
+          <div class="inline-flex items-center gap-2 mb-4">
+            <span class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
+            <p class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.32em] text-[#3a4048]">
+              AI-POWERED ACADEMIC EVALUATION PLATFORM
+            </p>
+          </div>
+
+          <!-- Headline (Classic Editorial Serif) -->
+          <h1 class="font-serif text-[42px] sm:text-[54px] lg:text-[62px] leading-[1.06] tracking-[-0.02em] text-[#0b0d10] mb-5">
+            <div>From Answers</div>
+            <div>
+              to <em class="font-bold not-italic text-[#0b4a39]">Understanding.</em>
+            </div>
+          </h1>
+
+          <!-- Pitch -->
+          <p class="font-sans text-[14px] sm:text-[15.5px] leading-[23px] text-[#2c3138] mb-8 max-w-xl">
+            ScholarX combines AI oral viva defense, biometric proctoring, and Outcome-Based Education (OBE) analytics to help universities evaluate real understanding — not just rote memorization.
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center gap-3.5 mb-10">
+            <button
+              type="button"
+              (click)="openDemoModal()"
+              class="inline-flex items-center justify-center gap-2.5 rounded-[6px] bg-[#0b4a39] hover:bg-[#08382b] text-white px-6 py-3 font-sans text-xs font-semibold tracking-tight shadow-[0_8px_18px_rgba(11,74,57,0.24)] transition-all cursor-pointer hover:translate-y-[-1px]">
+              <span>Request a Demo</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              (click)="openVideoModal()"
+              class="inline-flex items-center gap-2.5 rounded-[6px] border border-[#b9c2be] bg-white hover:bg-[#fbfbfb] text-[#14171c] px-5 py-3 font-sans text-xs font-semibold tracking-tight transition-all cursor-pointer shadow-sm hover:translate-y-[-1px]">
+              <img src="/assets/homepage/play-icon.png" alt="Play" class="w-4 h-4 object-contain" />
+              <span>Watch Video</span>
+            </button>
+          </div>
+
+          <!-- 4 KPIs Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-5 pt-6 border-t border-[#eceeee]/80">
+            @for (s of stats; track s.number) {
+              <div class="flex items-start gap-2.5">
+                <img [src]="s.icon" [alt]="s.label" class="w-7 h-7 object-contain shrink-0 mt-0.5" />
+                <div>
+                  <div class="font-serif text-[18px] sm:text-[20px] font-bold text-[#0b0d10] leading-none mb-1">{{ s.number }}</div>
+                  <div class="font-sans text-[10px] font-semibold text-[#14171c] leading-tight">{{ s.label }}</div>
+                  <div class="font-sans text-[9px] text-[#5a6066] mt-0.5">{{ s.sub }}</div>
+                </div>
+              </div>
+            }
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 3. STRIP: 4 CORE CAPABILITIES                                             -->
+    <!-- ========================================================================= -->
+    <section id="strip" class="border-y border-[#eceeee] bg-[#fdfdfb] py-6">
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#e6e8e9]">
+        @for (pillar of pillars; track pillar.title) {
+          <div class="flex items-start gap-4 px-3 pt-4 sm:pt-0">
+            <img [src]="pillar.icon" [alt]="pillar.title" class="w-11 h-11 object-contain shrink-0" />
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-[#e6f4f0] text-[#0b4a39] mb-1">
+                {{ pillar.badge }}
+              </span>
+              <h3 class="font-sans text-[13px] font-bold text-[#14171c] leading-snug">{{ pillar.title }}</h3>
+              <p class="font-sans text-[11px] text-[#5a6066] leading-relaxed mt-1">{{ pillar.desc }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 4. PROBLEM VS APPROACH                                                    -->
+    <!-- ========================================================================= -->
+    <section id="problem" class="py-16 lg:py-24 bg-gradient-to-b from-[#fbfcfc] to-[#fcfcfb] border-b border-[#eceeee]/70">
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12">
+        
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3a4048] mb-2">
+            ACADEMIC INTEGRITY & ASSESSMENT TRANSFORMATION
+          </p>
+          <h2 class="font-serif text-[32px] sm:text-[40px] text-[#0b0d10] leading-tight">
+            Exams measure memory. <br><em class="text-[#0b4a39]">Universities need understanding.</em>
+          </h2>
+          <p class="font-sans text-[13.5px] text-[#5a6066] mt-3">
+            Traditional written exams evaluate surface memorization while neglecting oral articulation, authentic problem-solving, and deep conceptual clarity.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+          
+          <!-- The Problem Card -->
+          <div class="relative bg-white rounded-2xl p-8 sm:p-10 border border-[#e9ecea] shadow-sm flex flex-col justify-between">
+            <div>
+              <p class="text-[9.5px] font-bold uppercase tracking-[0.32em] text-[#991b1b] mb-2">
+                THE SYSTEMIC PROBLEM
+              </p>
+              <h3 class="font-serif text-[28px] text-[#0b0d10] leading-snug mb-4">
+                The Rote Learning & Misconduct Crisis
+              </h3>
+              <p class="font-sans text-[13px] text-[#5a6066] mb-6 leading-relaxed">
+                Autonomous colleges struggle to verify whether a high exam score reflects genuine mastery or superficial cramming and unauthorized collaboration.
+              </p>
+
+              <div class="space-y-4 mb-8">
+                <div class="flex items-start gap-3.5">
+                  <div class="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </div>
+                  <div>
+                    <strong class="font-sans text-[13px] text-[#14171c] block">Superficial Rote Memorization</strong>
+                    <span class="font-sans text-[12px] text-[#5a6066]">Students memorize answers for semester boards without grasping core engineering invariants.</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3.5">
+                  <div class="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </div>
+                  <div>
+                    <strong class="font-sans text-[13px] text-[#14171c] block">Examiner Subjectivity & Grading Fatigue</strong>
+                    <span class="font-sans text-[12px] text-[#5a6066]">Parallel oral viva panels score identically performing candidates with huge variance and no auditable trail.</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3.5">
+                  <div class="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </div>
+                  <div>
+                    <strong class="font-sans text-[13px] text-[#14171c] block">Accreditation Audit Scramble</strong>
+                    <span class="font-sans text-[12px] text-[#5a6066]">Compiling manual Course Outcome (CO-PO) attainment matrices for NBA/NAAC takes hundreds of faculty hours.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t border-[#f1f1f0]">
+              <img src="/assets/homepage/problem-graphic.png" alt="Problem Illustration" class="w-36 h-auto object-contain opacity-85" />
+            </div>
+          </div>
+
+          <!-- Our Approach Card -->
+          <div class="relative bg-white rounded-2xl p-8 sm:p-10 border border-[#e9ecea] shadow-sm flex flex-col justify-between">
+            <div>
+              <p class="text-[9.5px] font-bold uppercase tracking-[0.32em] text-[#0b4a39] mb-2">
+                THE SCHOLARX APPROACH
+              </p>
+              <h3 class="font-serif text-[28px] text-[#0b0d10] leading-snug mb-4">
+                Smarter, Human-Centric AI Evaluation
+              </h3>
+              <p class="font-sans text-[13px] text-[#5a6066] mb-6 leading-relaxed">
+                ScholarX blends AI conversational viva examination, real-time proctoring telemetry, and automatic OBE attainment to create an objective, auditable academic defense.
+              </p>
+
+              <div class="space-y-4 mb-8">
+                <div class="flex items-start gap-3.5">
+                  <div class="w-6 h-6 rounded-full bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <strong class="font-sans text-[13px] text-[#14171c] block">Adaptive Bloom's Taxonomy Probing</strong>
+                    <span class="font-sans text-[12px] text-[#5a6066]">Dynamic questioning adapts in real time, escalating from Remember (L1) to Evaluate & Create (L5–L6).</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3.5">
+                  <div class="w-6 h-6 rounded-full bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <strong class="font-sans text-[13px] text-[#14171c] block">Automated CO-PO Attainment Matrices</strong>
+                    <span class="font-sans text-[12px] text-[#5a6066]">Calculates Course Outcome indices dynamically mapped to NBA Tier-1 & NAAC Criterion 2.6 standards.</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3.5">
+                  <div class="w-6 h-6 rounded-full bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <strong class="font-sans text-[13px] text-[#14171c] block">Biometric Edge Security & Multi-Tab Lockout</strong>
+                    <span class="font-sans text-[12px] text-[#5a6066]">Multi-face alarm, gaze direction tracking, and tab-switch interception with automatic session strikes.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t border-[#f1f1f0]">
+              <img src="/assets/homepage/approach-graphic.png" alt="Approach Illustration" class="w-32 h-auto object-contain opacity-95" />
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 5. DEEP DIVE: LIVE ORAL VIVA COCKPIT (Interactive Simulator Showcase)      -->
+    <!-- ========================================================================= -->
+    <section id="viva" class="py-16 lg:py-24 bg-[#fafaf8] border-b border-[#eef1f3]">
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center mb-14">
+          
+          <!-- Left Visual: Viva Waveform & Proctor Interface -->
+          <div class="lg:col-span-6 rounded-2xl overflow-hidden border border-[#eef1f3] shadow-xl bg-white">
+            <img
+              src="/assets/homepage/viva-visual.png"
+              alt="Live Oral Viva Proctoring Interface"
+              class="w-full h-auto object-cover" />
+          </div>
+
+          <!-- Right Content -->
+          <div class="lg:col-span-6 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3a4048]">
+                AI ORAL VIVA DEFENSE ENGINE
+              </p>
+              <div class="flex items-center gap-2">
+                <span class="font-serif text-[38px] leading-none text-[#cbd5e1]">01</span>
+                <div class="flex gap-1.5">
+                  <span class="h-2 w-2 rounded-full bg-[#0b4a39]"></span>
+                  <span class="h-2 w-2 rounded-full bg-[#cbd5e1]"></span>
+                  <span class="h-2 w-2 rounded-full bg-[#cbd5e1]"></span>
+                </div>
+              </div>
+            </div>
+
+            <h2 class="font-serif text-[32px] sm:text-[42px] leading-[1.1] text-[#0b0d10] mb-4">
+              Intelligent Questioning.<br>
+              Deeper <em class="italic text-[#0b4a39]">Evaluation.</em>
+            </h2>
+
+            <p class="font-sans text-[14px] leading-[22px] text-[#4a4f57] mb-6">
+              Conduct structured, adaptive viva examinations with real-time speech-to-text, intelligent follow-up probing, and Bloom’s Taxonomy based evaluation.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-8">
+              <div class="p-3.5 rounded-xl bg-white border border-[#e2e8f0] flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">psychology</span>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#14171c]">Context-Aware AI</div>
+                  <div class="text-[10.5px] text-[#5a6066]">Detects conceptual gaps</div>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-white border border-[#e2e8f0] flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">record_voice_over</span>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#14171c]">Voice Dictation</div>
+                  <div class="text-[10.5px] text-[#5a6066]">Real-time transcription</div>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-white border border-[#e2e8f0] flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">insights</span>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#14171c]">Bloom's Scoring</div>
+                  <div class="text-[10.5px] text-[#5a6066]">Cognitive levels 1 to 6</div>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-white border border-[#e2e8f0] flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">groups</span>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#14171c]">Hybrid Defense</div>
+                  <div class="text-[10.5px] text-[#5a6066]">Faculty + AI Copilot</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <a
+                routerLink="/student/viva"
+                class="inline-flex items-center gap-2 rounded-lg bg-[#0b4a39] hover:bg-[#08382b] text-white px-5 py-2.5 font-sans text-xs font-semibold shadow-sm transition-all cursor-pointer">
+                <span>Enter Live Viva Simulator</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+
+              <a
+                routerLink="/mentor/viva-copilot"
+                class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f6e4c] hover:underline cursor-pointer">
+                <span>See Faculty Copilot View →</span>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Interactive Viva Sample Defense Sandbox -->
+        <div class="bg-white rounded-2xl p-6 sm:p-8 border border-[#e2e8f0] shadow-md">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#eceeee] gap-3 mb-6">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[#0b4a39] bg-[#e6f4f0] px-2.5 py-1 rounded-full">
+                Interactive Defense Playground
+              </span>
+              <h3 class="font-serif text-[22px] font-bold text-[#0b0d10] mt-1.5">Live Question & Follow-Up Probing Simulator</h3>
+            </div>
+            <!-- Question Selector Pills -->
+            <div class="flex items-center gap-2">
+              @for (q of sampleVivaQuestions; track q.code; let idx = $index) {
+                <button
+                  type="button"
+                  (click)="selectSampleQuestion(idx)"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
+                  [class.bg-[#0b4a39]]="simulatedQuestionIndex() === idx"
+                  [class.text-white]="simulatedQuestionIndex() === idx"
+                  [class.bg-[#f1f5f9]]="simulatedQuestionIndex() !== idx"
+                  [class.text-[#475569]]="simulatedQuestionIndex() !== idx">
+                  {{ q.code }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Active Question Card -->
+          @if (sampleVivaQuestions[simulatedQuestionIndex()]; as activeQ) {
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              <!-- Left: Examiner Prompt -->
+              <div class="lg:col-span-7 space-y-4">
+                <div class="flex items-center gap-2.5">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">{{ activeQ.bloom }}</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">{{ activeQ.co }}</span>
+                  <span class="text-xs text-[#5a6066] font-mono">{{ activeQ.subject }}</span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0]">
+                  <div class="text-[11px] font-bold uppercase text-[#5a6066] mb-1">Primary Examiner Prompt</div>
+                  <p class="font-serif text-[16px] text-[#0b0d10] font-medium leading-relaxed">
+                    "{{ activeQ.question }}"
+                  </p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#e6f4f0] border border-[#c1e7dc]">
+                  <div class="text-[11px] font-bold uppercase text-[#0b4a39] mb-1 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">psychology</span>
+                    <span>AI Contextual Follow-Up Probe</span>
+                  </div>
+                  <p class="font-serif text-[15px] text-[#0b4a39] italic leading-relaxed">
+                    "{{ activeQ.followUp }}"
+                  </p>
+                </div>
+              </div>
+
+              <!-- Right: Telemetry & Scoring Simulation -->
+              <div class="lg:col-span-5 bg-[#fafaf8] p-5 rounded-xl border border-[#eceeee] flex flex-col justify-between">
+                <div>
+                  <div class="text-xs font-bold text-[#14171c] mb-3">Live Candidate Telemetry Output</div>
+                  <div class="space-y-3">
+                    <div>
+                      <div class="flex justify-between text-xs font-medium mb-1">
+                        <span>Conceptual Articulation</span>
+                        <span class="font-bold text-[#0b4a39]">{{ activeQ.clarityScore }}</span>
+                      </div>
+                      <div class="h-2 rounded-full bg-[#e2e8f0] overflow-hidden">
+                        <div class="h-full bg-[#0b4a39] rounded-full" [style.width]="activeQ.clarityScore"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="flex justify-between text-xs font-medium mb-1">
+                        <span>Technical Depth & Invariants</span>
+                        <span class="font-bold text-[#0284c7]">{{ activeQ.depthScore }}</span>
+                      </div>
+                      <div class="h-2 rounded-full bg-[#e2e8f0] overflow-hidden">
+                        <div class="h-full bg-[#0284c7] rounded-full" [style.width]="activeQ.depthScore"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="flex justify-between text-xs font-medium mb-1">
+                        <span>Biometric Integrity Score</span>
+                        <span class="font-bold text-[#10b981]">98.6%</span>
+                      </div>
+                      <div class="h-2 rounded-full bg-[#e2e8f0] overflow-hidden">
+                        <div class="h-full bg-[#10b981] rounded-full w-[98.6%]"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-4 border-t border-[#eceeee] flex items-center justify-between text-xs">
+                  <span class="text-[#5a6066]">Auto-Transcript Available</span>
+                  <a routerLink="/student/practice" class="font-semibold text-[#0b4a39] hover:underline">
+                    Practice This Topic →
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 6. OBE & ACCREDITATION ATTAINMENT MATRIX (NBA / NAAC Compliance Hub)       -->
+    <!-- ========================================================================= -->
+    <section id="obe" class="py-16 lg:py-24 bg-white border-b border-[#eceeee]">
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12">
+        
+        <div class="text-center max-w-3xl mx-auto mb-14">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3a4048] mb-2">
+            ACCREDITATION GOVERNANCE & OBE BENCHMARKING
+          </p>
+          <h2 class="font-serif text-[32px] sm:text-[42px] text-[#0b0d10] leading-tight">
+            Automated NBA Tier-1 & <em class="text-[#0b4a39]">NAAC Criterion 2.6</em> Audits.
+          </h2>
+          <p class="font-sans text-[14px] text-[#5a6066] mt-3">
+            Say goodbye to weeks of manual calculation. ScholarX correlates student oral defense performance directly to Course Outcomes (CO1–CO5) and Program Outcomes (PO1–PO12).
+          </p>
+        </div>
+
+        <!-- OBE Analytics Table & Dashboard Preview -->
+        <div class="bg-[#fbfcfc] rounded-2xl p-6 sm:p-10 border border-[#e2e8f0] shadow-md">
+          
+          <!-- Tab Navigation -->
+          <div class="flex flex-wrap items-center gap-2 pb-5 border-b border-[#e2e8f0] mb-6">
+            <button
+              type="button"
+              (click)="setObeTab('CO_ATTAINMENT')"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedObeTab() === 'CO_ATTAINMENT'"
+              [class.text-white]="selectedObeTab() === 'CO_ATTAINMENT'"
+              [class.bg-white]="selectedObeTab() !== 'CO_ATTAINMENT'"
+              [class.border]="selectedObeTab() !== 'CO_ATTAINMENT'"
+              [class.text-[#475569]]="selectedObeTab() !== 'CO_ATTAINMENT'">
+              Course Outcome (CO1–CO5) Attainment
+            </button>
+            <button
+              type="button"
+              (click)="setObeTab('BLOOM_TAXONOMY')"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedObeTab() === 'BLOOM_TAXONOMY'"
+              [class.text-white]="selectedObeTab() === 'BLOOM_TAXONOMY'"
+              [class.bg-white]="selectedObeTab() !== 'BLOOM_TAXONOMY'"
+              [class.border]="selectedObeTab() !== 'BLOOM_TAXONOMY'"
+              [class.text-[#475569]]="selectedObeTab() !== 'BLOOM_TAXONOMY'">
+              Bloom's Taxonomy Cognitive Distribution
+            </button>
+            <button
+              type="button"
+              (click)="setObeTab('INTEGRITY_INDEX')"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
+              [class.bg-[#0b4a39]]="selectedObeTab() === 'INTEGRITY_INDEX'"
+              [class.text-white]="selectedObeTab() === 'INTEGRITY_INDEX'"
+              [class.bg-white]="selectedObeTab() !== 'INTEGRITY_INDEX'"
+              [class.border]="selectedObeTab() !== 'INTEGRITY_INDEX'"
+              [class.text-[#475569]]="selectedObeTab() !== 'INTEGRITY_INDEX'">
+              Authentic Understanding Gap Index
+            </button>
+          </div>
+
+          <!-- TAB 1: CO ATTAINMENT MATRIX -->
+          @if (selectedObeTab() === 'CO_ATTAINMENT') {
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-[#e2e8f0] text-[#475569] uppercase font-bold text-[10.5px]">
+                    <th class="py-3 px-3">Course Outcome</th>
+                    <th class="py-3 px-3">Competency Description</th>
+                    <th class="py-3 px-3">Target Threshold</th>
+                    <th class="py-3 px-3">Class Attainment</th>
+                    <th class="py-3 px-3">NBA Tier-1 Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#eceeee]">
+                  <tr class="hover:bg-white transition-colors">
+                    <td class="py-3.5 px-3 font-bold text-[#0b4a39]">CO1</td>
+                    <td class="py-3.5 px-3 text-[#14171c]">Fundamental Invariants & System Architectural Synthesis</td>
+                    <td class="py-3.5 px-3 font-mono">75.0%</td>
+                    <td class="py-3.5 px-3 font-bold font-mono text-[#0b4a39]">84.2%</td>
+                    <td class="py-3.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">ATTAINED</span></td>
+                  </tr>
+                  <tr class="hover:bg-white transition-colors">
+                    <td class="py-3.5 px-3 font-bold text-[#0b4a39]">CO2</td>
+                    <td class="py-3.5 px-3 text-[#14171c]">Low-Latency Concurrency & Interrupt Subsystem Handlers</td>
+                    <td class="py-3.5 px-3 font-mono">75.0%</td>
+                    <td class="py-3.5 px-3 font-bold font-mono text-[#0b4a39]">79.6%</td>
+                    <td class="py-3.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">ATTAINED</span></td>
+                  </tr>
+                  <tr class="hover:bg-white transition-colors">
+                    <td class="py-3.5 px-3 font-bold text-[#0b4a39]">CO3</td>
+                    <td class="py-3.5 px-3 text-[#14171c]">Distributed Consensus Protocols (Paxos, Raft, Byzantine Faults)</td>
+                    <td class="py-3.5 px-3 font-mono">70.0%</td>
+                    <td class="py-3.5 px-3 font-bold font-mono text-[#0b4a39]">78.1%</td>
+                    <td class="py-3.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">ATTAINED</span></td>
+                  </tr>
+                  <tr class="hover:bg-white transition-colors">
+                    <td class="py-3.5 px-3 font-bold text-[#0b4a39]">CO4</td>
+                    <td class="py-3.5 px-3 text-[#14171c]">Fault Recovery & Distributed Transaction Isolation Invariants</td>
+                    <td class="py-3.5 px-3 font-mono">70.0%</td>
+                    <td class="py-3.5 px-3 font-bold font-mono text-amber-700">68.4%</td>
+                    <td class="py-3.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">ACTION REQUIRED</span></td>
+                  </tr>
+                  <tr class="hover:bg-white transition-colors">
+                    <td class="py-3.5 px-3 font-bold text-[#0b4a39]">CO5</td>
+                    <td class="py-3.5 px-3 text-[#14171c]">High-Throughput Storage & Cache Coherency Architecture</td>
+                    <td class="py-3.5 px-3 font-mono">75.0%</td>
+                    <td class="py-3.5 px-3 font-bold font-mono text-[#0b4a39]">88.5%</td>
+                    <td class="py-3.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">EXCEEDED</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          }
+
+          <!-- TAB 2: BLOOM'S TAXONOMY -->
+          @if (selectedObeTab() === 'BLOOM_TAXONOMY') {
+            <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 text-center">
+              <div class="p-4 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-[10px] font-bold text-[#5a6066]">L1: Remember</div>
+                <div class="font-serif text-[22px] font-bold text-[#14171c] my-1">96%</div>
+                <div class="text-[9.5px] text-emerald-600">Mastered</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-[10px] font-bold text-[#5a6066]">L2: Understand</div>
+                <div class="font-serif text-[22px] font-bold text-[#14171c] my-1">91%</div>
+                <div class="text-[9.5px] text-emerald-600">High Parity</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-[10px] font-bold text-[#5a6066]">L3: Apply</div>
+                <div class="font-serif text-[22px] font-bold text-[#14171c] my-1">84%</div>
+                <div class="text-[9.5px] text-emerald-600">Strong</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-[10px] font-bold text-[#5a6066]">L4: Analyze</div>
+                <div class="font-serif text-[22px] font-bold text-[#14171c] my-1">79%</div>
+                <div class="text-[9.5px] text-blue-600">Adequate</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-[10px] font-bold text-[#5a6066]">L5: Evaluate</div>
+                <div class="font-serif text-[22px] font-bold text-[#14171c] my-1">74%</div>
+                <div class="text-[9.5px] text-amber-600">Focus Area</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-[10px] font-bold text-[#5a6066]">L6: Create</div>
+                <div class="font-serif text-[22px] font-bold text-[#14171c] my-1">68%</div>
+                <div class="text-[9.5px] text-amber-600">Adaptive Re-test</div>
+              </div>
+            </div>
+          }
+
+          <!-- TAB 3: INTEGRITY & AUTHENTICITY GAP -->
+          @if (selectedObeTab() === 'INTEGRITY_INDEX') {
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div class="p-5 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-xs font-bold text-[#0b0d10] mb-1">Written vs. Oral Divergence</div>
+                <div class="font-serif text-[28px] font-bold text-[#0b4a39] mb-2">3.8%</div>
+                <p class="text-[11px] text-[#5a6066]">Close correlation indicates that written examination scores represent genuine articulation and understanding.</p>
+              </div>
+              <div class="p-5 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-xs font-bold text-[#0b0d10] mb-1">Proctoring Strike Incidence</div>
+                <div class="font-serif text-[28px] font-bold text-[#0284c7] mb-2">0.2%</div>
+                <p class="text-[11px] text-[#5a6066]">Edge AI tab-switch interception and multi-face alarms deter unauthorized assistance.</p>
+              </div>
+              <div class="p-5 rounded-xl bg-white border border-[#e2e8f0]">
+                <div class="text-xs font-bold text-[#0b0d10] mb-1">Grade Variance Reduction</div>
+                <div class="font-serif text-[28px] font-bold text-[#10b981] mb-2">68%</div>
+                <p class="text-[11px] text-[#5a6066]">Automated standardized rubric prompts remove subjective grading strictness between examiner panels.</p>
+              </div>
+            </div>
+          }
+
+          <!-- Footer Actions in OBE Card -->
+          <div class="pt-6 mt-6 border-t border-[#e2e8f0] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-xs text-[#5a6066]">
+              Audit Ready: Compliant with NBA SAR Tier-1 Criteria 3 & NAAC Self-Study Report (SSR).
+            </div>
+            <a
+              routerLink="/mentor/reports"
+              class="inline-flex items-center gap-2 text-xs font-bold text-[#0b4a39] hover:underline cursor-pointer">
+              <span>View Full Accreditation Hub</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 7. PYQ MINER & EDGE OCR QUESTION PAPER EXTRACTOR                          -->
+    <!-- ========================================================================= -->
+    <section id="ocr" class="py-16 lg:py-24 bg-[#fafaf8] border-b border-[#eceeee]">
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          
+          <!-- Left Narrative -->
+          <div class="lg:col-span-6 flex flex-col">
+            <span class="text-[10px] font-bold uppercase tracking-[0.32em] text-[#0b4a39] bg-[#e6f4f0] px-3 py-1 rounded-full w-fit mb-3">
+              CLIENT-SIDE NEURAL OCR
+            </span>
+            <h2 class="font-serif text-[32px] sm:text-[42px] leading-tight text-[#0b0d10] mb-4">
+              Turn 10 Years of Exam Papers into <em class="italic text-[#0b4a39]">Predicted Viva Questions.</em>
+            </h2>
+            <p class="font-sans text-[14px] leading-[22px] text-[#4a4f57] mb-6">
+              Students and faculty upload university question papers (PDF/PNG). Our edge OCR pipeline extracts handwritten and printed questions, clusters recurring trends, and generates model viva defense prompts.
+            </p>
+
+            <div class="space-y-3 mb-8">
+              <div class="flex items-center gap-3 text-xs text-[#14171c]">
+                <div class="w-6 h-6 rounded-full bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[15px]">document_scanner</span>
+                </div>
+                <span><strong>Edge OCR Extraction:</strong> Instant client-side optical parsing with Tesseract.js & PDF.js</span>
+              </div>
+
+              <div class="flex items-center gap-3 text-xs text-[#14171c]">
+                <div class="w-6 h-6 rounded-full bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[15px]">trending_up</span>
+                </div>
+                <span><strong>Recurrent Topic Miner:</strong> Identifies syllabus units that recur in over 80% of board vivas</span>
+              </div>
+
+              <div class="flex items-center gap-3 text-xs text-[#14171c]">
+                <div class="w-6 h-6 rounded-full bg-[#e6f4f0] text-[#0b4a39] flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[15px]">auto_stories</span>
+                </div>
+                <span><strong>Autonomous Practice Mock:</strong> Practice oral defenses on verified university question banks</span>
+              </div>
+            </div>
+
+            <div>
+              <a
+                routerLink="/student/paper-upload"
+                class="inline-flex items-center gap-2 rounded-lg bg-[#0b4a39] hover:bg-[#08382b] text-white px-5 py-2.5 font-sans text-xs font-semibold shadow-sm transition-all cursor-pointer">
+                <span>Upload Question Paper & Mine Questions</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Visual Preview: Question Paper OCR Scanner -->
+          <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-[#e2e8f0] shadow-xl relative overflow-hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-[#eceeee] mb-4">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#0b4a39] text-[20px]">picture_as_pdf</span>
+                <span class="text-xs font-bold text-[#14171c]">Apex_Tech_EC305_EndSem_Paper_2025.pdf</span>
+              </div>
+              <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                OCR PARSED (100% CONFIDENCE)
+              </span>
+            </div>
+
+            <div class="relative rounded-xl overflow-hidden border border-[#e2e8f0] bg-[#fafaf8] p-4 font-mono text-[11px] text-[#334155] leading-relaxed space-y-3">
+              <div class="text-[10px] text-emerald-700 font-bold uppercase">Extracted Question 3 (b):</div>
+              <p class="font-serif text-[14px] text-[#0b0d10] leading-snug">
+                "Explain the architecture of the 8051 microcontroller register banks. Why is register bank switching preferred over stack push/pop operations during interrupt handling?"
+              </p>
+
+              <div class="p-3 rounded-lg bg-[#e6f4f0] text-[#0b4a39] text-xs">
+                <strong>Predicted Viva Follow-Up:</strong> "If multiple nested interrupts occur, what is the risk to the PSW register RS0 and RS1 bits?"
+              </div>
+
+              <div class="flex items-center justify-between pt-2 border-t border-[#e2e8f0] text-[10px] text-[#64748b]">
+                <span>Mapped to: CO2 Embedded Invariants</span>
+                <span>Bloom Level: L4 Analyze</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 8. BUILT FOR EVERY ROLE (Multi-Stakeholder Suites)                        -->
+    <!-- ========================================================================= -->
+    <section id="roles" class="py-16 lg:py-24 bg-white border-b border-[#eceeee]">
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3a4048] mb-2">
+            THREE DEDICATED PORTALS
+          </p>
+          <h2 class="font-serif text-[32px] sm:text-[42px] text-[#0b0d10] leading-tight">
+            A Unified Platform for the Entire University.
+          </h2>
+          <p class="font-sans text-[14px] text-[#5a6066] mt-3">
+            Role-governed portals engineered for students, faculty mentors, and institutional administrators.
+          </p>
+        </div>
+
+        <!-- 3 Role Cards Grid (High-Impact Editorial Visuals) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- STUDENT CARD -->
+          <div class="rounded-2xl border border-[#e2e8f0] bg-white p-7 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full pointer-events-none bg-emerald-50 opacity-60"></div>
+            
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <img src="/assets/homepage/student-icon.png" alt="Student Icon" class="w-10 h-10 object-contain" />
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">
+                  Candidate Hub
+                </span>
+              </div>
+
+              <h3 class="font-serif text-[24px] font-bold text-[#14171c] mb-1">Students</h3>
+              <p class="font-sans text-xs text-[#5c6168] mb-6">Practice. Perform. Grow.</p>
+
+              <div class="flex justify-center mb-6">
+                <img src="/assets/homepage/student-art.png" alt="Student 3D Artwork" class="h-28 object-contain transition-transform group-hover:scale-105" />
+              </div>
+
+              <ul class="space-y-3 font-sans text-xs text-[#2f2f3d] mb-8">
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#038142]"></span>
+                  <span>Autonomous AI viva practice & simulator</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#038142]"></span>
+                  <span>10-year university PYQ OCR question vault</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#038142]"></span>
+                  <span>Academic profile, hardware loopback & mic tests</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#038142]"></span>
+                  <span>Direct admin helpdesk ticketing ledger</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pt-4 border-t border-[#eceeee]">
+              <a
+                routerLink="/student/dashboard"
+                class="w-full py-2.5 rounded-lg bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                <span>Enter Student Flight Deck</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- FACULTY MENTOR CARD -->
+          <div class="rounded-2xl border border-[#e2e8f0] bg-white p-7 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full pointer-events-none bg-blue-50 opacity-60"></div>
+            
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <img src="/assets/homepage/faculty-icon.png" alt="Faculty Icon" class="w-10 h-10 object-contain" />
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">
+                  Examiner Cockpit
+                </span>
+              </div>
+
+              <h3 class="font-serif text-[24px] font-bold text-[#14171c] mb-1">Faculty & Mentors</h3>
+              <p class="font-sans text-xs text-[#5c6168] mb-6">Assess. Mentor. Analyze.</p>
+
+              <div class="flex justify-center mb-6">
+                <img src="/assets/homepage/faculty-art.png" alt="Faculty 3D Artwork" class="h-28 object-contain transition-transform group-hover:scale-105" />
+              </div>
+
+              <ul class="space-y-3 font-sans text-xs text-[#2f2f3d] mb-8">
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#3e8cd6]"></span>
+                  <span>Live viva copilot with real-time probing suggestions</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#3e8cd6]"></span>
+                  <span>AI question synthesizer mapped to Bloom's taxonomy</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#3e8cd6]"></span>
+                  <span>Classroom roster moderation & join codes</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#3e8cd6]"></span>
+                  <span>Live multi-student video proctor grid & strike log</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pt-4 border-t border-[#eceeee]">
+              <a
+                routerLink="/mentor/dashboard"
+                class="w-full py-2.5 rounded-lg bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                <span>Enter Mentor Command Cockpit</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- ADMINISTRATORS CARD -->
+          <div class="rounded-2xl border border-[#e2e8f0] bg-white p-7 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full pointer-events-none bg-purple-50 opacity-60"></div>
+            
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <img src="/assets/homepage/admin-icon.png" alt="Admin Icon" class="w-10 h-10 object-contain" />
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full">
+                  Institutional Hub
+                </span>
+              </div>
+
+              <h3 class="font-serif text-[24px] font-bold text-[#14171c] mb-1">Administrators</h3>
+              <p class="font-sans text-xs text-[#5c6168] mb-6">Govern. Audit. Improve.</p>
+
+              <div class="flex justify-center mb-6">
+                <img src="/assets/homepage/admin-art.png" alt="Admin 3D Artwork" class="h-28 object-contain transition-transform group-hover:scale-105" />
+              </div>
+
+              <ul class="space-y-3 font-sans text-xs text-[#2f2f3d] mb-8">
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#6122e8]"></span>
+                  <span>Multi-campus tenant directory & RBAC toggles</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#6122e8]"></span>
+                  <span>Student feedback & support ticket resolution hub</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#6122e8]"></span>
+                  <span>Campus-wide broadcasting banner engine</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#6122e8]"></span>
+                  <span>Immutable audit logs & WebRTC proctor health</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pt-4 border-t border-[#eceeee]">
+              <a
+                routerLink="/admin/dashboard"
+                class="w-full py-2.5 rounded-lg bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                <span>Enter Admin Governance Hub</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 9. PROOF POINTS, STATS & TESTIMONIALS                                      -->
+    <!-- ========================================================================= -->
+    <section class="py-16 lg:py-24 bg-[#fbfcfc] border-b border-[#eceeee]">
+      <div class="max-w-[1520px] mx-auto px-6 lg:px-12">
+        
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          @for (c of caseStudyStats; track c.label) {
+            <div class="p-6 rounded-2xl bg-white border border-[#e2e8f0] shadow-sm">
+              <div class="font-serif text-[36px] font-bold text-[#0b4a39] leading-none mb-2">{{ c.metric }}</div>
+              <div class="text-xs font-bold text-[#14171c] mb-1">{{ c.label }}</div>
+              <div class="text-[11px] text-[#5a6066] leading-relaxed">{{ c.detail }}</div>
+            </div>
+          }
+        </div>
+
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3a4048] mb-2">
+            TRUSTED BY AUTONOMOUS INSTITUTIONS
+          </p>
+          <h2 class="font-serif text-[32px] text-[#0b0d10] leading-tight">
+            Hear from Deans, Examiners & Scholars.
+          </h2>
+        </div>
+
+        <!-- 3 Testimonial Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          @for (t of testimonials; track t.author) {
+            <div class="p-7 rounded-2xl bg-white border border-[#e2e8f0] shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-1 text-amber-500 mb-3">
+                  <span class="material-symbols-outlined text-[18px]">star</span>
+                  <span class="material-symbols-outlined text-[18px]">star</span>
+                  <span class="material-symbols-outlined text-[18px]">star</span>
+                  <span class="material-symbols-outlined text-[18px]">star</span>
+                  <span class="material-symbols-outlined text-[18px]">star</span>
+                </div>
+                <blockquote class="font-serif text-[15px] italic text-[#14171c] leading-relaxed mb-6">
+                  "{{ t.quote }}"
+                </blockquote>
+              </div>
+
+              <div class="pt-4 border-t border-[#f1f1f0] flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-bold text-[#14171c]">{{ t.author }}</div>
+                  <div class="text-[10.5px] text-[#5a6066]">{{ t.role }}</div>
+                  <div class="text-[10px] text-[#0b4a39] font-medium">{{ t.institution }}</div>
+                </div>
+                <span class="text-[9.5px] font-bold bg-[#e6f4f0] text-[#0b4a39] px-2 py-1 rounded">
+                  {{ t.stat }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 10. CALL TO ACTION (CTA)                                                  -->
+    <!-- ========================================================================= -->
+    <section id="cta" class="relative overflow-hidden py-20 lg:py-24 bg-gradient-to-b from-[#fcfcf8] via-[#fbf8f2] to-[#f7f2ea] border-b border-[#eceeee]">
+      
+      <!-- Decorative Edge Artwork -->
+      <div class="hidden lg:block absolute left-0 top-0 bottom-0 w-[360px] pointer-events-none select-none">
+        <img
+          src="/assets/homepage/cta-left.png"
+          alt="Campus Architecture Details"
+          class="w-full h-full object-cover"
+          style="mask-image: linear-gradient(90deg, #000 65%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 65%, transparent);" />
+      </div>
+
+      <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-[374px] pointer-events-none select-none">
+        <img
+          src="/assets/homepage/cta-right.png"
+          alt="Campus Pavilion Details"
+          class="w-full h-full object-cover"
+          style="mask-image: linear-gradient(90deg, transparent, #000 35%); -webkit-mask-image: linear-gradient(90deg, transparent, #000 35%);" />
+      </div>
+
+      <div class="max-w-5xl mx-auto px-6 lg:px-12 text-center relative z-10">
+        <p class="text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3a4048] mb-3">
+          READY TO MODERNIZE YOUR EXAMINATION ECOSYSTEM?
+        </p>
+
+        <h2 class="font-serif text-[34px] sm:text-[46px] text-[#0b0d10] leading-tight mb-3">
+          Let’s Build a Smarter Academic Future.
+        </h2>
+
+        <p class="font-sans text-[14.5px] leading-[22px] text-[#2a2e35] max-w-lg mx-auto mb-8">
+          Bring AI, integrity, and real understanding to your university. Schedule an executive briefing with our academic engineering team.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <button
+            type="button"
+            (click)="openDemoModal()"
+            class="inline-flex items-center justify-center gap-2.5 rounded-[6px] bg-[#0b4a39] hover:bg-[#08382b] text-white px-7 py-3.5 font-sans text-xs font-semibold tracking-tight shadow-md transition-all cursor-pointer hover:translate-y-[-1px]">
+            <span>Request a Demo</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+
+          <button
+            type="button"
+            (click)="openDemoModal()"
+            class="inline-flex items-center justify-center rounded-[6px] border border-[#b9c2be] bg-white hover:bg-[#fbfbfb] text-[#14171c] px-6 py-3.5 font-sans text-xs font-semibold tracking-tight transition-all cursor-pointer shadow-sm">
+            Contact Academic Sales
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 11. PROFESSIONAL ACADEMIC MEGA-FOOTER                                     -->
+  <!-- ========================================================================= -->
+  <footer class="bg-[#10141a] text-white/80 pt-16 pb-12 border-t border-[#1e2430]">
+    <div class="max-w-[1520px] mx-auto px-6 lg:px-12">
+      
+      <!-- Top Brand & Newsletter Banner -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between pb-12 border-b border-white/10 gap-8 mb-12">
+        <div class="max-w-md">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/assets/homepage/logo-icon.png" alt="ScholarX Crest" class="w-8 h-8 object-contain brightness-0 invert" />
+            <span class="font-sans text-[22px] font-bold text-white tracking-tight">ScholarX</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-900 text-emerald-300 px-2.5 py-0.5 rounded-full">
+              ENTERPRISE v1.0
+            </span>
+          </div>
+          <p class="font-sans text-xs leading-[20px] text-white/60">
+            Next-generation AI oral viva defense, biometric proctoring, and Outcome-Based Education (OBE) accreditation governance platform for Tier-1 universities.
+          </p>
+        </div>
+
+        <!-- Newsletter Subscription -->
+        <div class="w-full lg:max-w-md">
+          <div class="text-xs font-bold text-white mb-2">Subscribe to Academic Accreditation & AI Updates</div>
+          @if (newsletterSuccess()) {
+            <div class="p-2.5 rounded-lg bg-emerald-900/60 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px]">check_circle</span>
+              <span>Thank you for subscribing to ScholarX Academic Intelligence!</span>
+            </div>
+          } @else {
+            <form (ngSubmit)="subscribeNewsletter()" class="flex items-center gap-2">
+              <input
+                type="email"
+                [(ngModel)]="newsletterEmail"
+                name="newsEmail"
+                placeholder="dean@autonomous-univ.edu"
+                required
+                class="w-full px-3.5 py-2.5 text-xs rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#21db93]" />
+              <button
+                type="submit"
+                class="px-4 py-2.5 rounded-lg bg-[#0b4a39] hover:bg-[#0e5c47] text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors">
+                Subscribe
+              </button>
+            </form>
+          }
+        </div>
+      </div>
+
+      <!-- 5-Column Navigation Sitemap -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-14 text-xs">
+        
+        <!-- Col 1: Platform Portals -->
+        <div>
+          <h4 class="font-bold text-white uppercase tracking-wider text-[11px] mb-4">Platform Portals</h4>
+          <ul class="space-y-2.5 text-white/60">
+            <li><a routerLink="/student/dashboard" class="hover:text-white transition-colors">Student Flight Deck</a></li>
+            <li><a routerLink="/mentor/dashboard" class="hover:text-white transition-colors">Faculty Cockpit</a></li>
+            <li><a routerLink="/admin/dashboard" class="hover:text-white transition-colors">Administrator Hub</a></li>
+            <li><a routerLink="/student/viva" class="hover:text-white transition-colors">Live Oral Defense Room</a></li>
+            <li><a routerLink="/student/practice" class="hover:text-white transition-colors">Viva Practice Simulator</a></li>
+            <li><a routerLink="/student/paper-upload" class="hover:text-white transition-colors">PYQ OCR Question Miner</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 2: Accreditation & OBE -->
+        <div>
+          <h4 class="font-bold text-white uppercase tracking-wider text-[11px] mb-4">Accreditation & OBE</h4>
+          <ul class="space-y-2.5 text-white/60">
+            <li><a routerLink="/mentor/reports" class="hover:text-white transition-colors">NBA Tier-1 Criteria 3</a></li>
+            <li><a routerLink="/mentor/reports" class="hover:text-white transition-colors">NAAC Criterion 2.6 SAR</a></li>
+            <li><a routerLink="/mentor/reports" class="hover:text-white transition-colors">ABET Student Outcomes</a></li>
+            <li><a routerLink="/mentor/reports" class="hover:text-white transition-colors">CO-PO Attainment Matrix</a></li>
+            <li><a routerLink="/mentor/reports" class="hover:text-white transition-colors">Authenticity Gap Metric</a></li>
+            <li><a routerLink="/mentor/reports" class="hover:text-white transition-colors">One-Click PDF/Excel Export</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: AI & Media Engines -->
+        <div>
+          <h4 class="font-bold text-white uppercase tracking-wider text-[11px] mb-4">AI Technologies</h4>
+          <ul class="space-y-2.5 text-white/60">
+            <li><span class="hover:text-white cursor-pointer">Bloom's Taxonomy Scorer</span></li>
+            <li><span class="hover:text-white cursor-pointer">Live Speech Dictation Engine</span></li>
+            <li><span class="hover:text-white cursor-pointer">Dynamic Probing Questioner</span></li>
+            <li><span class="hover:text-white cursor-pointer">Tesseract.js OCR Pipeline</span></li>
+            <li><span class="hover:text-white cursor-pointer">LiveKit Cloud WebRTC Bus</span></li>
+            <li><span class="hover:text-white cursor-pointer">Gaze & Multi-Face Detector</span></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Governance & Policies -->
+        <div>
+          <h4 class="font-bold text-white uppercase tracking-wider text-[11px] mb-4">Governance</h4>
+          <ul class="space-y-2.5 text-white/60">
+            <li><a routerLink="/admin/institutions" class="hover:text-white transition-colors">Multi-Campus Onboarding</a></li>
+            <li><a routerLink="/admin/users" class="hover:text-white transition-colors">RBAC & Directory Controls</a></li>
+            <li><a routerLink="/admin/broadcasting" class="hover:text-white transition-colors">Campus Broadcast Engine</a></li>
+            <li><a routerLink="/student/support" class="hover:text-white transition-colors">Student Helpdesk SLA</a></li>
+            <li><span class="hover:text-white cursor-pointer">FERPA & GDPR Compliance</span></li>
+            <li><span class="hover:text-white cursor-pointer">Biometric Privacy Policy</span></li>
+          </ul>
+        </div>
+
+        <!-- Col 5: Institutional Liaison -->
+        <div class="col-span-2 md:col-span-1">
+          <h4 class="font-bold text-white uppercase tracking-wider text-[11px] mb-4">Institutional Desk</h4>
+          <div class="space-y-3 text-white/60 text-xs">
+            <div>
+              <div class="text-[10px] uppercase font-bold text-white/40">24/7 Defense Hotline</div>
+              <div class="text-white font-mono font-bold mt-0.5">+91 1800-420-VIVA</div>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase font-bold text-white/40">Accreditation Liaison</div>
+              <div class="text-white mt-0.5">dean-liaison&#64;scholarx.org</div>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase font-bold text-white/40">Cloud Telemetry Status</div>
+              <div class="flex items-center gap-1.5 text-emerald-400 font-semibold mt-0.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Operational (99.98% SLA)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Legal Row -->
+      <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-[11px] text-white/50 gap-4">
+        <div>
+          © 2026 ScholarX Enterprise Academic Intelligence. Engineered for Tier-1 Institutions.
+        </div>
+        <div class="flex flex-wrap items-center gap-6">
+          <span class="hover:text-white cursor-pointer">Terms of Examination</span>
+          <span class="hover:text-white cursor-pointer">Biometric Data Sovereignty</span>
+          <span class="hover:text-white cursor-pointer">ISO 27001 Certified</span>
+          <span class="hover:text-white cursor-pointer">NBA Tier-1 Aligned</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 12. INTERACTIVE MODALS (Demo Request & Video Player)                      -->
+  <!-- ========================================================================= -->
+
+  <!-- DEMO REQUEST MODAL -->
+  @if (showDemoModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="bg-white rounded-2xl max-w-lg w-full p-7 shadow-2xl border border-[#eceeee] relative animate-in zoom-in-95 duration-200">
+        
+        <button
+          type="button"
+          (click)="closeDemoModal()"
+          class="absolute top-5 right-5 text-[#5c6168] hover:text-[#14171c] p-1.5 rounded-lg hover:bg-[#f1f1f0] transition-colors cursor-pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-3 mb-2">
+          <div class="flex items-center gap-2">
+            <img src="/assets/homepage/logo-icon.png" alt="ScholarX" class="w-7 h-7 object-contain" />
+            <img src="/assets/homepage/wordmark.png" alt="ScholarX" class="h-5 w-auto object-contain" />
+          </div>
+          <h3 class="font-serif text-[20px] font-bold text-[#0b0d10] border-l border-slate-200 pl-3">Request Demo</h3>
+        </div>
+        <p class="font-sans text-xs text-[#5a6066] mb-6">
+          Schedule an interactive walk-through with our accreditation specialists to see live viva proctoring, speech evaluation, and CO-PO matrices in action.
+        </p>
+
+        <form (ngSubmit)="submitDemoRequest()" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#14171c] mb-1">Official Name</label>
+            <input
+              type="text"
+              [(ngModel)]="demoForm.fullName"
+              name="fullName"
+              placeholder="e.g. Dr. Alistair Finch"
+              required
+              class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-[#14171c] mb-1">Institutional Email</label>
+              <input
+                type="email"
+                [(ngModel)]="demoForm.email"
+                name="email"
+                placeholder="dean@university.edu"
+                required
+                class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#14171c] mb-1">Institution Name</label>
+              <input
+                type="text"
+                [(ngModel)]="demoForm.institution"
+                name="institution"
+                class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-[#14171c] mb-1">Your Role</label>
+              <select
+                [(ngModel)]="demoForm.role"
+                name="role"
+                class="w-full px-3 py-2.5 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]">
+                <option>Dean / Controller of Examinations</option>
+                <option>Department HOD</option>
+                <option>IQAC Accreditation Coordinator</option>
+                <option>Viva Examiner</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#14171c] mb-1">Student Body Scale</label>
+              <select
+                [(ngModel)]="demoForm.studentsCount"
+                name="studentsCount"
+                class="w-full px-3 py-2.5 text-xs rounded-xl border border-[#cbd5e1] focus:outline-none focus:border-[#0b4a39] bg-white text-[#14171c]">
+                <option>Under 2,500 Students</option>
+                <option>2,500 - 10,000 Students</option>
+                <option>10,000+ Multi-Campus</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button
+              type="submit"
+              [disabled]="isSubmittingDemo()"
+              class="w-full py-3 rounded-xl bg-[#0b4a39] hover:bg-[#08382b] text-white font-sans text-xs font-semibold tracking-wide shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+              @if (isSubmittingDemo()) {
+                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>Scheduling Consultation...</span>
+              } @else {
+                <span>Schedule Executive Demonstration</span>
+              }
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  }
+
+  <!-- VIDEO DEMO MODAL -->
+  @if (showVideoModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div class="bg-[#14171c] rounded-2xl max-w-4xl w-full p-5 shadow-2xl border border-white/10 relative animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse"></span>
+            <span class="text-xs font-bold text-white tracking-wide">ScholarX AI Oral Viva Live Demonstration</span>
+          </div>
+          <button
+            type="button"
+            (click)="closeVideoModal()"
+            class="text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="relative aspect-video rounded-xl overflow-hidden bg-black flex items-center justify-center">
+          <video
+            src="/assets/ai-girl.mp4"
+            controls
+            autoplay
+            playsinline
+            class="w-full h-full object-contain"></video>
+        </div>
+
+        <div class="pt-3 text-center text-xs text-white/50">
+          Features live oral questioning, real-time speech evaluation, and Bloom's cognitive taxonomy scoring.
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

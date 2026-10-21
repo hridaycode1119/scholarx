@@ -1,0 +1,480 @@
+<div class="max-w-7xl mx-auto space-y-6">
+
+  <!-- Toast Notification -->
+  @if (noticeToast()) {
+    <div class="p-4 rounded-2xl bg-[#0B4A39] text-white flex items-center justify-between text-xs font-bold shadow-lg animate-in fade-in duration-150">
+      <div class="flex items-center gap-2">
+        <span class="text-base text-[#21DB93]">⚡</span>
+        <span>{{ noticeToast() }}</span>
+      </div>
+      <button (click)="noticeToast.set(null)" class="text-white/60 hover:text-white cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  @if (adSuccessToast()) {
+    <div class="p-4 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] flex items-center justify-between text-xs font-bold shadow-sm animate-in fade-in duration-150">
+      <div class="flex items-center gap-2">
+        <span class="text-base">✓</span>
+        <span>{{ adSuccessToast() }}</span>
+      </div>
+      <button (click)="adSuccessToast.set(null)" class="text-[#065F46] hover:text-[#047857] cursor-pointer font-mono">✕</button>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-[22px] p-6 md:p-8 border border-[#ECEEEE] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-[#E6F4F0] text-[#0B4A39] text-xs font-extrabold flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-[#10B981] animate-ping"></span>
+          Cross-Platform Broadcasting & Routing
+        </span>
+        <span class="text-xs font-semibold text-[#5A6066]">
+          AI Ad Synthesizer • Registration Registry
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-[#0B4A39]">
+        Global Broadcasting & Student Registration Pipeline
+      </h1>
+      <p class="text-xs text-[#5A6066]">
+        Generate AI advertisements on any topic, provide full statement dossiers, accept student registrations, and automatically route student profiles to the assigned mentor's directory by college.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a routerLink="/admin/dashboard" class="px-4 py-2 rounded-xl bg-white border border-[#ECEEEE] text-[#5A6066] hover:text-[#0B4A39] text-xs font-bold transition-all shadow-2xs">
+        ← Admin Overview
+      </a>
+    </div>
+  </div>
+
+  <!-- SECTION 1: AI CAMPAIGN & POSTER SYNTHESIZER WITH MENTOR ROUTING -->
+  <div class="bg-gradient-to-br from-[#0B4A39] via-[#0B4A39] to-[#0F2421] rounded-[24px] p-6 md:p-8 text-white shadow-xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">✨</span>
+          <h2 class="text-lg font-black tracking-wide">AI Campaign & Registration Synthesizer</h2>
+        </div>
+        <p class="text-xs text-white/70">
+          Enter any campus initiative topic. AI will generate headlines, guidelines dossier, and assign routing to a specific college mentor.
+        </p>
+      </div>
+
+      <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#21DB93] text-[#0B4A39] self-start md:self-auto shadow-sm">
+        Autonomous vLLM Active
+      </span>
+    </div>
+
+    <!-- AI Generator Input Controls -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+      <div class="md:col-span-2 space-y-1.5">
+        <label class="font-bold text-white/90">Campaign Topic or Initiative *</label>
+        <input
+          type="text"
+          [(ngModel)]="aiTopic"
+          placeholder="e.g. Annual AI & Robotics Hackathon, NBA Workshop, Placement Drive..."
+          class="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs font-semibold text-white placeholder-white/40 focus:outline-none focus:border-[#21DB93]"
+        />
+
+        <!-- Quick Topic Chips -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-1">
+          <span class="text-[10px] text-white/60">Quick Prompts:</span>
+          <button
+            type="button"
+            (click)="aiTopic = 'National 48-Hour AI & Web3 Hackathon 2026'"
+            class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] font-bold text-[#21DB93] transition-all cursor-pointer">
+            🚀 Hackathon
+          </button>
+          <button
+            type="button"
+            (click)="aiTopic = 'Faculty Accreditation & OBE Outcome Workshop'"
+            class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] font-bold text-[#21DB93] transition-all cursor-pointer">
+            🎓 Faculty Workshop
+          </button>
+          <button
+            type="button"
+            (click)="aiTopic = 'Tier-1 Engineering Placement & Internship Drive'"
+            class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] font-bold text-[#21DB93] transition-all cursor-pointer">
+            💼 Placement Drive
+          </button>
+        </div>
+      </div>
+
+      <!-- Assign Reviewing Mentor & College -->
+      <div class="space-y-1.5">
+        <label class="font-bold text-white/90">Reviewing Mentor & College Routing</label>
+        <select
+          [ngModel]="aiMentorId"
+          (ngModelChange)="onMentorSelect($event)"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-[#0F2421] border border-white/20 text-xs font-bold text-white focus:outline-none focus:border-[#21DB93] cursor-pointer">
+          @for (m of mentorOptions; track m.id) {
+            <option [value]="m.id">{{ m.name }} ({{ m.id }}) • {{ m.college }}</option>
+          }
+        </select>
+        <span class="text-[10px] text-white/60 block">Students who register will be sent to this mentor</span>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="font-bold text-white/90">Target Audience Filter</label>
+        <select
+          [(ngModel)]="aiTargetAudience"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-[#0F2421] border border-white/20 text-xs font-bold text-white focus:outline-none focus:border-[#21DB93] cursor-pointer">
+          <option value="ALL">Everyone (Students & Mentors)</option>
+          <option value="STUDENTS_ONLY">Students Only</option>
+          <option value="MENTORS_ONLY">Mentors / Faculty Only</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end pt-1">
+      <button
+        (click)="generateWithAi()"
+        [disabled]="isAiGenerating() || !aiTopic.trim()"
+        class="px-6 py-2.5 rounded-xl bg-[#21DB93] hover:bg-[#1bb87b] disabled:opacity-50 text-[#0B4A39] font-black text-xs transition-all shadow-md cursor-pointer flex items-center gap-2">
+        @if (isAiGenerating()) {
+          <span class="animate-spin text-sm">↻</span>
+          <span>Synthesizing Campaign & Dossier...</span>
+        } @else {
+          <span>✨ Generate Ad with AI</span>
+        }
+      </button>
+    </div>
+
+    <!-- AI Generated Live Preview Card -->
+    @if (generatedAdPreview(); as preview) {
+      <div class="pt-4 border-t border-white/10 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <span class="text-xs font-black text-[#21DB93] uppercase tracking-wider flex items-center gap-1.5">
+            <span>●</span> Live AI Generated Ad & Routing Preview
+          </span>
+
+          <!-- Image Regeneration & Actions Bar -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              (click)="regenerateImage()"
+              class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition-all cursor-pointer border border-white/20 flex items-center gap-1.5">
+              <span>🔄</span>
+              <span>Regenerate Image</span>
+            </button>
+
+            <button
+              (click)="publishGeneratedAd()"
+              class="px-5 py-1.5 rounded-xl bg-[#21DB93] hover:bg-[#1bb87b] text-[#0B4A39] font-black text-xs transition-all shadow-md cursor-pointer flex items-center gap-1.5">
+              <span>🚀</span>
+              <span>Deploy & Publish Ad</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview Card Rendering -->
+        <div class="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden flex flex-col md:flex-row shadow-2xl">
+          <div class="md:w-5/12 aspect-video md:aspect-auto relative bg-[#0F2421] shrink-0 overflow-hidden">
+            <img [src]="preview.imageUrl" [alt]="preview.title" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+
+            <div class="absolute top-3 left-3 flex flex-col gap-1">
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase text-white bg-[#0B4A39]">
+                {{ preview.targetAudience === 'ALL' ? '👥 Everyone' : preview.targetAudience === 'STUDENTS_ONLY' ? '🎓 Students' : '🧑‍🏫 Mentors' }}
+              </span>
+              <span class="px-2.5 py-0.5 rounded text-[9px] font-black uppercase text-[#0B4A39] bg-[#21DB93]">
+                Direct Routing: {{ preview.assignedMentorId }}
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 flex-1 flex flex-col justify-between space-y-3">
+            <div class="space-y-1.5">
+              <span class="text-[10px] font-bold text-[#21DB93] uppercase tracking-wider block">
+                {{ preview.category }} • AI Synthesized Campaign
+              </span>
+              <h3 class="text-base md:text-lg font-black text-white leading-snug">{{ preview.title }}</h3>
+              <p class="text-xs font-bold text-[#21DB93]">{{ preview.tagline }}</p>
+
+              <!-- Mentor Routing Info Banner -->
+              <div class="p-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-white/80 flex items-center justify-between">
+                <span>🏛️ {{ preview.sponsorCollege }}</span>
+                <span class="font-bold text-[#21DB93]">Mentor: {{ preview.assignedMentorName }} ({{ preview.assignedMentorId }})</span>
+              </div>
+
+              <p class="text-xs text-white/80 leading-relaxed">{{ preview.description }}</p>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs">
+              <span class="text-[10px] font-mono text-white/50">Status: Ready for Deployment</span>
+              <span class="px-4 py-1.5 rounded-xl bg-white/15 font-bold text-xs text-white">
+                {{ preview.ctaText }} →
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- SECTION 2: ANIMATED NOTICE BAR TICKER CONTROLLER -->
+  <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-5">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-base font-bold text-[#0B4A39]">2. Global Dashboard Animated Notice Ticker</h2>
+        <p class="text-xs text-[#5A6066]">Controls the glowing real-time notice ticker rendered at the very top of every user's dashboard</p>
+      </div>
+      <span class="px-3 py-1 rounded-full text-[11px] font-black"
+        [ngClass]="noticeActive ? 'bg-[#ECFDF5] text-[#065F46]' : 'bg-[#FEF2F2] text-[#EF4444]'">
+        {{ noticeActive ? '● Notice Bar Active' : '○ Notice Bar Hidden' }}
+      </span>
+    </div>
+
+    <!-- Notice Bar Edit Form -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+      <div class="md:col-span-2 space-y-1.5">
+        <label class="font-bold text-[#0B4A39]">Notice Headline / Announcement *</label>
+        <input
+          type="text"
+          [(ngModel)]="noticeMessage"
+          placeholder="e.g. 📢 Important: Live Proctoring camera test scheduled today at 16:00 UTC."
+          class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-medium text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]"
+        />
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="font-bold text-[#0B4A39]">Target Audience</label>
+        <select
+          [(ngModel)]="noticeAudience"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-xs font-bold text-[#0B4A39] focus:outline-none focus:border-[#0B4A39]">
+          <option value="ALL">Everyone (Students & Mentors)</option>
+          <option value="STUDENTS_ONLY">Students Only</option>
+          <option value="MENTORS_ONLY">Mentors / Faculty Only</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-[#ECEEEE]/80">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold text-[#0B4A39]">Theme / Severity:</span>
+        <div class="flex items-center gap-1.5">
+          <button
+            type="button"
+            (click)="noticeType = 'INFO'"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+            [ngClass]="noticeType === 'INFO' ? 'bg-[#0B4A39] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] border border-[#ECEEEE]'">
+            Emerald Pine
+          </button>
+          <button
+            type="button"
+            (click)="noticeType = 'WARNING'"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+            [ngClass]="noticeType === 'WARNING' ? 'bg-[#D97706] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] border border-[#ECEEEE]'">
+            ⚠️ Warning Amber
+          </button>
+          <button
+            type="button"
+            (click)="noticeType = 'CRITICAL'"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+            [ngClass]="noticeType === 'CRITICAL' ? 'bg-[#EF4444] text-white shadow-2xs' : 'bg-[#F8FAF9] text-[#5A6066] border border-[#ECEEEE]'">
+            🚨 Urgent Crimson
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="flex items-center gap-2 text-xs font-bold text-[#0B4A39] cursor-pointer">
+          <input type="checkbox" [(ngModel)]="noticeActive" class="accent-[#0B4A39] w-4 h-4 rounded" />
+          <span>Active & Pinned</span>
+        </label>
+
+        <button
+          (click)="saveNoticeBar()"
+          class="px-5 py-2 rounded-xl bg-[#0B4A39] hover:bg-[#08382B] text-white text-xs font-bold transition-all shadow-sm cursor-pointer">
+          Update Live Notice Bar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: MASTER STUDENT AD REGISTRATIONS & ROUTED MENTORS DIRECTORY -->
+  <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-base">📋</span>
+          <h2 class="text-base font-bold text-[#0B4A39]">3. Central Student Ad Registrations & Routed Mentors Directory</h2>
+        </div>
+        <p class="text-xs text-[#5A6066]">
+          Live registry of all student applications filled from broadcast ads, automatically delivered to the respective college faculty mentor
+        </p>
+      </div>
+      <span class="text-xs font-bold text-[#0B4A39] font-mono">
+        {{ broadcastService.registrations().length }} Total Submissions
+      </span>
+    </div>
+
+    <div class="overflow-x-auto rounded-xl border border-[#ECEEEE]">
+      <table class="w-full text-left text-xs border-collapse">
+        <thead class="bg-[#F8FAF9] text-[#5A6066] uppercase font-bold text-[10px] tracking-wider border-b border-[#ECEEEE]">
+          <tr>
+            <th class="p-3">Student & Roll No</th>
+            <th class="p-3">College & Department</th>
+            <th class="p-3">Broadcast Campaign</th>
+            <th class="p-3">Assigned Reviewing Mentor</th>
+            <th class="p-3">Remarks / Statement</th>
+            <th class="p-3">Status</th>
+            <th class="p-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#ECEEEE] text-xs">
+          @for (reg of broadcastService.registrations(); track reg.id) {
+            <tr class="hover:bg-[#F4F6F5]/50 transition-colors">
+              <td class="p-3">
+                <p class="font-bold text-[#0B4A39]">{{ reg.studentName }}</p>
+                <p class="text-[10px] font-mono text-[#5A6066]">{{ reg.rollNumber }} • {{ reg.studentEmail }}</p>
+              </td>
+              <td class="p-3">
+                <p class="font-semibold text-[#0B4A39]">🏛️ {{ reg.collegeName }}</p>
+                <p class="text-[10px] text-[#5A6066]">{{ reg.department }} • {{ reg.yearSemester }}</p>
+              </td>
+              <td class="p-3 font-medium text-[#0B4A39] max-w-[180px] truncate" [title]="reg.adTitle">
+                {{ reg.adTitle }}
+              </td>
+              <td class="p-3">
+                <span class="font-bold text-[#0B4A39] block">{{ reg.mentorName }}</span>
+                <span class="text-[10px] font-mono text-[#0B4A39]">ID: {{ reg.mentorId }}</span>
+              </td>
+              <td class="p-3 text-[#5A6066] max-w-[200px] truncate" [title]="reg.statementOrRemarks || ''">
+                {{ reg.statementOrRemarks || 'No statement provided' }}
+              </td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+                  [ngClass]="{
+                    'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]': reg.status === 'ACCEPTED',
+                    'bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]': reg.status === 'PENDING',
+                    'bg-[#FEF2F2] text-[#991B1B] border border-[#FCA5A5]': reg.status === 'REJECTED'
+                  }">
+                  {{ reg.status }}
+                </span>
+              </td>
+              <td class="p-3 text-right">
+                <div class="flex items-center justify-end gap-1.5">
+                  @if (reg.status !== 'ACCEPTED') {
+                    <button
+                      (click)="acceptRegistration(reg.id)"
+                      class="px-2 py-1 rounded bg-[#0B4A39] hover:bg-[#08382B] text-white font-bold text-[10px] transition-all cursor-pointer">
+                      ✓ Accept
+                    </button>
+                  }
+                  @if (reg.status !== 'REJECTED') {
+                    <button
+                      (click)="rejectRegistration(reg.id)"
+                      class="px-2 py-1 rounded border border-[#ECEEEE] hover:bg-[#FEF2F2] text-[#EF4444] font-bold text-[10px] transition-all cursor-pointer">
+                      ✕
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 4: ACTIVE BROADCAST BANNERS GALLERY WITH FULL DETAILS & FORM TRIGGERS -->
+  <div class="bg-white rounded-[22px] p-6 border border-[#ECEEEE] shadow-sm space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-base font-bold text-[#0B4A39]">4. Active Published Broadcast Ads & Routing Profiles</h2>
+        <p class="text-xs text-[#5A6066]">Inspect campaigns, test the full statement dossiers, or trigger test registration forms</p>
+      </div>
+      <span class="text-xs font-bold text-[#0B4A39] font-mono">
+        {{ broadcastService.broadcastItems().length }} Total Ads
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (item of broadcastService.broadcastItems(); track item.id) {
+        <div class="rounded-2xl border border-[#ECEEEE] bg-white overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <!-- Banner Image Preview with Tag Badges -->
+            <div class="relative aspect-video w-full bg-[#0B4A39] overflow-hidden">
+              <img [src]="item.imageUrl" [alt]="item.title" class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+              <div class="absolute top-2.5 left-2.5 flex flex-col gap-1">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase text-white shadow-sm"
+                  [ngClass]="{
+                    'bg-[#0284C7]': item.targetAudience === 'STUDENTS_ONLY',
+                    'bg-[#059669]': item.targetAudience === 'MENTORS_ONLY',
+                    'bg-[#0B4A39]': item.targetAudience === 'ALL'
+                  }">
+                  {{ item.targetAudience === 'ALL' ? '👥 Everyone' : item.targetAudience === 'STUDENTS_ONLY' ? '🎓 Students' : '🧑‍🏫 Mentors' }}
+                </span>
+                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase text-[#0B4A39] bg-[#21DB93] shadow-sm">
+                  {{ item.registrationCount || 0 }} Registered
+                </span>
+              </div>
+
+              <div class="absolute top-2.5 right-2.5">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black"
+                  [ngClass]="item.active ? 'bg-[#ECFDF5] text-[#065F46]' : 'bg-[#FEF2F2] text-[#EF4444]'">
+                  ● {{ item.active ? 'Active' : 'Disabled' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="p-4 space-y-2">
+              <span class="text-[10px] font-bold text-[#0B4A39] uppercase tracking-wider block">
+                {{ item.category }} • {{ item.createdAt }}
+              </span>
+              <h3 class="text-sm font-bold text-[#0B4A39] leading-snug">{{ item.title }}</h3>
+              @if (item.tagline) {
+                <p class="text-xs font-semibold text-[#0B4A39]">{{ item.tagline }}</p>
+              }
+
+              <!-- Mentor & College Routing Pill -->
+              <div class="p-2 rounded-xl bg-[#F8FAF9] border border-[#ECEEEE] text-[11px] space-y-0.5">
+                <span class="font-bold text-[#0B4A39] block">🏛️ {{ item.sponsorCollege || 'Apex Institute' }}</span>
+                <span class="font-medium text-[#0B4A39] block">Routing Mentor: {{ item.assignedMentorName }} ({{ item.assignedMentorId }})</span>
+              </div>
+
+              <p class="text-xs text-[#5A6066] line-clamp-2 leading-relaxed">{{ item.description }}</p>
+            </div>
+          </div>
+
+          <!-- Card Footer Actions -->
+          <div class="p-3 bg-[#F8FAF9] border-t border-[#ECEEEE] flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+              <button
+                (click)="openDetails(item)"
+                class="px-2.5 py-1 rounded-lg text-xs font-bold text-[#0B4A39] bg-[#E6F4F0] hover:bg-[#d6eae4] transition-all cursor-pointer">
+                📄 Details
+              </button>
+
+              @if (item.requiresRegistration) {
+                <button
+                  (click)="openRegistration(item)"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-[#0B4A39] hover:bg-[#08382B] transition-all cursor-pointer">
+                  📝 Form
+                </button>
+              }
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              <button
+                (click)="toggleAd(item)"
+                class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border shadow-2xs"
+                [ngClass]="item.active ? 'bg-white border-[#ECEEEE] text-[#D97706] hover:bg-[#FFFBEB]' : 'bg-[#ECFDF5] border-[#A7F3D0] text-[#065F46]'">
+                {{ item.active ? 'Pause' : 'Enable' }}
+              </button>
+
+              <button
+                (click)="deleteAd(item)"
+                class="px-2 py-1 rounded-lg text-xs font-bold text-[#EF4444] hover:bg-[#FEF2F2] transition-all cursor-pointer">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+</div>
